@@ -1,0 +1,7 @@
+{
+    "require": {
+        "phpoffice/phpspreadsheet": "^1.19",
+        "monolog/monolog": "^2.3",
+        "boospot/boo-settings-helper": "^5.3"
+    }
+}
