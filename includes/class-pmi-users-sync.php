@@ -190,11 +190,10 @@ class Pmi_Users_Sync {
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
-		// Add the admin menu for the plugin
+		/**
+		 * Add the admin menu for the plugin
+		 */
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_link');
-
-		// Add the admin menu for the plugin using the {@see Boo_Settings_Helper} class
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'pmi_users_sync_add_admin_menu' );
 	}
 
 	/**
