@@ -101,29 +101,77 @@ class Pmi_Users_Sync_Admin
 		wp_enqueue_script($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
 	}
 
+	
 	/**
-	 * Build the admin menu using the Boo Settings Helper class
+	 * Build the admin menu using the {@see Boo_Settings_Helper} class
 	 * @see https://github.com/boospot/boo-settings-helper
 	 *
 	 * @return void
 	 */
-	public function pmi_users_sync_add_admin_menu()
-	{	
-		// TODO Implement the construction of the admin menu using the {@see Boo_Settings_Helper} class
- 		/* $config_array = array (
-
-		);
-
-		require_once(PMI_USERS_SYNC_PLUGIN_DIR_VENDOR . 'boo-settings-helper');
-		$settings_helper = new Boo_Settings_Helper($config_array); */
-	}
-
 	public function add_menu_link()
 	{
+		/**
+		 * Adding the main menu item at admin menu level
+		 */
 		$menu_page = add_menu_page(esc_html__('PMI Users Sync', 'pmi_users_sync'), esc_html__('PMI Users Sync', 'pmi_users_sync'), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', array($this, 'pmi_users_list_page'), 'dashicons-id-alt');
-
 		add_submenu_page(PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__('PMI Users', 'pmi_users_sync'), esc_html__('PMI Users', 'pmi_users_sync'), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options');
-		add_submenu_page(PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__('Settings', 'pmi_users_sync'), esc_html__('Settings', 'pmi_users_sync'), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options_settings', array($this, 'pmi_users_sync_settings_page'));
+
+		/**
+		 * Build the menu configuration array for the Boo Settings Helper class
+		 */
+		$config_array_menu = array(
+			'prefix'   => PMI_USERS_SYNC_PREFIX,
+			'tabs'     => true,
+			'menu'     =>
+			array(
+				'page_title' => __('PMI Users Sync Settings', 'pmi-users-sync'),
+				'menu_title' => __('Settings', 'pmi-users-sync'),
+				'capability' => 'manage_options',
+				'slug'       => 'pmi_users_sync_options',
+				'icon'       => 'dashicons-id-alt',
+				'position'   => 70,
+				'parent'     => PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options',
+				'submenu'    => true,
+			),
+			'sections' =>
+			array(
+				array(
+					'id'    => 'settings_section',
+					'title' => __('Settings', 'pmi-users-sync'),
+					'desc'  => __('Settings for PMI Users Sync plugin', 'pmi-users-sync'),
+				),
+			),
+			'fields'   => array(
+				'settings_section' => array(
+					array(
+						'id'    => 'overwrite_pmi_id',
+						'label' => 'PMI-ID Priority',
+						'desc' => __('If checked, the PMI ID inserted by the users will be overwritten', 'pmi-users-sync'),
+						'type'  => 'checkbox',
+					),
+					array(
+						'id'    => 'pmi_id_custom_field',
+						'label' => __('PMI-ID custom field', 'pmi-users-sync'),
+						'desc' => __('Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)'),
+						'type'  => 'text',
+					),
+				),
+			),
+			'links'    => array(
+				'plugin_basename' => plugin_basename(__FILE__),
+				'action_links'    => true,
+			),
+		);
+
+		/**
+		 * Including the Boo Settings Helper class
+		 */
+		require_once(PMI_USERS_SYNC_PLUGIN_DIR_VENDOR . 'boo-settings-helper/class-boo-settings-helper.php');
+		
+		/**
+		 * Building the settings menu creating a new instance of the {@see Boo_Settings_Helper} class
+		 */ 
+		$settings_helper = new Boo_Settings_Helper($config_array_menu);
 	}
 
 	/**
@@ -131,7 +179,7 @@ class Pmi_Users_Sync_Admin
 	 *
 	 * @return void
 	 */
-	public function pmi_users_list_page()
+	public function pmi_users_list_page($args)
 	{
 		// @todo TODO Make the filename dynamic
 		$file_path = resource_path('/pmi-excel/' . Pmi_Users_Sync_Pmi_User_Excel_File_Loader::PMI_EXCEL_FILENAME);
