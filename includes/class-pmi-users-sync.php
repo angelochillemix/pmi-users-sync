@@ -150,7 +150,7 @@ class Pmi_Users_Sync {
 		/**
 		 * Includes the global utility functions
 		 */
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/pmi-users-sync-functions.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/functions-pmi-users-sync.php');
 
 
 		//require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/admin/pmi-users-sync-update.php');

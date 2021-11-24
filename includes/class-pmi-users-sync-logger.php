@@ -16,6 +16,7 @@ use Monolog\Handler\StreamHandler;
 
 class Pmi_Users_Sync_Logger
 {
+    const LOG_NAME = 'PMI Users Sync Log';
     const LOG_FILE_NAME = PMI_USERS_SYNC_PREFIX . 'log.log';
     const LOG_DIR_PATH = PMI_USERS_SYNC_PLUGIN_DIR_ADMIN . 'logs/';
     const LOG_FILE_PATH = self::LOG_DIR_PATH . self::LOG_FILE_NAME;
@@ -42,7 +43,7 @@ class Pmi_Users_Sync_Logger
     {
         if (null === self::$log) {
             // create a log channel
-            self::$log = new Logger(PMI_USERS_SYNC_PREFIX . 'log');
+            self::$log = new Logger(self::LOG_FILE_NAME);
             self::$log->pushHandler(new StreamHandler(self::LOG_FILE_PATH, Logger::INFO));
         }
         return self::$log;

@@ -75,6 +75,11 @@ define( 'PMI_USERS_SYNC_PLUGIN_DIR_VENDOR', plugin_dir_path( __FILE__ ) . 'vendo
 
 
 /**
+ * Represents the hook function to setup the cron for the regular updated of the PMI-ID
+ */
+define ('PMI_USERS_SYNC_CRON_HOOK', PMI_USERS_SYNC_PREFIX . 'update_users_pmi_id');
+
+/**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-pmi-users-sync-activator.php
  */

@@ -162,11 +162,6 @@ class Pmi_Users_Sync_Admin
 				'action_links'    => true,
 			),
 		);
-
-		/**
-		 * Including the Boo Settings Helper class
-		 */
-		require_once(PMI_USERS_SYNC_PLUGIN_DIR_VENDOR . 'boo-settings-helper/class-boo-settings-helper.php');
 		
 		/**
 		 * Building the settings menu creating a new instance of the {@see Boo_Settings_Helper} class
@@ -199,16 +194,6 @@ class Pmi_Users_Sync_Admin
 			PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
 			PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
 		];
-		$updater = Pmi_Users_Sync_User_Updater::update($users, $options);
-	}
-
-	/**
-	 * Shows the plugin settings
-	 * 
-	 * @return void
-	 */
-	public function pmi_users_sync_settings_page()
-	{
-		require_once(plugin_dir_path(__FILE__) . 'partials/pmi-users-sync-settings-page.php');
+		Pmi_Users_Sync_User_Updater::update($users, $options);
 	}
 }
