@@ -30,45 +30,16 @@ class Pmi_Users_Sync_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-		// Register the hook to the cron tasks
-		if ( ! wp_next_scheduled( PMI_USERS_SYNC_CRON_HOOK ) ) {
-			add_filter( 'cron_schedules', 'pus_monthly_intervals' ); 
-			wp_schedule_event( time(), 'monthly', PMI_USERS_SYNC_CRON_HOOK );
+
+		// Activate the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site
+		$scheduler = new Pmi_Users_Sync_Cron_Scheduler();
+		$scheduler->schedule('monthly');
+
+		// TODO: Check that Advanced Custom Field plugin is installed
+
+		if ( !is_plugin_active('advanced-custom-fields/acf.php') ) {
+			// Inform the user that this plugin needs ACF to create the custome PMI-ID field that will be added to the user's information
 		}
 	}
 
-	function pus_monthly_intervals($schedules) {
-		$schedules['monthly'] = array(
-			'interval' => 2635200,
-			'display' => __('Once a month')
-		);
-		return $schedules;
-	}
-
-	/**
-	 * Function called by cron on a monthly basis
-	 *
-	 * @return void
-	 */
-	public function pus_update_users_pmi_id() {
-		// @todo TODO Make the filename dynamic
-		$file_path = resource_path('/pmi-excel/' . Pmi_Users_Sync_Pmi_User_Excel_File_Loader::PMI_EXCEL_FILENAME);
-		$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-		$users = $loader->load();
-
-		if (isset($_POST['update_users'])) {
-			$this->pmi_users_sync_users_update($users);
-		}
-	} 
-	
-	
-	private function pmi_users_sync_users_update($users)
-	{
-		$options = array();
-		$options = [
-			PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
-			PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
-		];
-		Pmi_Users_Sync_User_Updater::update($users, $options);
-	}
 }

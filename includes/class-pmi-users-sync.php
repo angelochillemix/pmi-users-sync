@@ -148,12 +148,14 @@ class Pmi_Users_Sync {
 		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-logger.php');
 
 		/**
-		 * Includes the global utility functions
+		 * The class to setup the cron scheduler
 		 */
-		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/functions-pmi-users-sync.php');
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-cron-scheduler.php');
 
-
-		//require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/admin/pmi-users-sync-update.php');
+		/**
+		 * The class with Path utilities source codeto setup the cron scheduler
+		 */
+		require_once(plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-path-utils.php');
 
 		$this->loader = new Pmi_Users_Sync_Loader();
 
@@ -185,7 +187,7 @@ class Pmi_Users_Sync {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Pmi_Users_Sync_Admin( $this->get_pmi_users_sync(), $this->get_version() );
+		$plugin_admin = new Pmi_Users_Sync_Admin( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -205,7 +207,7 @@ class Pmi_Users_Sync {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Pmi_Users_Sync_Public( $this->get_pmi_users_sync(), $this->get_version() );
+		$plugin_public = new Pmi_Users_Sync_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -218,17 +220,6 @@ class Pmi_Users_Sync {
 	 */
 	public function run() {
 		$this->loader->run();
-	}
-
-	/**
-	 * The name of the plugin used to uniquely identify it within the context of
-	 * WordPress and to define internationalization functionality.
-	 *
-	 * @since     1.0.0
-	 * @return    string    The name of the plugin.
-	 */
-	public function get_pmi_users_sync() {
-		return $this->get_plugin_name();
 	}
 
 	/**
