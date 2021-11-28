@@ -57,23 +57,29 @@ if (isset($_POST['update_users'])) {
     </form>
     <br />
     <br />
-    <p>Excel file path <?php echo $file_path ?></p>
-    <table class="styled-table">
-        <thead>
-            <th>PMI ID</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Email</th>
-        </thead>
-        <?php foreach ($users as $user) : ?>
-            <tr>
-                <td><?php echo $user->get_pmi_id() ?></td>
-                <td><?php echo $user->get_first_name() ?></td>
-                <td><?php echo $user->get_last_name() ?></td>
-                <td><?php echo $user->get_email() ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
+    <?php if (isset($error_message)) { ?>
+        <p> <?php echo $error_message ?></p>
+    <?php } ?>
+
+    <?php if (isset($users)) { ?>
+        <p>Excel file path <?php echo $file_path ?></p>
+        <table class="styled-table">
+            <thead>
+                <th>PMI ID</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+            </thead>
+            <?php foreach ($users as $user) : ?>
+                <tr>
+                    <td><?php echo $user->get_pmi_id() ?></td>
+                    <td><?php echo $user->get_first_name() ?></td>
+                    <td><?php echo $user->get_last_name() ?></td>
+                    <td><?php echo $user->get_email() ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php } ?>
 </body>
 
 </html>
