@@ -101,7 +101,7 @@ class Pmi_Users_Sync_Admin
 		wp_enqueue_script($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
 	}
 
-	
+
 	/**
 	 * Build the admin menu using the {@see Boo_Settings_Helper} class
 	 * @see https://github.com/boospot/boo-settings-helper
@@ -155,17 +155,42 @@ class Pmi_Users_Sync_Admin
 						'desc' => __('Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)'),
 						'type'  => 'text',
 					),
+					array(
+						'id'          => 'pmi_file_field_id',
+						'label'       => __('File', 'pmi-users-sync'),
+						'desc'        => __('The Excel file with the PMI-ID extracted from PMI', 'pmi-users-sync'),
+						'type'        => 'file',
+						'default'     => '',
+						'placeholder' => __('Textarea placeholder', 'pmi-users-sync'),
+						'options'     => array( //					'btn' => 'Get it'
+						)
+					),
 				),
 			),
 			'links'    => array(
 				'plugin_basename' => plugin_basename(__FILE__),
-				'action_links'    => true,
+				'action_links'    => array(
+					array(
+						'type' => 'default',
+						'text' => __('Settings', 'pmi-users-sync'),
+					),
+					array(
+						'type' => 'external',
+						'text' => __('Github Repository', 'pmi-users-sync'),
+						'url'  => 'https://github.com/angelochillemix/pmi-users-sync',
+					),
+					array(
+						// 'type' => 'internal',
+						// 'text' => __( 'Gravity Forms', 'pmi-users-sync' ),
+						// 'url'  => 'admin.php?page=gf_edit_forms',
+					),
+				),
 			),
 		);
-		
+
 		/**
 		 * Building the settings menu creating a new instance of the {@see Boo_Settings_Helper} class
-		 */ 
+		 */
 		$settings_helper = new Boo_Settings_Helper($config_array_menu);
 	}
 
@@ -176,13 +201,24 @@ class Pmi_Users_Sync_Admin
 	 */
 	public function pmi_users_list_page($args)
 	{
-		// @todo TODO Make the filename dynamic
-		$file_path = resource_path('/pmi-excel/' . Pmi_Users_Sync_Pmi_User_Excel_File_Loader::PMI_EXCEL_FILENAME);
-		$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-		$users = $loader->load();
+		$pmi_file_url = get_option(PMI_USERS_SYNC_PREFIX . 'pmi_file_field_id');
 
-		if (isset($_POST['update_users'])) {
-			$this->pmi_users_sync_users_update($users);
+
+		// Return false if the plugin setting is not set
+		if (false !== $pmi_file_url) {
+			$file_path = Path_Utils::get_file_path($pmi_file_url);
+			$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
+			try {
+				$users = $loader->load();
+
+				if (isset($_POST['update_users'])) {
+					$this->pmi_users_sync_users_update($users);
+				}
+			} catch (Exception $exception) {
+				Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage(), null);
+			}
+		} else {
+			$error_message = __('No file has been set in the plugin settings page.');
 		}
 		require_once(plugin_dir_path(__FILE__) . 'partials/pmi-users-sync-admin-display.php');
 	}
