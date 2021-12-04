@@ -196,6 +196,7 @@ class Pmi_Users_Sync {
 		 * Add the admin menu for the plugin
 		 */
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_link');
+		$this->loader->add_action('admin_notices', $plugin_admin, 'notify_user_about_acf_plugin');
 	}
 
 	/**

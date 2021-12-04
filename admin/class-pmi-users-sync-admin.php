@@ -30,7 +30,7 @@ class Pmi_Users_Sync_Admin
 	 * @access   private
 	 * @var      string    $pmi_users_sync    The ID of this plugin.
 	 */
-	private $pmi_users_sync;
+	private $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -48,10 +48,10 @@ class Pmi_Users_Sync_Admin
 	 * @param      string    $pmi_users_sync       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($pmi_users_sync, $version)
+	public function __construct($plugin_name, $version)
 	{
 
-		$this->pmi_users_sync = $pmi_users_sync;
+		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 	}
 
@@ -75,7 +75,7 @@ class Pmi_Users_Sync_Admin
 		 * class.
 		 */
 
-		wp_enqueue_style($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all');
+		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -98,7 +98,20 @@ class Pmi_Users_Sync_Admin
 		 * class.
 		 */
 
-		wp_enqueue_script($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
+		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
+	}
+
+	public function notify_user_about_acf_plugin()
+	{
+		if (!is_plugin_active('advanced-custom-fields/acf.php')) {
+			// Inform the user that this plugin needs ACF to create the custome PMI-ID field that will be added to the user's information
+			ob_start() ?>
+			<div class="notice notice-warning is-dismissible">
+				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires the plugin ', 'pmi-users-sync'); ?><a href="https://wordpress.org/plugins/advanced-custom-fields/"><?php _e('Advanced Custom Fields', 'pmi-users-sync'); ?></a></p>
+			</div>
+<?php
+		echo ob_get_clean();
+		}
 	}
 
 
@@ -178,11 +191,6 @@ class Pmi_Users_Sync_Admin
 						'type' => 'external',
 						'text' => __('Github Repository', 'pmi-users-sync'),
 						'url'  => 'https://github.com/angelochillemix/pmi-users-sync',
-					),
-					array(
-						// 'type' => 'internal',
-						// 'text' => __( 'Gravity Forms', 'pmi-users-sync' ),
-						// 'url'  => 'admin.php?page=gf_edit_forms',
 					),
 				),
 			),

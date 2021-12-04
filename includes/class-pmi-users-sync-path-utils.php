@@ -1,17 +1,24 @@
-<?php 
+<?php
 
 class Path_Utils
 {
-    /**
-     * Return the resources directory path
-     *
-     * @param string $filePath
-     * @return void
-     */
-    public static function resource_path($filePath) {
-        return PMI_USERS_SYNC_PLUGIN_DIR_RESOURCES . $filePath;
-    }   
+	/**
+	 * No instances allowed since this class is meant to contain only static method
+	 */
+	private function __construct()
+	{
+	}
 
+	/**
+	 * Return the full path of the file under the resources directory
+	 *
+	 * @param string $filePath
+	 * @return string The full path of the file under the resources directory
+	 */
+	public static function resource_path($filePath)
+	{
+		return PMI_USERS_SYNC_PLUGIN_DIR_RESOURCES . $filePath;
+	}
 
 	/**
 	 * Retieve the full path fo the file with the PMI-ID from PMI
@@ -50,5 +57,4 @@ class Path_Utils
 		if (file_exists($file)) return $file;
 		return false;
 	}
-
 }

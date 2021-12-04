@@ -34,12 +34,6 @@ class Pmi_Users_Sync_Activator {
 		// Activate the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site
 		$scheduler = new Pmi_Users_Sync_Cron_Scheduler();
 		$scheduler->schedule('monthly');
-
-		// TODO: Check that Advanced Custom Field plugin is installed
-
-		if ( !is_plugin_active('advanced-custom-fields/acf.php') ) {
-			// Inform the user that this plugin needs ACF to create the custome PMI-ID field that will be added to the user's information
-		}
 	}
 
 }
