@@ -5,6 +5,7 @@
         "boospot/boo-settings-helper": "^5.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.5"
+        "phpunit/phpunit": "^7",
+        "yoast/phpunit-polyfills": "^1.0"
     }
 }
