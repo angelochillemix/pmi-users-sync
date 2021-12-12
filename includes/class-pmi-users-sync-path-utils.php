@@ -43,18 +43,24 @@ class Path_Utils
 	 * Get the attachment absolute path from its url
 	 *
 	 * @param string $url the attachment url to get its absolute path
-	 *
-	 * @return bool|string It returns the absolute path of an attachment
+	 * @param bool $check_file If true it checks that the file exists, else return the resulting file path as string
+	 * @return bool|string It returns the absolute path of an attachment, or false if file does not exist
 	 */
-	public static function attachment_url_to_path($url)
+	public static function attachment_url_to_path($url, $check_file = true)
 	{
 		$parsed_url = parse_url($url);
 		if (empty($parsed_url['path'])) return false;
 		//Remove parent directory
 		$dir_path = substr(ltrim($parsed_url['path'], '/'), strpos(ltrim($parsed_url['path'], '/'), '/'));
+		// Remove one more trailing slash from the full path
+		$dir_path = ltrim($dir_path, '/');
+		// Append the absolute path of wordpress directory from the ABSPATH variable
 		$file = ABSPATH . $dir_path;
 		// Check if the resulting file exists and return its full path
-		if (file_exists($file)) return $file;
+		if (!$check_file || file_exists($file)) {
+			return $file;
+		} 
 		return false;
 	}
+
 }
