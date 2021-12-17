@@ -51,18 +51,20 @@ if (isset($_POST['update_users'])) {
 
 <body>
     <h1>PMI Users from Excel file</h1>
-    <p>Update the PMI ID of the users </p>
+    <?php if (isset($file_path)) { ?>
+        <p><?php _e('Excel file path'); ?> <?php echo $file_path ?></p>
+    <?php } ?>
+    <p><?php _e('Update the PMI ID of the users'); ?></p>
     <form id="update_users_form" method="POST">
-        <input type="submit" name="update_users" value="<?php echo _e('Update') ?>">Update PMI-ID</input>
+        <input type="submit" name="update_users" value="<?php _e('Update') ?>">Update PMI-ID</input>
     </form>
     <br />
     <br />
-    <?php if (isset($error_message)) { ?>
+    <?php if (isset($error_message) && !empty($error_message)) { ?>
         <p> <?php echo $error_message ?></p>
     <?php } ?>
 
     <?php if (isset($users)) { ?>
-        <p>Excel file path <?php echo $file_path ?></p>
         <table class="styled-table">
             <thead>
                 <th>PMI ID</th>

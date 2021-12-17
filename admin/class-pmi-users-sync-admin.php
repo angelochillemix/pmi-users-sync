@@ -108,10 +108,35 @@ class Pmi_Users_Sync_Admin
 			ob_start() ?>
 			<div class="notice notice-warning is-dismissible">
 				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires the plugin ', 'pmi-users-sync'); ?><a href="https://wordpress.org/plugins/advanced-custom-fields/"><?php _e('Advanced Custom Fields', 'pmi-users-sync'); ?></a></p>
+				<p><?php esc_html_e('Install the plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"'); ?></p>
 			</div>
 <?php
-		echo ob_get_clean();
+			echo ob_get_clean();
 		}
+
+		if (!$this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'))) {
+			// Inform the user that the ACF field for the PMI-ID is not yet defined
+			ob_start() ?>
+			<div class="notice notice-warning is-dismissible">
+				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires that a custom user field representing the PMI-ID is defined ', 'pmi-users-sync'); ?></p>
+				<p><?php esc_html_e('Install the ACF plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"'); ?></p>
+			</div>
+<?php
+			echo ob_get_clean();
+		}
+	}
+
+	/**
+	 * Check if a Advanced Custom Field is defined
+	 *
+	 * @param string $field_name The name of the field to check existence for
+	 * @return bool true if the field is found, false otherwise
+	 */
+	private function acf_field_exists($field_name)
+	{
+		global $wpdb;
+		$acf_fields = $wpdb->get_results($wpdb->prepare("SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, 'acf-field'));
+		return (count( $acf_fields )) > 0;
 	}
 
 
@@ -218,9 +243,14 @@ class Pmi_Users_Sync_Admin
 			$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
 			try {
 				$users = $loader->load();
+				$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'));
+				if (!$pmi_id_custom_field_exists) {
+					$error_message = __('PMI-ID custom field does not exist. Update not done!');
+				}
 
-				if (isset($_POST['update_users'])) {
+				if (isset($_POST['update_users']) && $pmi_id_custom_field_exists) {
 					$this->pmi_users_sync_users_update($users);
+					$error_message = __('Users successfully updated!');
 				}
 			} catch (Exception $exception) {
 				Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage(), null);
