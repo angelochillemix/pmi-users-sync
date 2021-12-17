@@ -112,7 +112,11 @@ class Pmi_Users_Sync_Admin
 			</div>
 <?php
 			echo ob_get_clean();
+			return;
 		}
+
+		// ACF plugin is installed and active
+		// It is now safe to check that custom field exists
 
 		if (!$this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'))) {
 			// Inform the user that the ACF field for the PMI-ID is not yet defined
@@ -136,6 +140,9 @@ class Pmi_Users_Sync_Admin
 	{
 		global $wpdb;
 		$acf_fields = $wpdb->get_results($wpdb->prepare("SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, 'acf-field'));
+		if (is_null($acf_fields)) {
+			return false;
+		}
 		return (count( $acf_fields )) > 0;
 	}
 
