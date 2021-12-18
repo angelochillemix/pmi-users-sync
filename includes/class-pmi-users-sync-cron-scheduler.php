@@ -18,7 +18,7 @@ class Pmi_Users_Sync_Cron_Scheduler
 	/**
 	 * Represents the hook function to setup the cron for the regular updated of the PMI-ID
 	 */
-	private const PMI_USERS_SYNC_CRON_HOOK = 'pus_update_users_pmi_id';
+	public const PMI_USERS_SYNC_CRON_HOOK = 'pus_cron_update_users_pmi_id';
 
 	/**
 	 * Schedule the regular updated of the PMI-ID
@@ -30,23 +30,20 @@ class Pmi_Users_Sync_Cron_Scheduler
 	{
 		// Register the hook to the cron tasks
 		if (!wp_next_scheduled(self::PMI_USERS_SYNC_CRON_HOOK)) {
-			add_filter('cron_schedules', 'pus_monthly_intervals');
-			wp_schedule_event(time(), $recurrence, self::PMI_USERS_SYNC_CRON_HOOK);
+			add_filter('cron_schedules', array($this, 'pus_add_intervals'));
+			$error = wp_schedule_event(time(), $recurrence, self::PMI_USERS_SYNC_CRON_HOOK);
+			add_action(self::PMI_USERS_SYNC_CRON_HOOK, array($this, 'pus_update_users_pmi_id'));
 		}
 	}
 
 	/**
 	 * Define the array of schedules for the cron tasks to synchronize the PMI-ID
 	 *
-	 * @param array $schedules The array with the defined schedules: weekly, monthly
-	 * @return array Return the $schedules array with the defined schedules: weekly, monthly
+	 * @param array $schedules The array with the WP defined recurrence
+	 * @return array Return the $schedules array with in addition the monthly schedules as not part of standard supported recurrence
 	 */
-	private function pus_monthly_intervals($schedules)
+	public function pus_add_intervals($schedules)
 	{
-		$schedules['weekly'] = array(
-			'interval' => 604800,
-			'display' => __('Once Weekly')
-		);
 		$schedules['monthly'] = array(
 			'interval' => 2635200,
 			'display' => __('Once a month')
@@ -68,8 +65,10 @@ class Pmi_Users_Sync_Cron_Scheduler
 			// Return false if the file is not set in the plugin setting
 			if (false !== $pmi_file_url) {
 				$file_path = Path_Utils::get_file_path($pmi_file_url);
+				Pmi_Users_Sync_Logger::logInformation(__('Loading PMI users from the file ' . $file_path), null);
 				$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
 				$users = $loader->load();
+				Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'), null);
 				$this->pmi_users_sync_users_update($users);
 			}
 		} catch (Exception $exception) {

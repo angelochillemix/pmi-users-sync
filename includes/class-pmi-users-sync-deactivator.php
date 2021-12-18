@@ -31,7 +31,7 @@ class Pmi_Users_Sync_Deactivator {
 	 */
 	public static function deactivate() {
 		// Unregister the hook from the cron tasks
-		wp_clear_scheduled_hook( PMI_USERS_SYNC_CRON_HOOK );
+		wp_clear_scheduled_hook( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK );
 	}
 
 }

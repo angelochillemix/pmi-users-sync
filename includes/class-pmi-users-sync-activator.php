@@ -33,7 +33,7 @@ class Pmi_Users_Sync_Activator {
 
 		// Activate the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site
 		$scheduler = new Pmi_Users_Sync_Cron_Scheduler();
-		$scheduler->schedule('monthly');
+		$scheduler->schedule('weekly');
 	}
 
 }
