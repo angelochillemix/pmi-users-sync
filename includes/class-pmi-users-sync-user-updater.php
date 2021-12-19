@@ -67,7 +67,7 @@ class Pmi_Users_Sync_User_Updater
                     } elseif (false === $result) {
                         Pmi_Users_Sync_Logger::logWarning(__('PMI-ID custom field does not exist, therefore not updated'));
                     } else {
-                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'] . ' for user with email ' . $user->get_email() .  ' was not found'), array());
+                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'] . ' for user with email ' . $user->get_email() .  ' was not found'));
                     }
                 } else {
                     Pmi_Users_Sync_Logger::logInformation(__('User with email ') . $user->get_email() . __(' not overwritten'));
