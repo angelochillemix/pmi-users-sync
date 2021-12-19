@@ -65,14 +65,14 @@ class Pmi_Users_Sync_Cron_Scheduler
 			// Return false if the file is not set in the plugin setting
 			if (false !== $pmi_file_url) {
 				$file_path = Path_Utils::get_file_path($pmi_file_url);
-				Pmi_Users_Sync_Logger::logInformation(__('Loading PMI users from the file ' . $file_path), null);
+				Pmi_Users_Sync_Logger::logInformation(__('Loading PMI users from the file ' . $file_path));
 				$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
 				$users = $loader->load();
-				Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'), null);
+				Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'));
 				$this->pmi_users_sync_users_update($users);
 			}
 		} catch (Exception $exception) {
-			Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage(), null);
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage());
 		}
 	}
 
