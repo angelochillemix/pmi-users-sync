@@ -52,7 +52,7 @@ class Pmi_Users_Sync_Cron_Scheduler
 	}
 
 	/**
-	 * Function called by cron on a monthly basis. 
+	 * Function called by cron on a regular basis. 
 	 * WARNING: The name of the function must match the constant defined at class level {@see self::PMI_USERS_SYNC_CRON_HOOK}
 	 *
 	 * @return void
