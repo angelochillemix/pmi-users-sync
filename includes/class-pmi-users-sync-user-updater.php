@@ -63,17 +63,17 @@ class Pmi_Users_Sync_User_Updater
                 if (true === self::pmi_id_to_be_updated($pmi_id, $wp_users, $options)) {
                     $result = update_user_meta($wp_users->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], $user->get_pmi_id());
                     if (true === $result) {
-                        Pmi_Users_Sync_Logger::logInformation(__('PMI-ID of user with email ' . $user->get_email() . ' updated to ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field']), array());
+                        Pmi_Users_Sync_Logger::logInformation(__('PMI-ID of user with email ' . $user->get_email() . ' updated to ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field']));
                     } elseif (false === $result) {
-                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID custom field does not exist, therefore not updated'), array());
+                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID custom field does not exist, therefore not updated'));
                     } else {
-                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'] . ' for user with email ' . $user->get_email() .  ' did not exist'), array());
+                        Pmi_Users_Sync_Logger::logWarning(__('PMI-ID ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'] . ' for user with email ' . $user->get_email() .  ' was not found'), array());
                     }
                 } else {
-                    Pmi_Users_Sync_Logger::logInformation(__('User with email ' . $user->get_email() . ' not overwritten'), array());
+                    Pmi_Users_Sync_Logger::logInformation(__('User with email ') . $user->get_email() . __(' not overwritten'));
                 }
             } else {
-                Pmi_Users_Sync_Logger::logInformation(__('User with email ' . $user->get_email() . ' not registered to the site'), array());
+                Pmi_Users_Sync_Logger::logInformation(__('User ') . $user->get_first_name() . ' ' . $user->get_last_name() . __(' with email ') . $user->get_email() . __(' not registered to the site'));
             }
         }
     }

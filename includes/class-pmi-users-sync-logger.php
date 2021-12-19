@@ -10,8 +10,8 @@
  * @subpackage Pmi_Users_Sync/includes
  */
 
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 
 
 class Pmi_Users_Sync_Logger
@@ -44,7 +44,7 @@ class Pmi_Users_Sync_Logger
         if (null === self::$log) {
             // create a log channel
             self::$log = new Logger(self::LOG_FILE_NAME);
-            self::$log->pushHandler(new StreamHandler(self::LOG_FILE_PATH, Logger::INFO));
+            self::$log->pushHandler(new RotatingFileHandler(self::LOG_FILE_PATH, 5, Logger::INFO));
         }
         return self::$log;
     }
@@ -56,7 +56,7 @@ class Pmi_Users_Sync_Logger
      * @param array $context
      * @return void
      */
-    public static function logError($message, $context)
+    public static function logError($message, $context = array())
     {
         self::get_log()->error($message, $context);
     }
@@ -68,7 +68,7 @@ class Pmi_Users_Sync_Logger
      * @param array $context
      * @return void
      */
-    public static function logInformation($message, $context)
+    public static function logInformation($message, $context = array())
     {
         self::get_log()->info($message, $context);
     }
@@ -80,7 +80,7 @@ class Pmi_Users_Sync_Logger
      * @param array $context
      * @return void
      */
-    public static function logWarning($message, $context)
+    public static function logWarning($message, $context = array())
     {
         self::get_log()->warning($message, $context);
     }
