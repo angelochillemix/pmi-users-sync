@@ -261,6 +261,7 @@ class Pmi_Users_Sync_Admin
 				}
 			} catch (Exception $exception) {
 				Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage());
+				$error_message = __('An error occurred during the users update') . ' ' . $exception->getMessage();
 			}
 		} else {
 			$error_message = __('No file has been set in the plugin settings page.');
