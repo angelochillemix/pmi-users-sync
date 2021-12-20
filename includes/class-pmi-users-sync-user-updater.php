@@ -82,7 +82,7 @@ class Pmi_Users_Sync_User_Updater
      * Check if the PMI-ID of the users should be updated based on the settings
      *
      * @param string $pmi_id The PMI-ID to set or false if not found in the user_meta table
-     * @param WP_User $user The {@see WP:User} instance of the user found with the specified email
+     * @param WP_User $user The {@see WP_User} instance of the user found with the specified email
      * @param array $options The pluging settings
      * @return boolean true if the PMI-ID is to be updated, false otherwise
      */
