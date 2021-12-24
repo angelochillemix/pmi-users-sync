@@ -30,7 +30,7 @@ class Pmi_Users_Sync_Admin
 	 * @access   private
 	 * @var      string    $pmi_users_sync    The ID of this plugin.
 	 */
-	private $pmi_users_sync;
+	private $plugin_name;
 
 	/**
 	 * The version of this plugin.
@@ -48,10 +48,10 @@ class Pmi_Users_Sync_Admin
 	 * @param      string    $pmi_users_sync       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct($pmi_users_sync, $version)
+	public function __construct($plugin_name, $version)
 	{
 
-		$this->pmi_users_sync = $pmi_users_sync;
+		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 	}
 
@@ -75,7 +75,7 @@ class Pmi_Users_Sync_Admin
 		 * class.
 		 */
 
-		wp_enqueue_style($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all');
+		wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all');
 	}
 
 	/**
@@ -98,10 +98,55 @@ class Pmi_Users_Sync_Admin
 		 * class.
 		 */
 
-		wp_enqueue_script($this->pmi_users_sync, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
+		wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/pmi-users-sync-admin.js', array('jquery'), $this->version, false);
 	}
 
-	
+	public function notify_user_about_acf_plugin()
+	{
+		if (!is_plugin_active('advanced-custom-fields/acf.php')) {
+			// Inform the user that this plugin needs ACF to create the custome PMI-ID field that will be added to the user's information
+			ob_start() ?>
+			<div class="notice notice-warning is-dismissible">
+				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires the plugin ', 'pmi-users-sync'); ?><a href="https://wordpress.org/plugins/advanced-custom-fields/"><?php _e('Advanced Custom Fields', 'pmi-users-sync'); ?></a></p>
+				<p><?php esc_html_e('Install the plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"'); ?></p>
+			</div>
+<?php
+			echo ob_get_clean();
+			return;
+		}
+
+		// ACF plugin is installed and active
+		// It is now safe to check that custom field exists
+
+		if (!$this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'))) {
+			// Inform the user that the ACF field for the PMI-ID is not yet defined
+			ob_start() ?>
+			<div class="notice notice-warning is-dismissible">
+				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires that a custom user field representing the PMI-ID is defined ', 'pmi-users-sync'); ?></p>
+				<p><?php esc_html_e('Install the ACF plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"'); ?></p>
+			</div>
+<?php
+			echo ob_get_clean();
+		}
+	}
+
+	/**
+	 * Check if a Advanced Custom Field is defined
+	 *
+	 * @param string $field_name The name of the field to check existence for
+	 * @return bool true if the field is found, false otherwise
+	 */
+	private function acf_field_exists($field_name)
+	{
+		global $wpdb;
+		$acf_fields = $wpdb->get_results($wpdb->prepare("SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, 'acf-field'));
+		if (is_null($acf_fields)) {
+			return false;
+		}
+		return (count( $acf_fields )) > 0;
+	}
+
+
 	/**
 	 * Build the admin menu using the {@see Boo_Settings_Helper} class
 	 * @see https://github.com/boospot/boo-settings-helper
@@ -155,22 +200,37 @@ class Pmi_Users_Sync_Admin
 						'desc' => __('Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)'),
 						'type'  => 'text',
 					),
+					array(
+						'id'          => 'pmi_file_field_id',
+						'label'       => __('File', 'pmi-users-sync'),
+						'desc'        => __('The Excel file with the PMI-ID extracted from PMI', 'pmi-users-sync'),
+						'type'        => 'file',
+						'default'     => '',
+						'placeholder' => __('Textarea placeholder', 'pmi-users-sync'),
+						'options'     => array( //					'btn' => 'Get it'
+						)
+					),
 				),
 			),
 			'links'    => array(
 				'plugin_basename' => plugin_basename(__FILE__),
-				'action_links'    => true,
+				'action_links'    => array(
+					array(
+						'type' => 'default',
+						'text' => __('Settings', 'pmi-users-sync'),
+					),
+					array(
+						'type' => 'external',
+						'text' => __('Github Repository', 'pmi-users-sync'),
+						'url'  => 'https://github.com/angelochillemix/pmi-users-sync',
+					),
+				),
 			),
 		);
 
 		/**
-		 * Including the Boo Settings Helper class
-		 */
-		require_once(PMI_USERS_SYNC_PLUGIN_DIR_VENDOR . 'boo-settings-helper/class-boo-settings-helper.php');
-		
-		/**
 		 * Building the settings menu creating a new instance of the {@see Boo_Settings_Helper} class
-		 */ 
+		 */
 		$settings_helper = new Boo_Settings_Helper($config_array_menu);
 	}
 
@@ -181,13 +241,30 @@ class Pmi_Users_Sync_Admin
 	 */
 	public function pmi_users_list_page($args)
 	{
-		// @todo TODO Make the filename dynamic
-		$file_path = resource_path('/pmi-excel/' . Pmi_Users_Sync_Pmi_User_Excel_File_Loader::PMI_EXCEL_FILENAME);
-		$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-		$users = $loader->load();
+		$pmi_file_url = get_option(PMI_USERS_SYNC_PREFIX . 'pmi_file_field_id');
 
-		if (isset($_POST['update_users'])) {
-			$this->pmi_users_sync_users_update($users);
+
+		// Return false if the plugin setting is not set
+		if (false !== $pmi_file_url) {
+			$file_path = Path_Utils::get_file_path($pmi_file_url);
+			$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
+			try {
+				$users = $loader->load();
+				$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'));
+				if (!$pmi_id_custom_field_exists) {
+					$error_message = __('PMI-ID custom field does not exist. Update not done!');
+				}
+
+				if (isset($_POST['update_users']) && $pmi_id_custom_field_exists) {
+					$this->pmi_users_sync_users_update($users);
+					$error_message = __('Users successfully updated!');
+				}
+			} catch (Exception $exception) {
+				Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage());
+				$error_message = __('An error occurred during the users update') . ' ' . $exception->getMessage();
+			}
+		} else {
+			$error_message = __('No file has been set in the plugin settings page.');
 		}
 		require_once(plugin_dir_path(__FILE__) . 'partials/pmi-users-sync-admin-display.php');
 	}
@@ -199,16 +276,6 @@ class Pmi_Users_Sync_Admin
 			PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
 			PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
 		];
-		$updater = Pmi_Users_Sync_User_Updater::update($users, $options);
-	}
-
-	/**
-	 * Shows the plugin settings
-	 * 
-	 * @return void
-	 */
-	public function pmi_users_sync_settings_page()
-	{
-		require_once(plugin_dir_path(__FILE__) . 'partials/pmi-users-sync-settings-page.php');
+		Pmi_Users_Sync_User_Updater::update($users, $options);
 	}
 }

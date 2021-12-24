@@ -25,7 +25,14 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class Pmi_Users_Sync_Pmi_User_Excel_File_Loader implements Pmi_Users_Sync_User_Loader
 {
+    /**
+     * Default filename
+     */
     const PMI_EXCEL_FILENAME = 'MemberDetail.xls';
+
+    /**
+     * The name of the worksheet with the list of users and related PMI-ID
+     */
     const PMI_EXCEL_WORKSHEET_NAME = 'Details';
 
 
@@ -50,6 +57,7 @@ class Pmi_Users_Sync_Pmi_User_Excel_File_Loader implements Pmi_Users_Sync_User_L
      * Loads the users from the Excel file from PMI and return an array of Pmi_Users_Sync_Pmi_User instances
      *
      * @return Pmi_Users_Sync_Pmi_User[] array of user instances
+     * @throws \PhpOffice\PhpSpreadsheet\Exception 
      */
     public function load()
     {
