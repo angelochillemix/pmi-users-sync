@@ -1,0 +1,30 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Install Test Wordpress",
+            "type": "shell",
+            "command": "./bin/install-wp-tests.sh",
+            "args": ["wordpress_test", "angelo", "''", "localhost", "latest"],
+            "group": "test",
+            "presentation": {
+              "reveal": "always",
+              "panel": "new"
+            }
+          },
+          {
+            "label": "Run Tests",
+            "type": "shell",
+            "command": "./vendor/bin/phpunit",
+            "args": ["-v"],
+            "group": "test",
+            "presentation": {
+              "reveal": "always",
+              "panel": "new",
+              "focus": true
+            }
+          }
+    ]
+}
