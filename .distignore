@@ -1,0 +1,15 @@
+/.wordpress-org
+/.git
+/.github
+/.vscode
+/tests
+/bin
+/resources
+
+composer.json
+composer.lock
+phpunit.xml.dist
+.travis.yml
+.phpcs.xml.dist
+.distignore
+.gitignore
