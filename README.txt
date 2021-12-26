@@ -20,17 +20,36 @@ The synchronization is done by matching the email address. If the email address 
 
 This section describes how to install the plugin and get it working.
 
+The PMI Users Sync plugin requires Advanced Custom Fields pluing installed and activated to add the PMI-ID custome field to the user
+
 e.g.
 
-1. Upload `pmi-users-sync.php` to the `/wp-content/plugins/` directory
+### Manual installation
+1. Download the zip file locally and extract it to a temporary folder 
+1. Upload the extracted directory pmi-users-sync to the production wordpress under `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place `<?php do_action('pmi_users_sync_hook'); ?>` in your templates
+
+### Installation from Wordpress
+1. Download the zip file locally
+1. Go to the 'Plugins' menu 
+1. Click the 'Add New' button
+1. Click the 'Upload Plugin' button
+1. Click the 'Choose file" button and navigate to the directory where the plugin zip file is stored
+1. Click the 'Install Now' button
+1. Activate the plugin
+
+### Post installation plugin setup
+1. Setup the 'PMI-ID Priority' setting to set the overwrite priority. If you'd like to prioritize the PMI-ID from PMI then tick the checkbox
+1. Set the Excel file which contains the PMI members list extraction
+1. Check from the 'PMI-Users' plugin page if the users are loaded from the Excel file. The same file will be used by the WP Cron to weekly synchronize the PMI-IDs
 
 ## Frequently Asked Questions
 
 None
 
 ## Screenshots
+
+**TODO** when uploaded to Wordpress.org upload and set the screenshots
 
 1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
 the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
@@ -41,7 +60,7 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 ## Changelog
 
 ### 1.0.1
-* Weekly scheduled synchronization
+* Weekly scheduled synchronization using WP Cron
 * Check Advanced Custom Fields plugin is active and that PMI-ID custom field exists
 * PHPUnit setup for unit testing
 * Fix some minor bugs
@@ -53,4 +72,3 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 ## Upgrade Notice
 
 None
-
