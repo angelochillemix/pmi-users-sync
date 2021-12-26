@@ -1,5 +1,24 @@
 {
-    "phpcs.standard": "WordPress",
-    "editor.bracketPairColorization.enabled": true,
-    "editor.guides.bracketPairs": "active"
+	"files.exclude": {
+		"**/wordpress": true
+	},
+	"editor.bracketPairColorization.enabled": true,
+	"editor.guides.bracketPairs": "active",
+	"[php]": {
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": true
+	},
+	"php.executablePath": "/usr/bin/php",
+	"php.suggest.basic": false,
+	"php.validate.executablePath": "/usr/bin/php",
+	// PHPCBF
+	"phpcbf.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcbf",
+	"phpcbf.standard": "Wordpress",
+	// PHPCS
+	"phpcs.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcs",
+	"phpcs.ignorePatterns": [
+		"vendor*",
+		"vendors"
+	],
+	"phpcs.standard": "WordPress",
 }
