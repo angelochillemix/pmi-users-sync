@@ -59,7 +59,7 @@ class Pmi_Users_Sync_Cron_Scheduler
 	 */
 	public function pus_update_users_pmi_id()
 	{
-		$pmi_file_url = get_option(PMI_USERS_SYNC_PREFIX . 'pmi_file_field_id');
+		$pmi_file_url = get_option(Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID);
 
 		try {
 			// Return false if the file is not set in the plugin setting

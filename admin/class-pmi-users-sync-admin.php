@@ -23,6 +23,25 @@
 class Pmi_Users_Sync_Admin
 {
 
+	private const FIELD_ID_OVERWRITE_PMI_ID = 'overwrite_pmi_id';
+	public const OPTION_OVERWRITE_PMI_ID = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_OVERWRITE_PMI_ID;
+
+	private const FIELD_ID_PMI_ID_CUSTOM_FIELD = 'pmi_id_custom_field';
+	public const OPTION_PMI_ID_CUSTOM_FIELD = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_PMI_ID_CUSTOM_FIELD;
+
+	private const FIELD_ID_PMI_FILE_FIELD_ID = 'pmi_file_field_id';
+	public const OPTION_PMI_FILE_FIELD_ID = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_PMI_FILE_FIELD_ID;
+
+	private const FIELD_ID_USER_LOADER = 'user_loader_field';
+	public const OPTION_USER_LOADER = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_LOADER;
+
+	private const FIELD_ID_DEP_SERVICE_USERNAME = 'depservice_username_field';
+	public const OPTION_DEP_SERVICE_USERNAME = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_DEP_SERVICE_USERNAME;
+
+	private const FIELD_ID_DEP_SERVICE_PASSWORD = 'depservice_password_field';
+	public const OPTION_DEP_SERVICE_PASSWORD = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_DEP_SERVICE_PASSWORD;
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -110,7 +129,7 @@ class Pmi_Users_Sync_Admin
 				<p><strong>Warning:&nbsp;</strong><?php esc_html_e('This plugin requires the plugin ', 'pmi-users-sync'); ?><a href="https://wordpress.org/plugins/advanced-custom-fields/"><?php _e('Advanced Custom Fields', 'pmi-users-sync'); ?></a></p>
 				<p><?php esc_html_e('Install the plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"'); ?></p>
 			</div>
-<?php
+		<?php
 			echo ob_get_clean();
 			return;
 		}
@@ -143,7 +162,7 @@ class Pmi_Users_Sync_Admin
 		if (is_null($acf_fields)) {
 			return false;
 		}
-		return (count( $acf_fields )) > 0;
+		return (count($acf_fields)) > 0;
 	}
 
 
@@ -189,26 +208,35 @@ class Pmi_Users_Sync_Admin
 			'fields'   => array(
 				'settings_section' => array(
 					array(
-						'id'    => 'overwrite_pmi_id',
+						'id'    => self::FIELD_ID_OVERWRITE_PMI_ID,
 						'label' => 'PMI-ID Priority',
 						'desc' => __('If checked, the PMI ID inserted by the users will be overwritten', 'pmi-users-sync'),
 						'type'  => 'checkbox',
 					),
 					array(
-						'id'    => 'pmi_id_custom_field',
+						'id'    => self::FIELD_ID_PMI_ID_CUSTOM_FIELD,
 						'label' => __('PMI-ID custom field', 'pmi-users-sync'),
 						'desc' => __('Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)'),
 						'type'  => 'text',
 					),
 					array(
-						'id'          => 'pmi_file_field_id',
+						'id'          => self::FIELD_ID_PMI_FILE_FIELD_ID,
 						'label'       => __('File', 'pmi-users-sync'),
 						'desc'        => __('The Excel file with the PMI-ID extracted from PMI', 'pmi-users-sync'),
 						'type'        => 'file',
 						'default'     => '',
-						'placeholder' => __('Textarea placeholder', 'pmi-users-sync'),
-						'options'     => array( //					'btn' => 'Get it'
-						)
+						'placeholder' => __('Insert the Excel file path', 'pmi-users-sync'),
+					),
+					array(
+						//----
+						'id'          => self::FIELD_ID_USER_LOADER,
+						'label'       => __('Loader', 'pmi-users-sync'),
+						'desc'        => __('The type of loader to use to load the PMI members', 'pmi-users-sync'),
+						'type'    => 'select',
+						'options' => array(
+							'option_excel' => 'Excel',
+							'option_web_service' => 'Web Service',
+						),
 					),
 				),
 			),
@@ -241,8 +269,7 @@ class Pmi_Users_Sync_Admin
 	 */
 	public function pmi_users_list_page($args)
 	{
-		$pmi_file_url = get_option(PMI_USERS_SYNC_PREFIX . 'pmi_file_field_id');
-
+		$pmi_file_url = get_option(self::OPTION_PMI_FILE_FIELD_ID);
 
 		// Return false if the plugin setting is not set
 		if (false !== $pmi_file_url) {
@@ -250,7 +277,7 @@ class Pmi_Users_Sync_Admin
 			$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
 			try {
 				$users = $loader->load();
-				$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'));
+				$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
 				if (!$pmi_id_custom_field_exists) {
 					$error_message = __('PMI-ID custom field does not exist. Update not done!');
 				}
@@ -273,8 +300,8 @@ class Pmi_Users_Sync_Admin
 	{
 		$options = array();
 		$options = [
-			PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
-			PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
+			self::OPTION_OVERWRITE_PMI_ID => get_option(self::OPTION_OVERWRITE_PMI_ID),
+			self::OPTION_PMI_ID_CUSTOM_FIELD => get_option(self::OPTION_PMI_ID_CUSTOM_FIELD)
 		];
 		Pmi_Users_Sync_User_Updater::update($users, $options);
 	}
