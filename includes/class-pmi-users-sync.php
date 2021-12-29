@@ -145,6 +145,11 @@ class Pmi_Users_Sync
 		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-user-web-service-loader.php');
 
 		/**
+		 * The class responsible to create the user loader based on the plugin settings
+		 */
+		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-user-loader-factory.php');
+
+		/**
 		 * The class responsible for loading the PMI users with a call to PMI DPE Web Service
 		 */
 		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-members-web-service.php');

@@ -41,6 +41,9 @@ class Pmi_Users_Sync_Admin
 	private const FIELD_ID_DEP_SERVICE_PASSWORD = 'depservice_password_field';
 	public const OPTION_DEP_SERVICE_PASSWORD = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_DEP_SERVICE_PASSWORD;
 
+	public const OPTION_USER_LOADER_EXCEL = 'option_excel';
+	public const OPTION_USER_WEB_SERVICE = 'option_web_service';
+
 
 	/**
 	 * The ID of this plugin.
@@ -185,7 +188,7 @@ class Pmi_Users_Sync_Admin
 		 */
 		$config_array_menu = array(
 			'prefix'   => PMI_USERS_SYNC_PREFIX,
-			'tabs'     => true,
+			'tabs'     => false,
 			'menu'     =>
 			array(
 				'page_title' => __('PMI Users Sync Settings', 'pmi-users-sync'),
@@ -200,13 +203,18 @@ class Pmi_Users_Sync_Admin
 			'sections' =>
 			array(
 				array(
-					'id'    => 'settings_section',
-					'title' => __('Settings', 'pmi-users-sync'),
+					'id'    => 'general_settings_section',
+					'title' => __('General Settings', 'pmi-users-sync'),
 					'desc'  => __('Settings for PMI Users Sync plugin', 'pmi-users-sync'),
+				),
+				array(
+					'id'    => 'loader_settings_section',
+					'title' => __('Users Loader Settings', 'pmi-users-sync'),
+					'desc'  => __('Settings for PMI Users loader', 'pmi-users-sync'),
 				),
 			),
 			'fields'   => array(
-				'settings_section' => array(
+				'general_settings_section' => array(
 					array(
 						'id'    => self::FIELD_ID_OVERWRITE_PMI_ID,
 						'label' => 'PMI-ID Priority',
@@ -219,6 +227,20 @@ class Pmi_Users_Sync_Admin
 						'desc' => __('Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)'),
 						'type'  => 'text',
 					),
+				),
+				'loader_settings_section' => array(
+					array(
+						//----
+						'id'          => self::FIELD_ID_USER_LOADER,
+						'label'       => __('Loader', 'pmi-users-sync'),
+						'desc'        => __('The type of loader to use to load the PMI members', 'pmi-users-sync'),
+						'type'    => 'select',
+						'default'     => self::OPTION_USER_LOADER_EXCEL,
+						'options' => array(
+							self::OPTION_USER_LOADER_EXCEL => 'Excel',
+							self::OPTION_USER_WEB_SERVICE => 'Web Service',
+						),
+					),
 					array(
 						'id'          => self::FIELD_ID_PMI_FILE_FIELD_ID,
 						'label'       => __('File', 'pmi-users-sync'),
@@ -228,15 +250,21 @@ class Pmi_Users_Sync_Admin
 						'placeholder' => __('Insert the Excel file path', 'pmi-users-sync'),
 					),
 					array(
-						//----
-						'id'          => self::FIELD_ID_USER_LOADER,
-						'label'       => __('Loader', 'pmi-users-sync'),
-						'desc'        => __('The type of loader to use to load the PMI members', 'pmi-users-sync'),
-						'type'    => 'select',
-						'options' => array(
-							'option_excel' => 'Excel',
-							'option_web_service' => 'Web Service',
-						),
+						'id'          => self::FIELD_ID_DEP_SERVICE_USERNAME,
+						'label'       => __('DEPService username', 'pmi-users-sync'),
+						'desc'        => __('The username to access the PMI DEPService. Contact your PMI Chapter Officer to get it.', 'pmi-users-sync'),
+						'type'        => 'text',
+						'default'     => '',
+						'placeholder' => __('Insert the username', 'pmi-users-sync'),
+					),
+					array(
+						'id'          => self::FIELD_ID_DEP_SERVICE_PASSWORD,
+						'label'       => __('DEPService password', 'pmi-users-sync'),
+						'desc'        => __('The password to access the PMI DEPService. Contact your PMI Chapter Officer to get it.', 'pmi-users-sync'),
+						'type'        => 'password',
+						'default'     => '',
+						'placeholder' => __('Insert the password', 'pmi-users-sync'),
+						'sanitize_callback' => array($this, 'sanitize_depservice_password'),
 					),
 				),
 			),
@@ -263,36 +291,50 @@ class Pmi_Users_Sync_Admin
 	}
 
 	/**
+	 * Overrides the default sanitize function that returns a hash of the password which will not work with the web service call
+	 *
+	 * @param string $value The password set in the settings page
+	 * @return string The same password
+	 */
+	function sanitize_depservice_password($value)
+	{
+		return $value;
+	}
+
+	/**
 	 * Shows the list of users from the Excel file
 	 *
 	 * @return void
 	 */
 	public function pmi_users_list_page($args)
 	{
-		$pmi_file_url = get_option(self::OPTION_PMI_FILE_FIELD_ID);
-
-		// Return false if the plugin setting is not set
-		if (false !== $pmi_file_url) {
-			$file_path = Path_Utils::get_file_path($pmi_file_url);
-			$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-			try {
-				$users = $loader->load();
-				$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
-				if (!$pmi_id_custom_field_exists) {
-					$error_message = __('PMI-ID custom field does not exist. Update not done!');
-				}
-
-				if (isset($_POST['update_users']) && $pmi_id_custom_field_exists) {
-					$this->pmi_users_sync_users_update($users);
-					$error_message = __('Users successfully updated!');
-				}
-			} catch (Exception $exception) {
-				Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage());
-				$error_message = __('An error occurred during the users update') . ' ' . $exception->getMessage();
+		try {
+			$loader = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
+			$users = $loader->load();
+			$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
+			if (!$pmi_id_custom_field_exists) {
+				$error_message = __('PMI-ID custom field does not exist. Update not done!');
 			}
-		} else {
-			$error_message = __('No file has been set in the plugin settings page.');
+
+			if (isset($_POST['update_users']) && $pmi_id_custom_field_exists) {
+				Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'));
+				$this->pmi_users_sync_users_update($users);
+				$error_message = __('Users successfully updated!');
+			}
+		} catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $exception) {
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while reading the Excel file. Error is: ') . $exception->getMessage());
+			$error_message = __('No file has been set in the plugin settings page or file does not exist.');
+		} catch (SoapFault $fault) {
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while retrieving the list of PMI members through the web service. Error is: ') . $fault->faultstring);
+			$error_message = __('An error occurred while retrieving the list of PMI members through the web service.');
+		} catch (Exception $exception) {
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while rendering the page. Error is: ') . $exception->getMessage());
+			$error_message = __('An error occurred during the page rendering') . ' ' . $exception->getMessage();
 		}
+
+		$user_loader_type = get_option(self::OPTION_USER_LOADER);
+		$file_path = $user_loader_type === self::OPTION_USER_LOADER_EXCEL ? get_option(self::OPTION_PMI_FILE_FIELD_ID) : false;
+
 		require_once(plugin_dir_path(__FILE__) . 'partials/pmi-users-sync-admin-display.php');
 	}
 

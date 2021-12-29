@@ -59,20 +59,26 @@ class Pmi_Users_Sync_Cron_Scheduler
 	 */
 	public function pus_update_users_pmi_id()
 	{
-		$pmi_file_url = get_option(Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID);
-
+		// TODO Check that ACF custom field exists
 		try {
-			// Return false if the file is not set in the plugin setting
-			if (false !== $pmi_file_url) {
-				$file_path = Path_Utils::get_file_path($pmi_file_url);
-				Pmi_Users_Sync_Logger::logInformation(__('Loading PMI users from the file ' . $file_path));
-				$loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-				$users = $loader->load();
-				Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'));
-				$this->pmi_users_sync_users_update($users);
-			}
+			//$pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
+			// if (!$pmi_id_custom_field_exists) {
+			// 	$error_message = __('PMI-ID custom field does not exist. Update not done!');
+			// }
+
+			$loader = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
+			$users = $loader->load();
+			Pmi_Users_Sync_Logger::logInformation(__('Synchronizing the PMI-ID of the users'));
+			$this->pmi_users_sync_users_update($users);
+		} catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $exception) {
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while reading the Excel file. Error is: ') . $exception->getMessage());
+			$error_message = __('No file has been set in the plugin settings page or file does not exist.');
+		} catch (SoapFault $fault) {
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while retrieving the list of PMI members through the web service. Error is: ') . $fault->faultstring);
+			$error_message = __('An error occurred while retrieving the list of PMI members through the web service.');
 		} catch (Exception $exception) {
-			Pmi_Users_Sync_Logger::logError(__('An error occurred while running the scheduled update. Error is: ') . $exception->getMessage());
+			Pmi_Users_Sync_Logger::logError(__('An error occurred while running the update. Error is: ') . $exception->getMessage());
+			$error_message = __('An error occurred during the users update') . ' ' . $exception->getMessage();
 		}
 	}
 

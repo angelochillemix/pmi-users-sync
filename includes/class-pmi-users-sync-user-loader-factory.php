@@ -32,10 +32,11 @@ class Pmi_Users_Sync_User_Loader_Factory
     /**
      * Undocumented function
      *
+     * @param string[] $options Plugin options
      * @return Pmi_Users_Sync_User_Loader A loader based on the option selected by the user. 
      * Returns an Excel file loader by default.
      */
-    public function create_user_loader()
+    public static function create_user_loader()
     {
         $user_loader_option = get_option(Pmi_Users_Sync_Admin::OPTION_USER_LOADER);
         switch ($user_loader_option) {

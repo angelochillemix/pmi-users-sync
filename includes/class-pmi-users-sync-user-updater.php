@@ -60,7 +60,7 @@ class Pmi_Users_Sync_User_Updater
 
             if (false !== $wp_users) {
                 if (true === self::pmi_id_to_be_updated($user, $wp_users, $options)) {
-                    $result = update_user_meta($wp_users->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], $user->get_pmi_id());
+                    $result = update_user_meta($wp_users->ID, $options[Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD], $user->get_pmi_id());
                     if (true === $result) {
                         Pmi_Users_Sync_Logger::logInformation(__('PMI-ID of user with email ' . $user->get_email() . ' updated to ' . $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field']));
                     } elseif (false === $result) {

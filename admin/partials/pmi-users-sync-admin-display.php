@@ -31,13 +31,15 @@ if (!current_user_can('manage_options')) {
 </head>
 
 <body>
-    <h1>PMI Users from Excel file</h1>
-    <?php if (isset($file_path)) { ?>
+    <?php if ($file_path) { ?>
+        <h1>PMI Users from Excel file</h1>
         <p><?php _e('Excel file path'); ?> <?php echo $file_path ?></p>
-    <?php } ?>
+    <?php } else { ?>
+        <h1>PMI Users from PMI web service</h1>
+    <?php }  ?>
     <p><?php _e('Update the PMI ID of the users'); ?></p>
     <form id="update_users_form" method="POST">
-        <input type="submit" name="update_users" value="<?php _e('Update') ?>">Update PMI-ID</input>
+        <input type="submit" name="update_users" value="<?php _e('Update') ?>">Update the PMI-ID of the users</input>
     </form>
     <br />
     <br />
