@@ -2,20 +2,23 @@
     "files.exclude": {
         "**/wordpress": true
     },
-"editor.bracketPairColorization.enabled": true,
+    "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
 	"[php]": {
 		"editor.formatOnPaste": true,
-		"editor.formatOnSave": true
+		"editor.formatOnSave": true,
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        //"editor.defaultFormatter": "persoderlind.vscode-phpcbf"
 	},
 	"php.executablePath": "/usr/bin/php",
-	"php.suggest.basic": false,
 	"php.validate.executablePath": "/usr/bin/php",
 	// PHPCBF
+    "phpcbf.enable": true,
 	"phpcbf.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcbf",
-	"phpcbf.standard": "Wordpress",
+    "phpcbf.standard": "WordPress",
     // PHPCS
-    "phpcs.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcs",
+    //"phpcs.enable": true,
+    "phpcs.executablePath": "/home/angelo/.config/composer//vendor/bin/phpcs",
     "phpcs.ignorePatterns": [
         "vendor*",
         "vendors"

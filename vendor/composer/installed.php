@@ -5,7 +5,7 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '0db46aabeeddeb1c717227918a2a981fcc4c9d7a',
+        'reference' => '492fcd42de25f428b28d7a055a02321c0c9ec2af',
         'name' => '__root__',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '0db46aabeeddeb1c717227918a2a981fcc4c9d7a',
+            'reference' => '492fcd42de25f428b28d7a055a02321c0c9ec2af',
             'dev_requirement' => false,
         ),
         'boospot/boo-settings-helper' => array(
