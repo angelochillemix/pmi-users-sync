@@ -6,7 +6,7 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
 {
     private const TEMP_PMI_EXCEL_FILE_PATH = __DIR__ . '/test-pmi-users.xls';
     private const TEMP_PMI_EXCEL_FILE_DIFFERENT_PMI_ID_PATH = __DIR__ . '/test-pmi-users-different-pmi-id.xls';
-    
+
 
     /**
      * Undocumented variable
@@ -31,7 +31,8 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
      * @before
      * @return void
      */
-    public function initialize_tests() {
+    public function initialize_tests()
+    {
         $this->excel_loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader(self::TEMP_PMI_EXCEL_FILE_PATH);
         $this->users = $this->excel_loader->load();
 
@@ -88,8 +89,8 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
     public function test_all_users_update()
     {
         $options = [
-            PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => true,
-            PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => 'dbem_pmi_id'
+            Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => true,
+            Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => 'dbem_pmi_id'
         ];
         Pmi_Users_Sync_User_Updater::update($this->users, $options);
         foreach ($this->users as $key => $value) {
@@ -101,8 +102,8 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
     public function test_single_user_update()
     {
         $options = [
-            PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => true,
-            PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => 'dbem_pmi_id'
+            Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => true,
+            Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => 'dbem_pmi_id'
         ];
         $user_ciccio_bello = $this->users[0];
         $this->assertEquals('Ciccio', $user_ciccio_bello->get_first_name(), 'Not the same name');
@@ -117,8 +118,8 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
     public function test_users_update_two_times()
     {
         $options = [
-            PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => true,
-            PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => 'dbem_pmi_id'
+            Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => true,
+            Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => 'dbem_pmi_id'
         ];
         Pmi_Users_Sync_User_Updater::update($this->users, $options);
         foreach ($this->users as $key => $value) {
@@ -135,8 +136,8 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
     public function test_users_update_with_overwrite()
     {
         $options = [
-            PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => true,
-            PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => 'dbem_pmi_id'
+            Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => true,
+            Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => 'dbem_pmi_id'
         ];
         Pmi_Users_Sync_User_Updater::update($this->users, $options);
         foreach ($this->users as $key => $value) {
@@ -165,11 +166,11 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
     public function test_users_update_no_overwrite()
     {
         $options = [
-            PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => false,
-            PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => 'dbem_pmi_id'
+            Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => false,
+            Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => 'dbem_pmi_id'
         ];
 
-        $this->assertFalse(boolval($options[PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id']));
+        $this->assertFalse(boolval($options[Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID]));
         foreach ($this->users as $key => $value) {
             $user = get_user_by('email', $value->get_email());
             $this->assertEmpty(get_user_meta($user->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], true), 'PMI-ID not empty');
@@ -185,7 +186,7 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase
         $this->users_with_different_pmi_id = $this->new_excel_loader->load();
         foreach ($this->users_with_different_pmi_id as $key => $value) {
             $user = get_user_by('email', $value->get_email());
-            $this->assertNotSame($value->get_pmi_id(), get_user_meta($user->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], true), 'PMI-ID from test file ' . $value->get_pmi_id() . ', PMI-ID from DB '. get_user_meta($user->ID, 'dbem_pmi_id', true));
+            $this->assertNotSame($value->get_pmi_id(), get_user_meta($user->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], true), 'PMI-ID from test file ' . $value->get_pmi_id() . ', PMI-ID from DB ' . get_user_meta($user->ID, 'dbem_pmi_id', true));
         }
         Pmi_Users_Sync_User_Updater::update($this->users_with_different_pmi_id, $options);
         foreach ($this->users as $key => $value) {
