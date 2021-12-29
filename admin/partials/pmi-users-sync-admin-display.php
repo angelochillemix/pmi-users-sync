@@ -22,25 +22,6 @@ if (!current_user_can('manage_options')) {
  */
 ?>
 
-<?php
-/* 
-if (isset($_POST['update_users'])) {
-    $file_path = resource_path('/pmi-excel/' . Pmi_Users_Sync_Pmi_User_Excel_File_Loader::PMI_EXCEL_FILENAME);
-    $loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-    $users = $loader->load();
-    //var_dump('There are ' . count($users) . ' users');
-    $options = array();
-    $options = [
-        PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
-        PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
-    ];
-    var_dump($options);
-    die();
-    $updater = Pmi_Users_Sync_User_Updater::update($users, $options);
-}
- */
-?>
-
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
 <html>

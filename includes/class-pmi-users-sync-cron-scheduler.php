@@ -86,8 +86,8 @@ class Pmi_Users_Sync_Cron_Scheduler
 	{
 		$options = array();
 		$options = [
-			PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id' => get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id'),
-			PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' => get_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field')
+			Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => get_option(Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID),
+			Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => get_option(Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD)
 		];
 		Pmi_Users_Sync_User_Updater::update($users, $options);
 	}

@@ -88,24 +88,27 @@ class Pmi_Users_Sync_User_Updater
      */
     private static function pmi_id_to_be_updated(Pmi_Users_Sync_Pmi_User $user, WP_User $wp_user, array $options): bool
     {
-        if (self::user_has_no_pmi_id($wp_user, $options) 
-            || ((true === boolval($options[PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id']))
+        if (
+            self::user_has_no_pmi_id($wp_user, $options)
+            || ((true === boolval($options[Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID]))
                 && (!self::user_has_same_pmi_id($wp_user, $user, $options)))
-            ) {
+        ) {
             return true;
         }
 
         return false;
     }
 
-    private static function user_has_no_pmi_id($wp_user, $options) : bool {
+    private static function user_has_no_pmi_id($wp_user, $options): bool
+    {
         $pmi_id = get_user_meta($wp_user->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], true);
 
         // User meta not found or empty
         return empty($pmi_id);
     }
 
-    private static function user_has_same_pmi_id(WP_User $wp_user, Pmi_Users_Sync_Pmi_User $user, $options) : bool {
+    private static function user_has_same_pmi_id(WP_User $wp_user, Pmi_Users_Sync_Pmi_User $user, $options): bool
+    {
         $pmi_id = get_user_meta($wp_user->ID, $options[PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field'], true);
 
         return $pmi_id === $user->get_pmi_id();

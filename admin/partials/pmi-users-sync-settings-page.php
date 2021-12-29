@@ -23,8 +23,8 @@ if (!defined('ABSPATH')) {
 
 if (isset($_POST) && !empty($_POST)) {
     $overwrite_pmi_id_value = isset($_POST['overwrite_pmi_id']) ? $_POST['overwrite_pmi_id'] : '';
-    update_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id', $overwrite_pmi_id_value);
-    update_option(PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field', $_POST['pmi_id_custom_field']);
+    update_option(Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID, $overwrite_pmi_id_value);
+    update_option(Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD, $_POST['pmi_id_custom_field']);
 }
 ?>
 
@@ -44,7 +44,7 @@ if (isset($_POST) && !empty($_POST)) {
                     <td>
                         <fieldset>
                             <label for="overwrite_pmi_id">
-                                <input name="overwrite_pmi_id" type="checkbox" id="overwrite_pmi_id" value="1" <?php echo !empty(get_option(PMI_USERS_SYNC_PREFIX . 'overwrite_pmi_id')) ? 'checked' : '' ?>>
+                                <input name="overwrite_pmi_id" type="checkbox" id="overwrite_pmi_id" value="1" <?php echo !empty(get_option(Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID)) ? 'checked' : '' ?>>
                                 <?php _e('If checked, the PMI ID inserted by the users will be overwritten') ?>
                             </label>
                         </fieldset>

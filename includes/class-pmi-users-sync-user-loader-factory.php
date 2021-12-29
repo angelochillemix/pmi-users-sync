@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The file that defines the PMI DEPService web service to retrieve the list of PMI Chapter members directly from PMI
+ * The file that defines the User Loader factory
  *
  * @link       http://angelochillemi.com/pmi-users-sync
  * @since      1.1.0
@@ -37,18 +37,18 @@ class Pmi_Users_Sync_User_Loader_Factory
      */
     public function create_user_loader()
     {
-        $user_loader_option = get_option(self::OPTION_USER_LOADER);
+        $user_loader_option = get_option(Pmi_Users_Sync_Admin::OPTION_USER_LOADER);
         switch ($user_loader_option) {
             case 'option_web_service':
-                $username = get_option(self::OPTION_DEP_SERVICE_USERNAME);
-                $password = get_option(self::OPTION_DEP_SERVICE_PASSWORD);
+                $username = get_option(Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_USERNAME);
+                $password = get_option(Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_PASSWORD);
                 $loader = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader($username, $password);
                 break;
 
             case 'option_excel':
 
             default: // default Excel file
-                $pmi_file_url = get_option(PMI_USERS_SYNC_PREFIX . 'pmi_file_field_id');
+                $pmi_file_url = get_option(Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID);
                 $file_path = Path_Utils::get_file_path($pmi_file_url);
                 $loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
                 break;
