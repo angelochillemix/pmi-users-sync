@@ -37,6 +37,7 @@ class Pmi_Users_Sync_User_Loader_Factory {
 	/**
 	 * Create a {@see Pmi_Users_Sync_User_Loader} loader based on the option selected by the user.
 	 *
+	 * @throws InvalidArgumentException If username and password for the web service are not set.
 	 * @return Pmi_Users_Sync_User_Loader A loader based on the option selected by the user.
 	 * Returns an Excel file loader by default.
 	 */
@@ -45,13 +46,12 @@ class Pmi_Users_Sync_User_Loader_Factory {
 		switch ( $user_loader_option ) {
 			case 'option_web_service':
 				$web_service = static::get_web_service();
-				$loader      = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader( $web_service );
+					$loader  = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader( $web_service );
 				break;
-
 			case 'option_excel':
 			default: // default loading from Excel file.
 				$pmi_file_url = get_option( Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID );
-				$file_path    = Path_Utils::get_file_path( $pmi_file_url );
+				$file_path    = Pmi_Users_Sync_Path_Utils::get_file_path( $pmi_file_url );
 				$loader       = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader( $file_path );
 				break;
 		}
@@ -63,7 +63,7 @@ class Pmi_Users_Sync_User_Loader_Factory {
 	 * Cache expiration time is 4 days (@see Pmi_Users_Sync_Members_Web_Service::EXPIRE_TIME).
 	 *
 	 * @return Pmi_Users_Sync_Members_Web_Service The web service instance as result of the call to PMI DEP Service
-	 * @throws SoapFault Exception in case an error occurs during the web service call.
+	 * @throws InvalidArgumentException If username and password for the web service are not set.
 	 */
 	private static function get_web_service() {
 		$web_service = wp_cache_get( self::CACHE_KEY );
@@ -75,6 +75,8 @@ class Pmi_Users_Sync_User_Loader_Factory {
 
 				// Caching for 4 days the web service object to avoid repearing calls.
 				wp_cache_set( self::CACHE_KEY, $web_service, 'web_service', intval( self::EXPIRE_TIME ) );
+			} else {
+				throw new InvalidArgumentException( 'Invalid username and password', 1 );
 			}
 		}
 		return $web_service;
