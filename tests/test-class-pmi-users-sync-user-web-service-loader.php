@@ -14,7 +14,7 @@ class Test_Pmi_Users_Sync_Pmi_User_Web_Service_Loader extends TestCase {
 		if ( ! file_exists( __DIR__ . '/test-pmi-users.csv' ) ) {
 			$this->fail( 'Test CSV file does not exist' );
 		}
-		$mock_web_service->method( 'call' )->willReturn( $obj );
+		$mock_web_service->expects( $this->once() )->method( 'call' )->willReturn( $obj );
 		$mock_web_service->method( 'get_csv_extract' )->willReturn( $csv_file );
 		$loader = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader( $mock_web_service );
 		$result = $loader->load();
