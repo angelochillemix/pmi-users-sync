@@ -62,7 +62,7 @@ class Pmi_Users_Sync_Members_Web_Service {
 	 *
 	 * @link https://components.pmi.org/UI/HelpDocs/HowToUseCS.pdf Component System User Guide
 	 * @return stdClass the SOAP object returned by the web service.
-	 * @throws SoapFault An exception in case of errors occurred during the call to the web service .
+	 * @throws SoapFault An exception in case of errors occurred during the call to the web service.
 	 *
 	 * SOAP output
 	 *

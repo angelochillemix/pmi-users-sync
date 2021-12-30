@@ -7,6 +7,7 @@
     "editor.guides.bracketPairs": "active",
     // PHPCBF
     "phpcbf.enable": true,
+    "phpcbf.onsave": true,
     "phpcbf.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcbf",
     "phpcbf.standard": "WordPress",
     "phpcbf.documentFormattingProvider": true,

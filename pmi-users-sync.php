@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The plugin bootstrap file
  *
@@ -24,7 +23,6 @@
  * Text Domain:       pmi-users-sync
  * Domain Path:       /languages
  */
-
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -99,11 +97,6 @@ function deactivate_pmi_users_sync() {
 
 register_activation_hook( __FILE__, 'activate_pmi_users_sync' );
 register_deactivation_hook( __FILE__, 'deactivate_pmi_users_sync' );
-
-/**
- * Includes the global utility functions
- */
-// include dirname( __FILE__ ) . '/includes/pmi-users-sync-functions.php';
 
 /**
  * The core plugin class that is used to define internationalization,
