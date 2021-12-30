@@ -22,8 +22,6 @@ This section describes how to install the plugin and get it working.
 
 The PMI Users Sync plugin requires Advanced Custom Fields pluing installed and activated to add the PMI-ID custome field to the user
 
-e.g.
-
 ### Manual installation
 1. Download the zip file locally and extract it to a temporary folder 
 1. Upload the extracted directory pmi-users-sync to the production wordpress under `/wp-content/plugins/` directory
@@ -58,6 +56,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 2. This is the second screen shot
 
 ## Changelog
+
+### 1.0.1
+* Changes on README.txt and translation in italian
 
 ### 1.0.1
 * Weekly scheduled synchronization using WP Cron
