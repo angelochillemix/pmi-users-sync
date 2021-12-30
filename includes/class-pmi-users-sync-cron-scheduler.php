@@ -55,7 +55,7 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @return void
 	 */
 	public function pus_update_users_pmi_id() {
-		 // TODO Check that ACF custom field exists.
+		// TODO Check that ACF custom field exists.
 		try {
 			// $pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
 			// if (!$pmi_id_custom_field_exists) {
@@ -64,19 +64,19 @@ class Pmi_Users_Sync_Cron_Scheduler {
 
 			$loader = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
 			$users  = $loader->load();
-			Pmi_Users_Sync_Logger::logInformation( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
+			Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 			$this->pmi_users_sync_users_update( $users );
 		} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
-			Pmi_Users_Sync_Logger::logError( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 			$error_message = __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' );
 		} catch ( SoapFault $fault ) {
-			Pmi_Users_Sync_Logger::logError( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
+			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
 			$error_message = __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' );
 		} catch ( InvalidArgumentException $exception ) {
-			Pmi_Users_Sync_Logger::logError( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 			$error_message = __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		} catch ( Exception $exception ) {
-			Pmi_Users_Sync_Logger::logError( __( 'An error occurred while running the update. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while running the update. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 			$error_message = __( 'An error occurred during the users update', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		}
 	}

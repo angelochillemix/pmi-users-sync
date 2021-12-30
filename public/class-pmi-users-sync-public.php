@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The public-facing functionality of the plugin.
  *
@@ -44,14 +43,12 @@ class Pmi_Users_Sync_Public {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $pmi_users_sync       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
+	 * @param string $pmi_users_sync The name of the plugin.
+	 * @param string $version The version of this plugin.
 	 */
 	public function __construct( $pmi_users_sync, $version ) {
-
 		$this->pmi_users_sync = $pmi_users_sync;
-		$this->version = $version;
-
+		$this->version        = $version;
 	}
 
 	/**
@@ -74,7 +71,6 @@ class Pmi_Users_Sync_Public {
 		 */
 
 		wp_enqueue_style( $this->pmi_users_sync, plugin_dir_url( __FILE__ ) . 'css/pmi-users-sync-public.css', array(), $this->version, 'all' );
-
 	}
 
 	/**
@@ -97,7 +93,6 @@ class Pmi_Users_Sync_Public {
 		 */
 
 		wp_enqueue_script( $this->pmi_users_sync, plugin_dir_url( __FILE__ ) . 'js/pmi-users-sync-public.js', array( 'jquery' ), $this->version, false );
-
 	}
 
 }

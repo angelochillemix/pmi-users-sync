@@ -133,7 +133,7 @@ class Pmi_Users_Sync {
 		/**
 		 * The class responsible for loading the PMI users from the Excel file from PMI
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-user-excel-file-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-pmi-user-excel-file-loader.php';
 
 		/**
 		 * The class responsible for loading the PMI users through PMI DPE Web Service
@@ -183,7 +183,7 @@ class Pmi_Users_Sync {
 	 * @access   private
 	 */
 	private function set_locale() {
-		$plugin_i18n = new Pmi_Users_Sync_i18n();
+		$plugin_i18n = new Pmi_Users_Sync_I18n();
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}

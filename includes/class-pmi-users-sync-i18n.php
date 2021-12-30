@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -24,7 +23,7 @@
  * @subpackage Pmi_Users_Sync/includes
  * @author     Angelo Chillemi <info@angelochillemi.com>
  */
-class Pmi_Users_Sync_i18n {
+class Pmi_Users_Sync_I18n {
 
 
 	/**
@@ -33,13 +32,11 @@ class Pmi_Users_Sync_i18n {
 	 * @since    1.0.0
 	 */
 	public function load_plugin_textdomain() {
-
 		load_plugin_textdomain(
 			'pmi-users-sync',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
-
 	}
 
 

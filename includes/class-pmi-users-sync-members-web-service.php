@@ -58,7 +58,7 @@ class Pmi_Users_Sync_Members_Web_Service {
 	}
 
 	/**
-	 * Loads PMI members list of a PMI Chapter using DEPService web service.
+	 * Loads PMI members list of a PMI Chapter using DEPService web service
 	 *
 	 * @link https://components.pmi.org/UI/HelpDocs/HowToUseCS.pdf Component System User Guide
 	 * @return stdClass the SOAP object returned by the web service.
