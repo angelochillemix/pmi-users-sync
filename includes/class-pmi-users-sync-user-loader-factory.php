@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the User Loader factory
  *
@@ -10,7 +9,6 @@
  * @subpackage Pmi_Users_Sync/includes
  */
 
-
 /**
  * Represents the PMI DEPService web service called to retrieve the list of members of the PMI Chapter in CSV format
  *
@@ -18,42 +16,67 @@
  * @subpackage Pmi_Users_Sync/includes
  * @author     Angelo Chillemi <info@angelochillemi.com>
  */
-class Pmi_Users_Sync_User_Loader_Factory
-{
-    private const OPTION_DEP_SERVICE_USERNAME = PMI_USERS_SYNC_PREFIX . 'depservice_username';
-    private const OPTION_DEP_SERVICE_PASSWORD = PMI_USERS_SYNC_PREFIX . 'depservice_password';
+class Pmi_Users_Sync_User_Loader_Factory {
 
-    private const OPTION_USER_LOADER = PMI_USERS_SYNC_PREFIX . 'depservice_password';
+	/**
+	 * Cache expire time of 4 days
+	 */
+	private const EXPIRE_TIME = 4 * DAY_IN_SECONDS;
 
-    private function __construct()
-    {
-    }
+	/**
+	 * The key to cache the web service object
+	 */
+	private const CACHE_KEY = PMI_USERS_SYNC_PREFIX . 'PMI_MEMBERS_WEB_SERVICE';
 
-    /**
-     * Undocumented function
-     *
-     * @param string[] $options Plugin options
-     * @return Pmi_Users_Sync_User_Loader A loader based on the option selected by the user. 
-     * Returns an Excel file loader by default.
-     */
-    public static function create_user_loader()
-    {
-        $user_loader_option = get_option(Pmi_Users_Sync_Admin::OPTION_USER_LOADER);
-        switch ($user_loader_option) {
-            case 'option_web_service':
-                $username = get_option(Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_USERNAME);
-                $password = get_option(Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_PASSWORD);
-                $loader = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader($username, $password);
-                break;
+	/**
+	 * Private constructor
+	 */
+	private function __construct() {
+	}
 
-            case 'option_excel':
+	/**
+	 * Create a {@see Pmi_Users_Sync_User_Loader} loader based on the option selected by the user.
+	 *
+	 * @return Pmi_Users_Sync_User_Loader A loader based on the option selected by the user.
+	 * Returns an Excel file loader by default.
+	 */
+	public static function create_user_loader() {
+		$user_loader_option = get_option( Pmi_Users_Sync_Admin::OPTION_USER_LOADER );
+		switch ( $user_loader_option ) {
+			case 'option_web_service':
+				$web_service = static::get_web_service();
+				$loader      = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader( $web_service );
+				break;
 
-            default: // default Excel file
-                $pmi_file_url = get_option(Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID);
-                $file_path = Path_Utils::get_file_path($pmi_file_url);
-                $loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader($file_path);
-                break;
-        }
-        return $loader;
-    }
+			case 'option_excel':
+			default: // default loading from Excel file.
+				$pmi_file_url = get_option( Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID );
+				$file_path    = Path_Utils::get_file_path( $pmi_file_url );
+				$loader       = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader( $file_path );
+				break;
+		}
+		return $loader;
+	}
+
+	/**
+	 * Get an instance of the Pmi_Users_Sync_Members_Web_Service from the cache or create a new instance.
+	 * Cache expiration time is 4 days (@see Pmi_Users_Sync_Members_Web_Service::EXPIRE_TIME).
+	 *
+	 * @return Pmi_Users_Sync_Members_Web_Service The web service instance as result of the call to PMI DEP Service
+	 * @throws SoapFault Exception in case an error occurs during the web service call.
+	 */
+	private static function get_web_service() {
+		$web_service = wp_cache_get( self::CACHE_KEY );
+		if ( ! $web_service ) {
+			$username = get_option( Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_USERNAME );
+			$password = get_option( Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_PASSWORD );
+			if ( $username && $password ) {
+				$web_service = new Pmi_Users_Sync_Members_Web_Service( $username, $password );
+
+				// Caching for 4 days the web service object to avoid repearing calls.
+				wp_cache_set( self::CACHE_KEY, $web_service, 'web_service', intval( self::EXPIRE_TIME ) );
+			}
+		}
+		return $web_service;
+	}
 }

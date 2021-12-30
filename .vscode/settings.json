@@ -1,6 +1,7 @@
 {
     "files.exclude": {
-        "*/wordpress/*": true
+        "**/wordpress": true,
+        "*/wordpress/*": true,
     },
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
@@ -12,12 +13,13 @@
     // PHPCS
     "phpcs.enable": true,
     "phpcs.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcs",
-    "phpcs.ignorePatterns": [
-        "vendor*",
-        "vendors"
-    ],
     "phpcs.standard": "WordPress",
-    "editor.formatOnPaste": true,
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "persoderlind.vscode-phpcbf"
+    "[php]": {
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "persoderlind.vscode-phpcbf"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }

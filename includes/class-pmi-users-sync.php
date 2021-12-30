@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -27,8 +26,8 @@
  * @subpackage Pmi_Users_Sync/includes
  * @author     Angelo Chillemi <info@angelochillemi.com>
  */
-class Pmi_Users_Sync
-{
+class Pmi_Users_Sync {
+
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -67,9 +66,8 @@ class Pmi_Users_Sync
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct()
-	{
-		if (defined('PMI_USERS_SYNC_VERSION')) {
+	public function __construct() {
+		if ( defined( 'PMI_USERS_SYNC_VERSION' ) ) {
 			$this->version = PMI_USERS_SYNC_VERSION;
 		} else {
 			$this->version = '1.0.0';
@@ -98,81 +96,79 @@ class Pmi_Users_Sync
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies()
-	{
-
+	private function load_dependencies() {
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-loader.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-i18n.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-i18n.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'admin/class-pmi-users-sync-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-pmi-users-sync-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/class-pmi-users-sync-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-pmi-users-sync-public.php';
 
 		/**
 		 * The class responsible for defining the PMI user
 		 */
-		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-pmi-user.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-pmi-user.php';
 
 		/**
 		 * The interface for defining the loader of the PMI users from a source
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/interface-pmi-users-sync-user-loader.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/interface-pmi-users-sync-user-loader.php';
 
 		/**
 		 * The class responsible for loading the PMI users from the Excel file from PMI
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-user-excel-file-loader.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-user-excel-file-loader.php';
 
 		/**
 		 * The class responsible for loading the PMI users through PMI DPE Web Service
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-user-web-service-loader.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-pmi-user-web-service-loader.php';
 
 		/**
 		 * The class responsible to create the user loader based on the plugin settings
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . 'includes/class-pmi-users-sync-user-loader-factory.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-pmi-users-sync-user-loader-factory.php';
 
 		/**
 		 * The class responsible for loading the PMI users with a call to PMI DPE Web Service
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-members-web-service.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-members-web-service.php';
 
 		/**
 		 * The class responsible to update the PMI users with PMI-ID of the Excel file from PMI
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-user-updater.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-updater.php';
 
 		/**
 		 * The class responsible to log messages to the log file
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-logger.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-logger.php';
 
 		/**
 		 * The class to setup the cron scheduler
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-cron-scheduler.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-cron-scheduler.php';
 
 		/**
 		 * The class with Path utilities source codeto setup the cron scheduler
 		 */
-		require_once(plugin_dir_path(dirname(__FILE__)) . '/includes/class-pmi-users-sync-path-utils.php');
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-path-utils.php';
 
 		$this->loader = new Pmi_Users_Sync_Loader();
 	}
@@ -186,12 +182,10 @@ class Pmi_Users_Sync
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale()
-	{
-
+	private function set_locale() {
 		$plugin_i18n = new Pmi_Users_Sync_i18n();
 
-		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
+		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 	}
 
 	/**
@@ -201,19 +195,17 @@ class Pmi_Users_Sync
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks()
-	{
+	private function define_admin_hooks() {
+		$plugin_admin = new Pmi_Users_Sync_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$plugin_admin = new Pmi_Users_Sync_Admin($this->get_plugin_name(), $this->get_version());
-
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 		/**
 		 * Add the admin menu for the plugin
 		 */
-		$this->loader->add_action('admin_menu', $plugin_admin, 'add_menu_link');
-		$this->loader->add_action('admin_notices', $plugin_admin, 'notify_user_about_acf_plugin');
+		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_link' );
+		$this->loader->add_action( 'admin_notices', $plugin_admin, 'notify_user_about_acf_plugin' );
 	}
 
 	/**
@@ -223,13 +215,11 @@ class Pmi_Users_Sync
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks()
-	{
+	private function define_public_hooks() {
+		$plugin_public = new Pmi_Users_Sync_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$plugin_public = new Pmi_Users_Sync_Public($this->get_plugin_name(), $this->get_version());
-
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 	}
 
 	/**
@@ -237,8 +227,7 @@ class Pmi_Users_Sync
 	 *
 	 * @since    1.0.0
 	 */
-	public function run()
-	{
+	public function run() {
 		$this->loader->run();
 	}
 
@@ -249,8 +238,7 @@ class Pmi_Users_Sync
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name()
-	{
+	public function get_plugin_name() {
 		return $this->pmi_users_sync;
 	}
 
@@ -260,8 +248,7 @@ class Pmi_Users_Sync
 	 * @since     1.0.0
 	 * @return    Pmi_Users_Sync_Loader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader()
-	{
+	public function get_loader() {
 		return $this->loader;
 	}
 
@@ -271,8 +258,7 @@ class Pmi_Users_Sync
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version()
-	{
+	public function get_version() {
 		return $this->version;
 	}
 }
