@@ -57,6 +57,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<?php } ?>
 
 	<?php if ( isset( $users ) ) { ?>
+		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $users ) ); ?> <?php echo esc_html( ' users' ); ?></p>
 		<table class="styled-table">
 			<thead>
 				<th>PMI ID</th>
