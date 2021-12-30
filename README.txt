@@ -4,7 +4,7 @@ Donate link: https://paypal.me/angelochillemi
 Tags: pmi, users management
 Requires at least: 5.x
 Tested up to: 5.8.2
-Stable tag: 1.0.2
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,15 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 2. This is the second screen shot
 
 ## Changelog
+
+### 1.2.0
+* Changes according to the results of PHP Code Sniffer and Beautifier analysis
+* Resolved unmanaged exception thrown when username or password for DEP web service are not set 
+
+### 1.1.0
+* Implementation of web service call to retrieve the list of PMI members from PMI directly
+* Refactoring for improved WP options management
+* PHP Code Sniffer and Beautifier setup for Wordpress coding standard
 
 ### 1.0.1
 * Changes on README.txt and translation in italian
