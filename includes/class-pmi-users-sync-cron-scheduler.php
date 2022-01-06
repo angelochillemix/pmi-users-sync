@@ -35,6 +35,23 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	}
 
 	/**
+	 * Unschedule the event to update the PMI-ID
+	 *
+	 * @return void
+	 * @since 1.2.0
+	 */
+	public function unschedule() {
+		$timestamp = wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK );
+		if ( $timestamp ) {
+			// Unschedule the task.
+			wp_unschedule_event( $timestamp, self::PMI_USERS_SYNC_CRON_HOOK );
+
+			// Unregister the hook from the cron tasks.
+			wp_clear_scheduled_hook( self::PMI_USERS_SYNC_CRON_HOOK );
+		}
+	}
+
+	/**
 	 * Define the array of schedules for the cron tasks to synchronize the PMI-ID
 	 *
 	 * @param array $schedules The array with the WP defined recurrence.
@@ -55,29 +72,18 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @return void
 	 */
 	public function pus_update_users_pmi_id() {
-		// TODO Check that ACF custom field exists.
 		try {
-			// $pmi_id_custom_field_exists = $this->acf_field_exists(get_option(self::OPTION_PMI_ID_CUSTOM_FIELD));
-			// if (!$pmi_id_custom_field_exists) {
-			// $error_message = __('PMI-ID custom field does not exist. Update not done!');
-			// }
+			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ) );
+			if ( ! $pmi_id_custom_field_exists ) {
+				Pmi_Users_Sync_Logger::log_warning( __( 'ACF field for PMI-ID does not exist', 'pmi-users-sync' ) );
+				return;
+			}
 
-			$loader = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
-			$users  = $loader->load();
+			$users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
 			Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 			$this->pmi_users_sync_users_update( $users );
-		} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' );
-		} catch ( SoapFault $fault ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
-			$error_message = __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' );
-		} catch ( InvalidArgumentException $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		} catch ( Exception $exception ) {
 			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while running the update. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'An error occurred during the users update', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		}
 	}
 

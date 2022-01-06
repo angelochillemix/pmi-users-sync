@@ -137,7 +137,7 @@ class Pmi_Users_Sync_Admin {
 		// ACF plugin is installed and active.
 		// It is now safe to check that custom field exists.
 
-		if ( ! $this->acf_field_exists( get_option( PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ) ) ) {
+		if ( ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ) ) ) {
 			// Inform the user that the ACF field for the PMI-ID is not yet defined.
 			ob_start()
 			?>
@@ -149,22 +149,6 @@ class Pmi_Users_Sync_Admin {
 			echo ob_get_clean();
 		}
 	}
-
-	/**
-	 * Check if a Advanced Custom Field is defined
-	 *
-	 * @param string $field_name The name of the field to check existence for.
-	 * @return bool true if the field is found, false otherwise
-	 */
-	private function acf_field_exists( $field_name ) {
-		global $wpdb;
-		$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, 'acf-field' ) );
-		if ( is_null( $acf_fields ) ) {
-			return false;
-		}
-		return ( count( $acf_fields ) ) > 0;
-	}
-
 
 	/**
 	 * Build the admin menu using the {@see Boo_Settings_Helper} class
@@ -307,13 +291,13 @@ class Pmi_Users_Sync_Admin {
 		try {
 			$loader                     = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
 			$users                      = $loader->load();
-			$pmi_id_custom_field_exists = $this->acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
+			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
 			if ( ! $pmi_id_custom_field_exists ) {
 				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
 
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
-				// TODO #1 Commenting as I need to find out why it the nonce verification always fails although the nonce field is posted correctly
+				// TODO #1 Find out why the nonce verification always fails although the nonce field is posted correctly
 				// if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ) || ! wp_verify_nonce( PMI_USERS_SYNC_PREFIX . 'nonce_field', PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
 				// Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
 				// wp_nonce_ays( '' );

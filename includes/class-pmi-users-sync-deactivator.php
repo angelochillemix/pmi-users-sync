@@ -22,15 +22,14 @@
 class Pmi_Users_Sync_Deactivator {
 
 	/**
-	 * Short Description. (use period)
-	 *
-	 * Long Description.
+	 * Execute tasks for the deactivation of the plugin.
 	 *
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
-		// Unregister the hook from the cron tasks.
-		wp_clear_scheduled_hook( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK );
+		// Unschedule the registered hook to update the PMI-ID.
+		$scheduler = new Pmi_Users_Sync_Cron_Scheduler();
+		$scheduler->unschedule();
 	}
 
 }

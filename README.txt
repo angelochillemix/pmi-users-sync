@@ -58,8 +58,9 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 ## Changelog
 
 ### 1.2.0
-* Changes according to the results of PHP Code Sniffer and Beautifier analysis
-* Resolved unmanaged exception thrown when username or password for DEP web service are not set 
+* Changes according to the results of PHP Code Sniffer and Beautifier analysis following WordPress standard
+* Resolved unmanaged exception thrown when username or password for DEP web service are not set
+* Check that ACF PMI-ID field is set during the schedule update
 
 ### 1.1.0
 * Implementation of web service call to retrieve the list of PMI members from PMI directly

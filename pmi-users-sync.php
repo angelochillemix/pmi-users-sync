@@ -81,7 +81,7 @@ define( 'PMI_USERS_SYNC_CRON_HOOK', PMI_USERS_SYNC_PREFIX . 'update_users_pmi_id
  * The code that runs during plugin activation.
  * This action is documented in includes/class-pmi-users-sync-activator.php
  */
-function activate_pmi_users_sync() {
+function pmi_users_sync_activate_pmi_users_sync() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-pmi-users-sync-activator.php';
 	Pmi_Users_Sync_Activator::activate();
 }
@@ -90,13 +90,13 @@ function activate_pmi_users_sync() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-pmi-users-sync-deactivator.php
  */
-function deactivate_pmi_users_sync() {
+function pmi_users_sync_deactivate_pmi_users_sync() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-pmi-users-sync-deactivator.php';
 	Pmi_Users_Sync_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_pmi_users_sync' );
-register_deactivation_hook( __FILE__, 'deactivate_pmi_users_sync' );
+register_activation_hook( __FILE__, 'pmi_users_sync_activate_pmi_users_sync' );
+register_deactivation_hook( __FILE__, 'pmi_users_sync_deactivate_pmi_users_sync' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -118,8 +118,8 @@ require dirname( __FILE__ ) . '/vendor/autoload.php';
  *
  * @since    1.0.0
  */
-function run_pmi_users_sync() {
+function pmi_users_sync_run_pmi_users_sync() {
 	$plugin = new Pmi_Users_Sync();
 	$plugin->run();
 }
-run_pmi_users_sync();
+pmi_users_sync_run_pmi_users_sync();

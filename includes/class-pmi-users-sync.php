@@ -166,9 +166,14 @@ class Pmi_Users_Sync {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-cron-scheduler.php';
 
 		/**
-		 * The class with Path utilities source codeto setup the cron scheduler
+		 * The class with Path utilities
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-path-utils.php';
+
+		/**
+		 * The class with utilities methods
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-utils.php';
 
 		$this->loader = new Pmi_Users_Sync_Loader();
 	}
