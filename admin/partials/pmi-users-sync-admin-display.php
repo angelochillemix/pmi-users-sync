@@ -49,6 +49,9 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<p><?php esc_html_e( 'Update the PMI ID of the users', 'pmi-users-sync' ); ?></p>
 	<form id="update_users_form" method="POST">
 		<input type="submit" name="update_users" value="<?php esc_html_e( 'Update', 'pmi-users-sync' ); ?>">Update the PMI-ID of the users</input>
+		<?php wp_nonce_field( PMI_USERS_SYNC_PREFIX . 'nonce_action', PMI_USERS_SYNC_PREFIX . 'nonce_field' ); ?>
+</form>
+
 	</form>
 	<br />
 	<br />

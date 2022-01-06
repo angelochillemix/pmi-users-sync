@@ -312,8 +312,12 @@ class Pmi_Users_Sync_Admin {
 				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
 
-			// TODO Add nouce verification
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
+				// TODO #1 Commenting as I need to find out why it the nonce verification always fails although the nonce field is posted correctly
+				// if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ) || ! wp_verify_nonce( PMI_USERS_SYNC_PREFIX . 'nonce_field', PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
+				// Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
+				// wp_nonce_ays( '' );
+				// }
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 				$this->pmi_users_sync_users_update( $users );
 				$error_message = __( 'Users successfully updated!', 'pmi-users-sync' );
