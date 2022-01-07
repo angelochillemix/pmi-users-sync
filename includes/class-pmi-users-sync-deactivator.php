@@ -29,7 +29,7 @@ class Pmi_Users_Sync_Deactivator {
 	public static function deactivate() {
 		// Unschedule the registered hook to update the PMI-ID.
 		$scheduler = new Pmi_Users_Sync_Cron_Scheduler();
-		$scheduler->unschedule();
+		$scheduler->clear_scheduled_hook();
 	}
 
 }

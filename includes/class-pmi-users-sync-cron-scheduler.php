@@ -20,17 +20,39 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	public const PMI_USERS_SYNC_CRON_HOOK = 'pus_cron_update_users_pmi_id';
 
 	/**
+	 * Represents the callback to define custom schedules
+	 */
+	public const PMI_USERS_SYNC_CRON_CUSTOM_SCHEDULE_CALLBACK = 'pus_add_intervals';
+
+	/**
+	 * Represents the callback to call to update the PMI-ID on a regular basis
+	 */
+	public const PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK = 'pus_update_users_pmi_id';
+
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY            = 'weekly';
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY           = 'pus_monthly';
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY         = 'pus_quarterly';
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_EVERY_TWO_MINUTES = 'pus_every_two_minutes';
+
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT = self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
+
+	/**
 	 * Schedule the regular updated of the PMI-ID
 	 *
 	 * @param string $recurrence The recurrence of the event.
 	 * @return void
 	 */
 	public function schedule( string $recurrence ) {
+		if ( ! isset( $recurrence ) || is_null( $recurrence ) || empty( $recurrence ) ) {
+			$recurrence = self::PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT;
+		}
+
 		// Register the hook to the cron tasks.
 		if ( ! wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK ) ) {
-			add_filter( 'cron_schedules', array( $this, 'pus_add_intervals' ) );
 			$error = wp_schedule_event( time(), $recurrence, self::PMI_USERS_SYNC_CRON_HOOK );
-			add_action( self::PMI_USERS_SYNC_CRON_HOOK, array( $this, 'pus_update_users_pmi_id' ) );
+			if ( ( ! is_bool( $error ) && is_object( $error ) && $error->has_errors() ) ) {
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while scheduling the cron for the synchronization of the PMI-ID. Error is: ', 'pmi-users-sync' ) . $error->get_error_message() );
+			}
 		}
 	}
 
@@ -41,14 +63,22 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @since 1.2.0
 	 */
 	public function unschedule() {
+		// Unschedule the task.
 		$timestamp = wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK );
 		if ( $timestamp ) {
-			// Unschedule the task.
 			wp_unschedule_event( $timestamp, self::PMI_USERS_SYNC_CRON_HOOK );
-
-			// Unregister the hook from the cron tasks.
-			wp_clear_scheduled_hook( self::PMI_USERS_SYNC_CRON_HOOK );
 		}
+	}
+
+	/**
+	 * Clear all scheduled events
+	 *
+	 * @return void
+	 */
+	public function clear_scheduled_hook() {
+		$this->unschedule();
+		// Unregister the hook from the WP cron.
+		wp_clear_scheduled_hook( self::PMI_USERS_SYNC_CRON_HOOK );
 	}
 
 	/**
@@ -58,9 +88,17 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @return array Return the $schedules array with in addition the monthly schedules as not part of standard supported recurrence
 	 */
 	public function pus_add_intervals( $schedules ) {
-		$schedules['monthly'] = array(
-			'interval' => 2635200,
+		$schedules[ self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY ]           = array(
+			'interval' => MONTH_IN_SECONDS,
 			'display'  => __( 'Once a month', 'pmi-users-sync' ),
+		);
+		$schedules[ self::PMI_USERS_SYNC_CRON_SCHEDULE_EVERY_TWO_MINUTES ] = array(
+			'interval' => MINUTE_IN_SECONDS * 2,
+			'display'  => __( 'Every 2 minutes', 'pmi-users-sync' ),
+		);
+		$schedules[ self::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY ]         = array(
+			'interval' => MONTH_IN_SECONDS * 3,
+			'display'  => __( 'Every quarter', 'pmi-users-sync' ),
 		);
 		return $schedules;
 	}
@@ -77,6 +115,12 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			if ( ! $pmi_id_custom_field_exists ) {
 				Pmi_Users_Sync_Logger::log_warning( __( 'ACF field for PMI-ID does not exist', 'pmi-users-sync' ) );
 				return;
+			}
+
+			$recurrence = get_option( Pmi_Users_Sync_Admin::OPTION_LOADER_SCHEDULE );
+			if ( false !== $recurrence ) {
+				$this->unschedule();
+				$this->schedule( $recurrence );
 			}
 
 			$users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();

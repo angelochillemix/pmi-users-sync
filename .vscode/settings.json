@@ -1,7 +1,6 @@
 {
     "files.exclude": {
-        "**/wordpress": true,
-        "*/wordpress/*": true,
+       // "**/wordpress": true
     },
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",

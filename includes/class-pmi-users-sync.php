@@ -40,6 +40,16 @@ class Pmi_Users_Sync {
 	protected $loader;
 
 	/**
+	 * The schedule responsible for scheduling the synchronization of PMI-ID of PMI members with the users
+	 * registered to the WordPress website.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      Pmi_Users_Sync_Cron_Scheduler $scheduler Scheduls the synchronization of PMI-ID of PMI members with the users registered to the WordPress website.
+	 */
+	protected $scheduler = null;
+
+	/**
 	 * The unique identifier of this plugin.
 	 *
 	 * @since    1.0.0
@@ -175,7 +185,8 @@ class Pmi_Users_Sync {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-utils.php';
 
-		$this->loader = new Pmi_Users_Sync_Loader();
+		$this->loader    = new Pmi_Users_Sync_Loader();
+		$this->scheduler = new Pmi_Users_Sync_Cron_Scheduler();
 	}
 
 	/**
@@ -199,6 +210,7 @@ class Pmi_Users_Sync {
 	 *
 	 * @since    1.0.0
 	 * @access   private
+	 * @throws Exception Throws an exception if the scheduler instance is null.
 	 */
 	private function define_admin_hooks() {
 		$plugin_admin = new Pmi_Users_Sync_Admin( $this->get_plugin_name(), $this->get_version() );
@@ -211,6 +223,16 @@ class Pmi_Users_Sync {
 		 */
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_link' );
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'notify_user_about_acf_plugin' );
+
+		if ( null === $this->scheduler ) {
+			throw new Exception( 'Schedule instance cannot be null', 1 );
+		}
+
+		/**
+		 * Register the scheduled event to synchronize the PMI-ID on a regular basis.
+		 */
+		$this->loader->add_filter( 'cron_schedules', $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_CUSTOM_SCHEDULE_CALLBACK );
+		$this->loader->add_action( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK, $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK );
 	}
 
 	/**
@@ -228,12 +250,31 @@ class Pmi_Users_Sync {
 	}
 
 	/**
+	 * Schedule the synchornization of PMI-ID
+	 *
+	 * @return void
+	 */
+	public function schedule_synchronization() {
+		// Activate the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site.
+		$recurrence = get_option( Pmi_Users_Sync_Admin::OPTION_LOADER_SCHEDULE );
+		if ( false === $recurrence ) {
+			$recurrence = Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
+		}
+		$this->scheduler->unschedule();
+		$this->scheduler->schedule( $recurrence );
+	}
+
+	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
 	 * @since    1.0.0
 	 */
 	public function run() {
 		$this->loader->run();
+
+		// Schedule the cron task for the synchornization of the PMI-ID.
+		// Task to be executed after the loader run to ensure hooks and actions are set.
+		$this->schedule_synchronization();
 	}
 
 	/**

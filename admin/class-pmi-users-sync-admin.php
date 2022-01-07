@@ -43,6 +43,8 @@ class Pmi_Users_Sync_Admin {
 	public const OPTION_USER_LOADER_EXCEL = 'option_excel';
 	public const OPTION_USER_WEB_SERVICE  = 'option_web_service';
 
+	private const FIELD_ID_LOADER_SCHEDULE = 'loader_schedule_field';
+	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
 
 	/**
 	 * The ID of this plugin.
@@ -212,6 +214,19 @@ class Pmi_Users_Sync_Admin {
 				'loader_settings_section'  => array(
 					array(
 						// ----
+						'id'      => self::FIELD_ID_LOADER_SCHEDULE,
+						'label'   => __( 'Synchonization schedule', 'pmi-users-sync' ),
+						'desc'    => __( 'The recurrence of the users loader that synchronizes the PMI-ID', 'pmi-users-sync' ),
+						'type'    => 'select',
+						'default' => Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT,
+						'options' => array(
+							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY => __( 'Weekly', 'pmi-users-sync' ),
+							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY  => __( 'Monthly', 'pmi-users-sync' ),
+							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY  => __( 'Quarterly', 'pmi-users-sync' ),
+						),
+					),
+					array(
+						// ----
 						'id'      => self::FIELD_ID_USER_LOADER,
 						'label'   => __( 'Loader', 'pmi-users-sync' ),
 						'desc'    => __( 'The type of loader to use to load the PMI members', 'pmi-users-sync' ),
@@ -297,11 +312,11 @@ class Pmi_Users_Sync_Admin {
 			}
 
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
-				// TODO #1 Find out why the nonce verification always fails although the nonce field is posted correctly
-				// if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ) || ! wp_verify_nonce( PMI_USERS_SYNC_PREFIX . 'nonce_field', PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
-				// Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
-				// wp_nonce_ays( '' );
-				// }
+				if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
+					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
+					Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
+					wp_nonce_ays( '' );
+				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 				$this->pmi_users_sync_users_update( $users );
 				$error_message = __( 'Users successfully updated!', 'pmi-users-sync' );
