@@ -21,31 +21,7 @@
  * @subpackage Pmi_Users_Sync/includes
  * @author     Angelo Chillemi <info@angelochillemi.com>
  */
-class Pmi_Users_Sync_User_Updater {
-
-	/**
-	 * Array of {@see Pmi_Users_Sync_User} instances which PMI ID must be updated
-	 *
-	 * @var Pmi_Users_Sync_Pmi_User[] Array of {@see Pmi_Users_Sync_User} instances which PMI ID must be updated
-	 */
-	private $users;
-
-	/**
-	 * List of options to apply for the update of the PMI ID
-	 *
-	 * @var mixed The list of options to apply for the update of the PMI ID {@see ../admin/partials/pmi-users-sync-settings-page.php}.
-	 */
-	private $options;
-
-	/**
-	 * Pmi_Users_Sync_User_Updater class constructor
-	 *
-	 * @param Pmi_Users_Sync_Pmi_User[] $users The list of PMI users.
-	 * @param mixed                     $options The pluging settings.
-	 */
-	public function __construct( $users, $options ) {
-		$this->$users = $users;
-	}
+class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 
 	/**
 	 * Update the PMI ID of the users
@@ -54,7 +30,7 @@ class Pmi_Users_Sync_User_Updater {
 	 * @param mixed                     $options The pluging settings.
 	 * @return void
 	 */
-	public static function update( $users, $options ) {
+	protected function do_update( $users, $options ) {
 		foreach ( $users as $user ) {
 			$wp_users = get_user_by( 'email', $user->get_email() );
 
@@ -85,9 +61,9 @@ class Pmi_Users_Sync_User_Updater {
 	 * @param array                   $options The pluging settings.
 	 * @return bool true if the PMI-ID is to be updated, false otherwise
 	 */
-	private static function pmi_id_to_be_updated( Pmi_Users_Sync_Pmi_User $user, WP_User $wp_user, array $options ): bool {
+	private function pmi_id_to_be_updated( Pmi_Users_Sync_Pmi_User $user, WP_User $wp_user, array $options ): bool {
 		if (
-			self::user_has_no_pmi_id( $wp_user, $options )
+			$this->user_has_no_pmi_id( $wp_user, $options )
 			|| ( ( true === boolval( $options[ Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID ] ) )
 				&& ( ! self::user_has_same_pmi_id( $wp_user, $user, $options ) ) )
 		) {
@@ -104,7 +80,7 @@ class Pmi_Users_Sync_User_Updater {
 	 * @param array   $options The plugin settings.
 	 * @return boolean
 	 */
-	private static function user_has_no_pmi_id( $wp_user, $options ): bool {
+	private function user_has_no_pmi_id( $wp_user, $options ): bool {
 		$pmi_id = get_user_meta( $wp_user->ID, $options[ PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ], true );
 
 		// User meta not found or empty.

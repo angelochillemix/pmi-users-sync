@@ -75,7 +75,7 @@ class Pmi_Users_Sync_Pmi_User {
 	/**
 	 * Returns the first name of the user
 	 *
-	 * @return the first name of the user
+	 * @return string first name of the user
 	 */
 	public function get_first_name() {
 		return $this->first_name;
