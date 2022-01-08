@@ -35,7 +35,7 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 			$wp_users = get_user_by( 'email', $user->get_email() );
 
 			if ( false !== $wp_users ) {
-				if ( true === self::pmi_id_to_be_updated( $user, $wp_users, $options ) ) {
+				if ( true === $this->pmi_id_to_be_updated( $user, $wp_users, $options ) ) {
 					$result = update_user_meta( $wp_users->ID, $options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ], $user->get_pmi_id() );
 					if ( true === $result ) {
 						Pmi_Users_Sync_Logger::log_information( __( 'PMI-ID of user with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' updated to ', 'pmi-users-sync' ) . $options[ PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ] );
