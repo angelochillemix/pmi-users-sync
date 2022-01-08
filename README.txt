@@ -40,6 +40,7 @@ The PMI Users Sync plugin requires Advanced Custom Fields pluing installed and a
 1. Setup the 'PMI-ID Priority' setting to set the overwrite priority. If you'd like to prioritize the PMI-ID from PMI then tick the checkbox
 1. Set the Excel file which contains the PMI members list extraction
 1. Check from the 'PMI-Users' plugin page if the users are loaded from the Excel file. The same file will be used by the WP Cron to weekly synchronize the PMI-IDs
+// TODO #8 Improve the post installation steps as plugin setup
 
 ## Frequently Asked Questions
 
@@ -47,7 +48,7 @@ None
 
 ## Screenshots
 
-**TODO** when uploaded to Wordpress.org upload and set the screenshots
+//TODO #7 Set the screenshots when uploaded to Wordpress.org plugins repository
 
 1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
 the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
@@ -58,6 +59,8 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 ## Changelog
 
 ### 1.3.0
+* Shows last PMI users synchronization date and time
+* Added user loaded daily recurrence option for PMI users synchonization
 
 ### 1.2.0
 * Changes according to the results of PHP Code Sniffer and Beautifier analysis following WordPress standard
