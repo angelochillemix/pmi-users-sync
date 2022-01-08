@@ -2,8 +2,8 @@
 /**
  * Fired during plugin activation to setup the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site
  *
- * @link       http://angelochillemi.com
- * @since      1.0.1
+ * @link  http://angelochillemi.com
+ * @since 1.0.1
  *
  * @package    Pmi_Users_Sync
  * @subpackage Pmi_Users_Sync/includes
@@ -13,6 +13,7 @@
  * Setup the cron scheduler to synchronize the PMI-ID from PMI with the users registered to the site
  */
 class Pmi_Users_Sync_Cron_Scheduler {
+
 
 	/**
 	 * Represents the hook function to setup the cron for the regular updated of the PMI-ID
@@ -37,9 +38,20 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT = self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
 
 	/**
+	 * Mapping between recurrence option and seconds.
+	 *
+	 * @var array
+	 */
+	private $recurrence_in_seconds = array(
+		self::PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY    => WEEK_IN_SECONDS,
+		self::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY => MONTH_IN_SECONDS * 3,
+		self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY   => MONTH_IN_SECONDS,
+	);
+
+	/**
 	 * Schedule the regular updated of the PMI-ID
 	 *
-	 * @param string $recurrence The recurrence of the event.
+	 * @param  string $recurrence The recurrence of the event.
 	 * @return void
 	 */
 	public function schedule( string $recurrence ) {
@@ -49,7 +61,12 @@ class Pmi_Users_Sync_Cron_Scheduler {
 
 		// Register the hook to the cron tasks.
 		if ( ! wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK ) ) {
-			$error = wp_schedule_event( time(), $recurrence, self::PMI_USERS_SYNC_CRON_HOOK );
+			$seconds = $this->get_seconds_from_schedule( $recurrence );
+			$error   = wp_schedule_event(
+				time() + $seconds, // Adding the recurrence in seconds otherwise it starts the synchronization immediately.
+				$recurrence,
+				self::PMI_USERS_SYNC_CRON_HOOK
+			);
 			if ( ( ! is_bool( $error ) && is_object( $error ) && $error->has_errors() ) ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while scheduling the cron for the synchronization of the PMI-ID. Error is: ', 'pmi-users-sync' ) . $error->get_error_message() );
 			}
@@ -57,10 +74,25 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	}
 
 	/**
+	 * Returns the number of seconds as per recurrence argument passed.
+	 *
+	 * @param  string $recurrence The recurrence of the cron event.
+	 * @return integer The seconds correspongin to the recurrence.
+	 */
+	private function get_seconds_from_schedule( $recurrence ) : int {
+		$seconds = MONTH_IN_SECONDS; // Monthly recurrence by default.
+
+		if ( key_exists( $recurrence, $this->recurrence_in_seconds ) ) {
+			$seconds = $this->recurrence_in_seconds[ $recurrence ];
+		}
+		return $seconds;
+	}
+
+	/**
 	 * Unschedule the event to update the PMI-ID
 	 *
 	 * @return void
-	 * @since 1.2.0
+	 * @since  1.2.0
 	 */
 	public function unschedule() {
 		// Unschedule the task.
@@ -84,7 +116,7 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	/**
 	 * Define the array of schedules for the cron tasks to synchronize the PMI-ID
 	 *
-	 * @param array $schedules The array with the WP defined recurrence.
+	 * @param  array $schedules The array with the WP defined recurrence.
 	 * @return array Return the $schedules array with in addition the monthly schedules as not part of standard supported recurrence
 	 */
 	public function pus_add_intervals( $schedules ) {
@@ -117,12 +149,6 @@ class Pmi_Users_Sync_Cron_Scheduler {
 				return;
 			}
 
-			$recurrence = get_option( Pmi_Users_Sync_Admin::OPTION_LOADER_SCHEDULE );
-			if ( false !== $recurrence ) {
-				$this->unschedule();
-				$this->schedule( $recurrence );
-			}
-
 			$users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
 			Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 			$this->pmi_users_sync_users_update( $users );
@@ -134,7 +160,7 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	/**
 	 * Update the PMI-ID of the users
 	 *
-	 * @param Pmi_Users_Sync_Pmi_User[] $users The list of users for which to update the PMI-ID.
+	 * @param  Pmi_Users_Sync_Pmi_User[] $users The list of users for which to update the PMI-ID.
 	 * @return void
 	 */
 	private function pmi_users_sync_users_update( $users ) {
