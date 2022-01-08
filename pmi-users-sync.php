@@ -15,7 +15,7 @@
  * Plugin Name:       PMI Users Sync
  * Plugin URI:        http://angelochillemi.com/pmi-users-sync
  * Description:       Synchronize the PMI subscribed users with WordPress users, using ACF for the PMI-ID. This plugin is particularly useful for PMI Chapters to offer specific services to PMI subscribed members.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Author:            Angelo Chillemi
  * Author URI:        http://angelochillemi.com
  * License:           GPL-2.0+
