@@ -58,6 +58,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<?php if ( isset( $error_message ) && ! empty( $error_message ) ) { ?>
 		<p> <?php echo esc_html( $error_message ); ?></p>
 	<?php } ?>
+	<p> <?php echo esc_html__( 'Last synchronization on: ', 'pmi-users-sync' ) . esc_html( $pus_last_synchronization_date ); ?></p>
 
 	<?php if ( isset( $users ) ) { ?>
 		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $users ) ); ?> <?php echo esc_html( ' users' ); ?></p>

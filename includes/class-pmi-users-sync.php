@@ -161,6 +161,11 @@ class Pmi_Users_Sync {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-members-web-service.php';
 
 		/**
+		 * The abstract class responsible to update the PMI users with PMI-ID of the Excel file from PMI
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-abstract-updater.php';
+
+		/**
 		 * The class responsible to update the PMI users with PMI-ID of the Excel file from PMI
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-updater.php';

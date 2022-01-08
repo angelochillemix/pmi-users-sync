@@ -46,6 +46,9 @@ class Pmi_Users_Sync_Admin {
 	private const FIELD_ID_LOADER_SCHEDULE = 'loader_schedule_field';
 	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
 
+	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = 'loader_last_synchronization_date_time';
+
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -299,10 +302,9 @@ class Pmi_Users_Sync_Admin {
 	/**
 	 * Shows the list of users from the Excel file
 	 *
-	 * @param mixed $args Arguments of the callback.
 	 * @return void
 	 */
-	public function pmi_users_list_page( $args ) {
+	public function pmi_users_list_page() {
 		try {
 			$loader                     = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
 			$users                      = $loader->load();
@@ -311,6 +313,7 @@ class Pmi_Users_Sync_Admin {
 				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
 
+			// Update of the PMI-ID triggered manually.
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
 				if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
 					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
@@ -320,6 +323,12 @@ class Pmi_Users_Sync_Admin {
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 				$this->pmi_users_sync_users_update( $users );
 				$error_message = __( 'Users successfully updated!', 'pmi-users-sync' );
+			}
+
+			// Update the last synchronization date and time on the page.
+			$pus_last_synchronization_date = get_option( self::LOADER_LAST_SYNCHRONIZATION_DATE_TIME );
+			if ( ! $pus_last_synchronization_date ) {
+				$pus_last_synchronization_date = __( 'No synchronization occurred yet', 'pmi-users-sync' );
 			}
 		} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
 			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
@@ -347,11 +356,12 @@ class Pmi_Users_Sync_Admin {
 	 * @return void
 	 */
 	private function pmi_users_sync_users_update( $users ) {
-		$options = array();
-		$options = array(
+		$options      = array();
+		$options      = array(
 			self::OPTION_OVERWRITE_PMI_ID    => get_option( self::OPTION_OVERWRITE_PMI_ID ),
 			self::OPTION_PMI_ID_CUSTOM_FIELD => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
 		);
-		Pmi_Users_Sync_User_Updater::update( $users, $options );
+		$user_updater = new Pmi_Users_Sync_User_Updater( $users, $options );
+		$user_updater->update( $users, $options );
 	}
 }
