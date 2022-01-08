@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-12-26 21:51+0100\n"
-"PO-Revision-Date: 2021-12-26 21:56+0100\n"
+"POT-Creation-Date: 2022-01-08 19:47+0100\n"
+"PO-Revision-Date: 2022-01-08 19:58+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it\n"
@@ -13,118 +13,229 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin/class-pmi-users-sync-admin.php:110
-msgid "Advanced Custom Fields"
-msgstr "Campi Personalizzati Avanzati"
-
-#: admin/class-pmi-users-sync-admin.php:161
+#: admin/class-pmi-users-sync-admin.php:166
 msgid "PMI Users Sync"
 msgstr "PMI Users Sync"
 
-#: admin/class-pmi-users-sync-admin.php:162
+#: admin/class-pmi-users-sync-admin.php:167
 msgid "PMI Users"
 msgstr "Utenti PMI"
 
-#: admin/class-pmi-users-sync-admin.php:172
+#: admin/class-pmi-users-sync-admin.php:177
 msgid "PMI Users Sync Settings"
 msgstr "Impostazioni PMI Users Sync"
 
-#: admin/class-pmi-users-sync-admin.php:173
-#: admin/class-pmi-users-sync-admin.php:185
-#: admin/class-pmi-users-sync-admin.php:220
+#: admin/class-pmi-users-sync-admin.php:178
+#: admin/class-pmi-users-sync-admin.php:272
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: admin/class-pmi-users-sync-admin.php:186
+#: admin/class-pmi-users-sync-admin.php:190
+msgid "General Settings"
+msgstr "Impostazioni Generali"
+
+#: admin/class-pmi-users-sync-admin.php:191
 msgid "Settings for PMI Users Sync plugin"
 msgstr "Impostazioni per il plugin PMI User Sync"
 
-#: admin/class-pmi-users-sync-admin.php:194
-#: admin/partials/pmi-users-sync-settings-page.php:48
+#: admin/class-pmi-users-sync-admin.php:195
+msgid "Users Loader Settings"
+msgstr "Impostazioni del caricatore utenti"
+
+#: admin/class-pmi-users-sync-admin.php:196
+msgid "Settings for PMI Users loader"
+msgstr "Impostazioni per il caricatore degli utenti PMI"
+
+#: admin/class-pmi-users-sync-admin.php:204
 msgid "If checked, the PMI ID inserted by the users will be overwritten"
 msgstr "Se selezionato, il PMI ID inserito dall'utente verrà soprascritto"
 
-#: admin/class-pmi-users-sync-admin.php:199
+#: admin/class-pmi-users-sync-admin.php:209
 msgid "PMI-ID custom field"
 msgstr "PMI-ID campo personalizzato"
 
-#: admin/class-pmi-users-sync-admin.php:200
-#: admin/partials/pmi-users-sync-settings-page.php:59
-msgid "Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)"
-msgstr "Inserisci il PMI-ID campo personalizzato definito nel plugin ACF (ad es. dbem_pmi_id)"
+#: admin/class-pmi-users-sync-admin.php:210
+msgid ""
+"Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)"
+msgstr ""
+"Inserisci il PMI-ID campo personalizzato definito nel plugin ACF (ad es. "
+"dbem_pmi_id)"
 
-#: admin/class-pmi-users-sync-admin.php:205
+#: admin/class-pmi-users-sync-admin.php:218
+msgid "Synchonization schedule"
+msgstr "Programmazione di sincronizzazione"
+
+#: admin/class-pmi-users-sync-admin.php:219
+msgid "The recurrence of the users loader that synchronizes the PMI-ID"
+msgstr "La ricorrenza del caricatore degli utenti che sincronizza il PMI ID"
+
+#: admin/class-pmi-users-sync-admin.php:223
+msgid "Weekly"
+msgstr "Settimanalmente"
+
+#: admin/class-pmi-users-sync-admin.php:224
+msgid "Monthly"
+msgstr "Mensilmente"
+
+#: admin/class-pmi-users-sync-admin.php:225
+msgid "Quarterly"
+msgstr "Trimestralmente"
+
+#: admin/class-pmi-users-sync-admin.php:231
+msgid "Loader"
+msgstr "Caricatore"
+
+#: admin/class-pmi-users-sync-admin.php:232
+msgid "The type of loader to use to load the PMI members"
+msgstr "Il tipo di caricatore da usare per caricare i membri del PMI"
+
+#: admin/class-pmi-users-sync-admin.php:242
 msgid "File"
 msgstr "File"
 
-#: admin/class-pmi-users-sync-admin.php:206
+#: admin/class-pmi-users-sync-admin.php:243
 msgid "The Excel file with the PMI-ID extracted from PMI"
 msgstr "Il file Excel con i PMI-ID estratti da PMI"
 
-#: admin/class-pmi-users-sync-admin.php:209
-msgid "Textarea placeholder"
-msgstr "Textarea placeholder"
+#: admin/class-pmi-users-sync-admin.php:246
+msgid "Insert the Excel file path"
+msgstr "Inserisci il percorso del file Excel"
 
-#: admin/class-pmi-users-sync-admin.php:224
+#: admin/class-pmi-users-sync-admin.php:250
+msgid "DEPService username"
+msgstr "Nome utente per DEPService"
+
+#: admin/class-pmi-users-sync-admin.php:251
+msgid ""
+"The username to access the PMI DEPService. Contact your PMI Chapter Officer "
+"to get it."
+msgstr ""
+"Il nome utente per accedere a PMI DEPService. Contatta il direttore del tuo "
+"PMI Chapter per ottenerlo."
+
+#: admin/class-pmi-users-sync-admin.php:254
+msgid "Insert the username"
+msgstr "Inserisci il nome utente"
+
+#: admin/class-pmi-users-sync-admin.php:258
+msgid "DEPService password"
+msgstr "Password per DEPService"
+
+#: admin/class-pmi-users-sync-admin.php:259
+msgid ""
+"The password to access the PMI DEPService. Contact your PMI Chapter Officer "
+"to get it."
+msgstr ""
+"Il nome utente per accedere a PMI DEPService. Contatta il direttore del tuo "
+"PMI Chapter per ottenerla."
+
+#: admin/class-pmi-users-sync-admin.php:262
+msgid "Insert the password"
+msgstr "Inserisci la password"
+
+#: admin/class-pmi-users-sync-admin.php:276
 msgid "Github Repository"
 msgstr "Github Repository"
 
-#: admin/class-pmi-users-sync-admin.php:255
+#: admin/class-pmi-users-sync-admin.php:311
 msgid "PMI-ID custom field does not exist. Update not done!"
 msgstr "Il campo personalizzato PMI-ID non esiste. Aggiornamento non eseguito!"
 
-#: admin/class-pmi-users-sync-admin.php:260
+#: admin/class-pmi-users-sync-admin.php:317
+msgid "Nonce failed!"
+msgstr "Verifica fallita!"
+
+#: admin/class-pmi-users-sync-admin.php:320
+#: includes/class-pmi-users-sync-cron-scheduler.php:155
+msgid "Synchronizing the PMI-ID of the users"
+msgstr "Syncronizzazione dei PMI-ID degli utenti in corso"
+
+#: admin/class-pmi-users-sync-admin.php:322
 msgid "Users successfully updated!"
 msgstr "Utente aggiornato con successo!"
 
-#: admin/class-pmi-users-sync-admin.php:263
-#: includes/class-pmi-users-sync-cron-scheduler.php:75
-msgid "An error occurred while running the scheduled update. Error is: "
-msgstr "Un errore è stato riscontrato durante l'aggiornamento programmato. L'errore è "
+#: admin/class-pmi-users-sync-admin.php:325
+msgid "An error occurred while reading the Excel file. Error is: "
+msgstr ""
+"Un errore è stato riscontrato durante la lettura del file Excel. L'errore è "
 
-#: admin/class-pmi-users-sync-admin.php:264
-msgid "An error occurred during the users update"
-msgstr "Errore riscontrato durante l'aggiornamento dell'utente"
+#: admin/class-pmi-users-sync-admin.php:326
+msgid ""
+"No file has been set in the plugin settings page or file does not exist."
+msgstr ""
+"File non impostato nella pagina delle impostazioni del plugin o il file non "
+"esiste."
 
-#: admin/class-pmi-users-sync-admin.php:267
-msgid "No file has been set in the plugin settings page."
-msgstr "File non impostato nella pagina delle impostazioni del plugin."
+#: admin/class-pmi-users-sync-admin.php:328
+msgid ""
+"An error occurred while retrieving the list of PMI members through the web "
+"service. Error is: "
+msgstr ""
+"Un errore è stato riscontrato durante il recupero della lista dei membri PMI "
+"attraverso il Web Service. L'errore è: "
 
-#: admin/partials/pmi-users-sync-admin-display.php:55
-msgid "Excel file path"
-msgstr "Percordo del file Excel"
+#: admin/class-pmi-users-sync-admin.php:329
+msgid ""
+"An error occurred while retrieving the list of PMI members through the web "
+"service."
+msgstr ""
+"Un errore è stato riscontrato durante il recupero della lista dei membri PMI "
+"attraverso il Web Service."
 
-#: admin/partials/pmi-users-sync-admin-display.php:57
-msgid "Update the PMI ID of the users"
-msgstr "Aggiorna il PMI-ID dell'utente"
+#: admin/class-pmi-users-sync-admin.php:331
+msgid "An error occurred. Error is: "
+msgstr "Errore riscontrato. L'errore è: "
 
-#: admin/partials/pmi-users-sync-admin-display.php:59
-msgid "Update"
-msgstr "Aggiorna"
+#: admin/class-pmi-users-sync-admin.php:332
+msgid "An error occurred"
+msgstr "Errore riscontrato"
 
-#: admin/partials/pmi-users-sync-settings-page.php:57
-msgid "Insert custom field name"
-msgstr "Inserisci il campo personalizzato"
+#: admin/class-pmi-users-sync-admin.php:334
+msgid "An error occurred while rendering the page. Error is: "
+msgstr ""
+"Un errore è stato riscontrato durante la creazione della pagina. L'errore è "
 
-#: admin/partials/pmi-users-sync-settings-page.php:66
-msgid "Save Changes"
-msgstr "Salva Modifiche"
+#: admin/class-pmi-users-sync-admin.php:335
+msgid "An error occurred during the page rendering"
+msgstr "Errore riscontrato durante la creazione della pagina"
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:49
+#: includes/class-pmi-users-sync-cron-scheduler.php:73
+msgid ""
+"An error occurred while scheduling the cron for the synchronization of the "
+"PMI-ID. Error is: "
+msgstr ""
+"Un errore è stato riscontrato durante la programmazione dell'evento cron di "
+"sinconizzazione del PMI ID. L'errore è: "
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:127
 msgid "Once a month"
 msgstr "Una volta al mese"
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:68
-msgid "Loading PMI users from the file "
-msgstr "Caricamento degli utenti PMI dal file "
+#: includes/class-pmi-users-sync-cron-scheduler.php:131
+msgid "Every 2 minutes"
+msgstr "Ogni 2 minuti"
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:71
-msgid "Synchronizing the PMI-ID of the users"
-msgstr "Syncronizzazione dei PMI-ID degli utenti in corso"
+#: includes/class-pmi-users-sync-cron-scheduler.php:135
+msgid "Every quarter"
+msgstr "Ogni trimestre"
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:150
+msgid "ACF field for PMI-ID does not exist"
+msgstr "Il campo ACF per PMI-ID non esiste"
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:158
+msgid "An error occurred while running the update. Error is: "
+msgstr ""
+"Un errore è stato riscontrato durante l'aggiornamento programmato. L'errore "
+"è: "
 
 #: includes/class-pmi-users-sync-user-updater.php:65
 msgid "PMI-ID of user with email "
 msgstr "PMI-ID dell'utente con email "
+
+#: includes/class-pmi-users-sync-user-updater.php:65
+msgid " updated to "
+msgstr "aggiornato a"
 
 #: includes/class-pmi-users-sync-user-updater.php:67
 msgid "PMI-ID custom field does not exist, therefore not updated"
@@ -133,6 +244,14 @@ msgstr "Il campo personalizzato PMI-ID non esiste, quindi non aggiornato"
 #: includes/class-pmi-users-sync-user-updater.php:69
 msgid "PMI-ID "
 msgstr "PMI-ID "
+
+#: includes/class-pmi-users-sync-user-updater.php:69
+msgid " for user with email "
+msgstr "per utente con email "
+
+#: includes/class-pmi-users-sync-user-updater.php:69
+msgid " was not found"
+msgstr "non è stato trovato"
 
 #: includes/class-pmi-users-sync-user-updater.php:72
 msgid "User with email "
@@ -153,3 +272,21 @@ msgstr " con email "
 #: includes/class-pmi-users-sync-user-updater.php:75
 msgid " not registered to the site"
 msgstr " non registrato al sito"
+
+#~ msgid "Advanced Custom Fields"
+#~ msgstr "Campi Personalizzati Avanzati"
+
+#~ msgid "Textarea placeholder"
+#~ msgstr "Textarea placeholder"
+
+#~ msgid "Update the PMI ID of the users"
+#~ msgstr "Aggiorna il PMI-ID dell'utente"
+
+#~ msgid "Update"
+#~ msgstr "Aggiorna"
+
+#~ msgid "Save Changes"
+#~ msgstr "Salva Modifiche"
+
+#~ msgid "Loading PMI users from the file "
+#~ msgstr "Caricamento degli utenti PMI dal file "

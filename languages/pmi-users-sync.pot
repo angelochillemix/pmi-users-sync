@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PMI Users Sync\n"
-"POT-Creation-Date: 2021-12-26 21:58+0100\n"
+"POT-Creation-Date: 2022-01-08 19:59+0100\n"
 "PO-Revision-Date: 2021-12-26 21:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -19,117 +19,198 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-1: bin\n"
 "X-Poedit-SearchPathExcluded-2: vendor\n"
 
-#: admin/class-pmi-users-sync-admin.php:110
-msgid "Advanced Custom Fields"
-msgstr ""
-
-#: admin/class-pmi-users-sync-admin.php:161
+#: admin/class-pmi-users-sync-admin.php:166
 msgid "PMI Users Sync"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:162
+#: admin/class-pmi-users-sync-admin.php:167
 msgid "PMI Users"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:172
+#: admin/class-pmi-users-sync-admin.php:177
 msgid "PMI Users Sync Settings"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:173
-#: admin/class-pmi-users-sync-admin.php:185
-#: admin/class-pmi-users-sync-admin.php:220
+#: admin/class-pmi-users-sync-admin.php:178
+#: admin/class-pmi-users-sync-admin.php:272
 msgid "Settings"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:186
+#: admin/class-pmi-users-sync-admin.php:190
+msgid "General Settings"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:191
 msgid "Settings for PMI Users Sync plugin"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:194
-#: admin/partials/pmi-users-sync-settings-page.php:48
+#: admin/class-pmi-users-sync-admin.php:195
+msgid "Users Loader Settings"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:196
+msgid "Settings for PMI Users loader"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:204
 msgid "If checked, the PMI ID inserted by the users will be overwritten"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:199
+#: admin/class-pmi-users-sync-admin.php:209
 msgid "PMI-ID custom field"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:200
-#: admin/partials/pmi-users-sync-settings-page.php:59
+#: admin/class-pmi-users-sync-admin.php:210
 msgid "Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:205
-msgid "File"
+#: admin/class-pmi-users-sync-admin.php:218
+msgid "Synchonization schedule"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:206
-msgid "The Excel file with the PMI-ID extracted from PMI"
+#: admin/class-pmi-users-sync-admin.php:219
+msgid "The recurrence of the users loader that synchronizes the PMI-ID"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:209
-msgid "Textarea placeholder"
+#: admin/class-pmi-users-sync-admin.php:223
+msgid "Weekly"
 msgstr ""
 
 #: admin/class-pmi-users-sync-admin.php:224
+msgid "Monthly"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:225
+msgid "Quarterly"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:231
+msgid "Loader"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:232
+msgid "The type of loader to use to load the PMI members"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:242
+msgid "File"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:243
+msgid "The Excel file with the PMI-ID extracted from PMI"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:246
+msgid "Insert the Excel file path"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:250
+msgid "DEPService username"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:251
+msgid "The username to access the PMI DEPService. Contact your PMI Chapter Officer to get it."
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:254
+msgid "Insert the username"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:258
+msgid "DEPService password"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:259
+msgid "The password to access the PMI DEPService. Contact your PMI Chapter Officer to get it."
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:262
+msgid "Insert the password"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:276
 msgid "Github Repository"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:255
+#: admin/class-pmi-users-sync-admin.php:311
 msgid "PMI-ID custom field does not exist. Update not done!"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:260
+#: admin/class-pmi-users-sync-admin.php:317
+msgid "Nonce failed!"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:320
+#: includes/class-pmi-users-sync-cron-scheduler.php:155
+msgid "Synchronizing the PMI-ID of the users"
+msgstr ""
+
+#: admin/class-pmi-users-sync-admin.php:322
 msgid "Users successfully updated!"
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:263
-#: includes/class-pmi-users-sync-cron-scheduler.php:75
-msgid "An error occurred while running the scheduled update. Error is: "
+#: admin/class-pmi-users-sync-admin.php:325
+msgid "An error occurred while reading the Excel file. Error is: "
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:264
-msgid "An error occurred during the users update"
+#: admin/class-pmi-users-sync-admin.php:326
+msgid "No file has been set in the plugin settings page or file does not exist."
 msgstr ""
 
-#: admin/class-pmi-users-sync-admin.php:267
-msgid "No file has been set in the plugin settings page."
+#: admin/class-pmi-users-sync-admin.php:328
+msgid "An error occurred while retrieving the list of PMI members through the web service. Error is: "
 msgstr ""
 
-#: admin/partials/pmi-users-sync-admin-display.php:55
-msgid "Excel file path"
+#: admin/class-pmi-users-sync-admin.php:329
+msgid "An error occurred while retrieving the list of PMI members through the web service."
 msgstr ""
 
-#: admin/partials/pmi-users-sync-admin-display.php:57
-msgid "Update the PMI ID of the users"
+#: admin/class-pmi-users-sync-admin.php:331
+msgid "An error occurred. Error is: "
 msgstr ""
 
-#: admin/partials/pmi-users-sync-admin-display.php:59
-msgid "Update"
+#: admin/class-pmi-users-sync-admin.php:332
+msgid "An error occurred"
 msgstr ""
 
-#: admin/partials/pmi-users-sync-settings-page.php:57
-msgid "Insert custom field name"
+#: admin/class-pmi-users-sync-admin.php:334
+msgid "An error occurred while rendering the page. Error is: "
 msgstr ""
 
-#: admin/partials/pmi-users-sync-settings-page.php:66
-msgid "Save Changes"
+#: admin/class-pmi-users-sync-admin.php:335
+msgid "An error occurred during the page rendering"
 msgstr ""
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:49
+#: includes/class-pmi-users-sync-cron-scheduler.php:73
+msgid "An error occurred while scheduling the cron for the synchronization of the PMI-ID. Error is: "
+msgstr ""
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:127
 msgid "Once a month"
 msgstr ""
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:68
-msgid "Loading PMI users from the file "
+#: includes/class-pmi-users-sync-cron-scheduler.php:131
+msgid "Every 2 minutes"
 msgstr ""
 
-#: includes/class-pmi-users-sync-cron-scheduler.php:71
-msgid "Synchronizing the PMI-ID of the users"
+#: includes/class-pmi-users-sync-cron-scheduler.php:135
+msgid "Every quarter"
+msgstr ""
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:150
+msgid "ACF field for PMI-ID does not exist"
+msgstr ""
+
+#: includes/class-pmi-users-sync-cron-scheduler.php:158
+msgid "An error occurred while running the update. Error is: "
 msgstr ""
 
 #: includes/class-pmi-users-sync-user-updater.php:65
 msgid "PMI-ID of user with email "
+msgstr ""
+
+#: includes/class-pmi-users-sync-user-updater.php:65
+msgid " updated to "
 msgstr ""
 
 #: includes/class-pmi-users-sync-user-updater.php:67
@@ -138,6 +219,14 @@ msgstr ""
 
 #: includes/class-pmi-users-sync-user-updater.php:69
 msgid "PMI-ID "
+msgstr ""
+
+#: includes/class-pmi-users-sync-user-updater.php:69
+msgid " for user with email "
+msgstr ""
+
+#: includes/class-pmi-users-sync-user-updater.php:69
+msgid " was not found"
 msgstr ""
 
 #: includes/class-pmi-users-sync-user-updater.php:72
