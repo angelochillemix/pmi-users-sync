@@ -65,9 +65,11 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			$error   = wp_schedule_event(
 				time() + $seconds, // Adding the recurrence in seconds otherwise it starts the synchronization immediately.
 				$recurrence,
-				self::PMI_USERS_SYNC_CRON_HOOK
+				self::PMI_USERS_SYNC_CRON_HOOK,
+				array(),
+				true
 			);
-			if ( ( ! is_bool( $error ) && is_object( $error ) && $error->has_errors() ) ) {
+			if ( ( is_object( $error ) && ( $error instanceof WP_Error ) && $error->has_errors() ) ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while scheduling the cron for the synchronization of the PMI-ID. Error is: ', 'pmi-users-sync' ) . $error->get_error_message() );
 			}
 		}
