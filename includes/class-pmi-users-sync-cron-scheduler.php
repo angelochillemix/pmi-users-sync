@@ -30,6 +30,7 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 */
 	public const PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK = 'pus_update_users_pmi_id';
 
+	public const PMI_USERS_SYNC_CRON_SCHEDULE_DAILY             = 'daily';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY            = 'weekly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY           = 'pus_monthly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY         = 'pus_quarterly';
@@ -43,9 +44,10 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @var array
 	 */
 	private $recurrence_in_seconds = array(
+		self::PMI_USERS_SYNC_CRON_SCHEDULE_DAILY     => DAY_IN_SECONDS,
 		self::PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY    => WEEK_IN_SECONDS,
-		self::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY => MONTH_IN_SECONDS * 3,
 		self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY   => MONTH_IN_SECONDS,
+		self::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY => MONTH_IN_SECONDS * 3,
 	);
 
 	/**

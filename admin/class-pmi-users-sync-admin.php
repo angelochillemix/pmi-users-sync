@@ -46,6 +46,8 @@ class Pmi_Users_Sync_Admin {
 	private const FIELD_ID_LOADER_SCHEDULE = 'loader_schedule_field';
 	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
 
+	private const FIELD_ID_LOADER_SELECTION_DESCRIPTION_FIELD_ID = 'loader_selection_description_field';
+
 	/**
 	 * The ID of this plugin.
 	 *
@@ -220,6 +222,7 @@ class Pmi_Users_Sync_Admin {
 						'type'    => 'select',
 						'default' => Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT,
 						'options' => array(
+							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_DAILY => __( 'Daily', 'pmi-users-sync' ),
 							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY => __( 'Weekly', 'pmi-users-sync' ),
 							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY  => __( 'Monthly', 'pmi-users-sync' ),
 							Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY  => __( 'Quarterly', 'pmi-users-sync' ),
@@ -240,7 +243,7 @@ class Pmi_Users_Sync_Admin {
 					array(
 						'id'          => self::FIELD_ID_PMI_FILE_FIELD_ID,
 						'label'       => __( 'File', 'pmi-users-sync' ),
-						'desc'        => __( 'The Excel file with the PMI-ID extracted from PMI', 'pmi-users-sync' ),
+						'desc'        => __( 'The Excel file with the PMI-ID extracted from PMI. </br>Insert the file if Excel file is selected in the <strong>Loader</strong> setting field.', 'pmi-users-sync' ),
 						'type'        => 'file',
 						'default'     => '',
 						'placeholder' => __( 'Insert the Excel file path', 'pmi-users-sync' ),
@@ -248,7 +251,7 @@ class Pmi_Users_Sync_Admin {
 					array(
 						'id'          => self::FIELD_ID_DEP_SERVICE_USERNAME,
 						'label'       => __( 'DEPService username', 'pmi-users-sync' ),
-						'desc'        => __( 'The username to access the PMI DEPService. Contact your PMI Chapter Officer to get it.', 'pmi-users-sync' ),
+						'desc'        => __( 'The username to access the PMI DEPService. Contact your PMI Chapter Officer to get it.</br><strong>Note:</strong> Set the username if Web Service is selected in the <strong>Loader</strong> setting field', 'pmi-users-sync' ),
 						'type'        => 'text',
 						'default'     => '',
 						'placeholder' => __( 'Insert the username', 'pmi-users-sync' ),
@@ -256,7 +259,7 @@ class Pmi_Users_Sync_Admin {
 					array(
 						'id'                => self::FIELD_ID_DEP_SERVICE_PASSWORD,
 						'label'             => __( 'DEPService password', 'pmi-users-sync' ),
-						'desc'              => __( 'The password to access the PMI DEPService. Contact your PMI Chapter Officer to get it.', 'pmi-users-sync' ),
+						'desc'              => __( 'The password to access the PMI DEPService. Contact your PMI Chapter Officer to get it.</br><strong>Note:</strong> Set the password if Web Service is selected in the <strong>Loader</strong> setting field', 'pmi-users-sync' ),
 						'type'              => 'password',
 						'default'           => '',
 						'placeholder'       => __( 'Insert the password', 'pmi-users-sync' ),
