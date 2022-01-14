@@ -168,11 +168,10 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 * @return void
 	 */
 	private function pmi_users_sync_users_update( $users ) {
-		$options      = array(
+		$options = array(
 			Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => get_option( Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID ),
 			Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => get_option( Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ),
 		);
-		$user_updater = new Pmi_Users_Sync_User_Updater( $users, $options );
-		$user_updater->update( $users, $options );
+		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
 	}
 }
