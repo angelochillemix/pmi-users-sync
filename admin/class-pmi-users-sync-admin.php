@@ -22,6 +22,7 @@
 class Pmi_Users_Sync_Admin {
 
 
+
 	private const FIELD_ID_OVERWRITE_PMI_ID = 'overwrite_pmi_id';
 	public const OPTION_OVERWRITE_PMI_ID    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_OVERWRITE_PMI_ID;
 
@@ -45,6 +46,9 @@ class Pmi_Users_Sync_Admin {
 
 	private const FIELD_ID_LOADER_SCHEDULE = 'loader_schedule_field';
 	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
+
+	private const FIELD_ID_USER_ROLE_FIELD = 'user_role_field';
+	public const OPTION__USER_ROLE         = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_FIELD;
 
 	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = 'loader_last_synchronization_date_time';
 
@@ -155,6 +159,27 @@ class Pmi_Users_Sync_Admin {
 	}
 
 	/**
+	 * Filters the array of row meta for each plugin in the Plugins list table.
+	 *
+	 * @param string[] $plugin_meta An array of the plugin's metadata.
+	 * @param string   $plugin_file Path to the plugin file relative to the plugins directory.
+	 * @return string[] An array of the plugin's metadata.
+	 */
+	public function filter_plugin_row_meta( array $plugin_meta, $plugin_file ) {
+		if ( 'pmi-users-sync/pmi-users-sync.php' !== $plugin_file ) {
+			return $plugin_meta;
+		}
+
+		$plugin_meta[] = sprintf(
+			'<a href="%1$s"><span class="dashicons dashicons-awards" aria-hidden="true" style="font-size:14px;line-height:1.3"></span>%2$s</a>',
+			'https://paypal.me/angelochillemi',
+			esc_html_x( 'Donate', 'verb', 'pmi-users-sync' )
+		);
+		return $plugin_meta;
+	}
+
+
+	/**
 	 * Build the admin menu using the {@see Boo_Settings_Helper} class
 	 *
 	 * @see https://github.com/boospot/boo-settings-helper
@@ -162,9 +187,7 @@ class Pmi_Users_Sync_Admin {
 	 * @return void
 	 */
 	public function add_menu_link() {
-		/**
-		 * Adding the main menu item at admin menu level
-		 */
+		// Adding the main menu item at admin menu level.
 		$menu_page = add_menu_page( esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', array( $this, 'pmi_users_list_page' ), 'dashicons-id-alt' );
 		add_submenu_page( PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__( 'PMI Users', 'pmi-users-sync' ), esc_html__( 'PMI Users', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options' );
 
@@ -207,6 +230,12 @@ class Pmi_Users_Sync_Admin {
 						'type'  => 'checkbox',
 					),
 					array(
+						'id'       => self::FIELD_ID_USER_ROLE_FIELD,
+						'label'    => __( 'User role to update', 'pmi-users-sync' ),
+						'callback' => array( $this, 'pmi_users_sync_roles_render_field' ),
+						'type'     => 'multicheck',
+					),
+					array(
 						'id'    => self::FIELD_ID_PMI_ID_CUSTOM_FIELD,
 						'label' => __( 'PMI-ID custom field', 'pmi-users-sync' ),
 						'desc'  => __( 'Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)', 'pmi-users-sync' ),
@@ -243,10 +272,13 @@ class Pmi_Users_Sync_Admin {
 					array(
 						'id'          => self::FIELD_ID_PMI_FILE_FIELD_ID,
 						'label'       => __( 'File', 'pmi-users-sync' ),
-						'desc'        => __( 'The Excel file with the PMI-ID extracted from PMI. </br>Insert the file if Excel file is selected in the <strong>Loader</strong> setting field.', 'pmi-users-sync' ),
+						'desc'        => __( 'The Excel file path with the PMI-ID extracted from PMI.</br>Once inserted, it just needs to be overwritten manually or by batch.</br>Insert the file if Excel file is selected in the <strong>Loader</strong> setting field.', 'pmi-users-sync' ),
 						'type'        => 'file',
 						'default'     => '',
 						'placeholder' => __( 'Insert the Excel file path', 'pmi-users-sync' ),
+						'options'     => array(
+							'btn' => __( 'Set', 'pmi-users-sync' ),
+						),
 					),
 					array(
 						'id'          => self::FIELD_ID_DEP_SERVICE_USERNAME,
@@ -290,6 +322,33 @@ class Pmi_Users_Sync_Admin {
 	}
 
 	/**
+	 * Callback function to render the list of roles
+	 *
+	 * @param array $args The arguments from the Boo Settings Helper.
+	 * @return void
+	 */
+	public function pmi_users_sync_roles_render_field( $args ) {
+		$all_roles = wp_roles()->roles;
+		$value     = $args['value'];
+		if ( empty( $value ) ) {
+			$value = $args['default'];
+		}
+
+		$html = '<fieldset>';
+		foreach ( $all_roles as $role => $role_config ) {
+			$checked = isset( $value[ $role ] ) ? $value[ $role ] : '0';
+			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $role );
+			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $role, checked( $checked, $role, false ), $args['name'] );
+			$html   .= sprintf( '%1$s</label><br>', $role_config['name'] );
+		}
+
+		$html .= __( 'The user role to update if users found to be member of PMI', 'pmi-users-sync' );
+		$html .= '</fieldset>';
+		echo $html;
+		unset( $all_roles, $html );
+	}
+
+	/**
 	 * Overrides the default sanitize function that returns a hash of the password which will not work with the web service call
 	 *
 	 * @param string $value The password set in the settings page.
@@ -315,8 +374,10 @@ class Pmi_Users_Sync_Admin {
 
 			// Update of the PMI-ID triggered manually.
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
-				if ( ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
-					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' ) ) {
+				if (
+					! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
+					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' )
+				) {
 					Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
 					wp_nonce_ays( '' );
 				}
@@ -356,12 +417,10 @@ class Pmi_Users_Sync_Admin {
 	 * @return void
 	 */
 	private function pmi_users_sync_users_update( $users ) {
-		$options      = array();
-		$options      = array(
+		$options = array(
 			self::OPTION_OVERWRITE_PMI_ID    => get_option( self::OPTION_OVERWRITE_PMI_ID ),
 			self::OPTION_PMI_ID_CUSTOM_FIELD => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
 		);
-		$user_updater = new Pmi_Users_Sync_User_Updater( $users, $options );
-		$user_updater->update( $users, $options );
+		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
 	}
 }

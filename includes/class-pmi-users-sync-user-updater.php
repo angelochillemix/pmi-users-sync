@@ -4,8 +4,8 @@
  *
  * This is used to update the PMI ID in the usermeta database according to the plugin settings
  *
- * @link       http://angelochillemi.com
- * @since      1.0.0
+ * @link  http://angelochillemi.com
+ * @since 1.0.0
  *
  * @package    Pmi_Users_Sync
  * @subpackage Pmi_Users_Sync/includes
@@ -23,11 +23,37 @@
  */
 class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 
+
+	/**
+	 * Represents the instance of the User Updater.
+	 *
+	 * @var Pmi_Users_Sync_User_Updater
+	 */
+	private static Pmi_Users_Sync_User_Updater $instance;
+
+	/**
+	 * Avoid multiple instance of the User Updater.
+	 */
+	private function __construct() {
+	}
+
+	/**
+	 * Returns the instance of the User Updater
+	 *
+	 * @return Pmi_Users_Sync_User_Updater The instance of the User Updater.
+	 */
+	public static function get_user_updater() {
+		if ( ! isset( self::$instance ) || null === self::$instance ) {
+			self::$instance = new Pmi_Users_Sync_User_Updater();
+		}
+		return self::$instance;
+	}
+
 	/**
 	 * Update the PMI ID of the users
 	 *
-	 * @param Pmi_Users_Sync_Pmi_User[] $users The list of PMI users.
-	 * @param mixed                     $options The pluging settings.
+	 * @param  Pmi_Users_Sync_Pmi_User[] $users   The list of PMI users.
+	 * @param  mixed                     $options The pluging settings.
 	 * @return void
 	 */
 	protected function do_update( $users, $options ) {
@@ -56,16 +82,15 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 	/**
 	 * Check if the PMI-ID of the users should be updated based on the settings
 	 *
-	 * @param Pmi_Users_Sync_Pmi_User $user The user with the PMI-ID.
-	 * @param WP_User                 $wp_user The {@see WP_User} instance of the user found with the specified email.
-	 * @param array                   $options The pluging settings.
+	 * @param  Pmi_Users_Sync_Pmi_User $user    The user with the PMI-ID.
+	 * @param  WP_User                 $wp_user The {@see WP_User} instance of the user found with the specified email.
+	 * @param  array                   $options The pluging settings.
 	 * @return bool true if the PMI-ID is to be updated, false otherwise
 	 */
 	private function pmi_id_to_be_updated( Pmi_Users_Sync_Pmi_User $user, WP_User $wp_user, array $options ): bool {
-		if (
-			$this->user_has_no_pmi_id( $wp_user, $options )
+		if ( $this->user_has_no_pmi_id( $wp_user, $options )
 			|| ( ( true === boolval( $options[ Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID ] ) )
-				&& ( ! self::user_has_same_pmi_id( $wp_user, $user, $options ) ) )
+			&& ( ! self::user_has_same_pmi_id( $wp_user, $user, $options ) ) )
 		) {
 			return true;
 		}
@@ -76,8 +101,8 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 	/**
 	 * Check that user has no PMI-ID
 	 *
-	 * @param WP_User $wp_user The registered {@see WP_User} to retrieve from WP database.
-	 * @param array   $options The plugin settings.
+	 * @param  WP_User $wp_user The registered {@see WP_User} to retrieve from WP database.
+	 * @param  array   $options The plugin settings.
 	 * @return boolean
 	 */
 	private function user_has_no_pmi_id( $wp_user, $options ): bool {
@@ -90,9 +115,9 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 	/**
 	 * Check that the two users have same PMI-ID
 	 *
-	 * @param WP_User                 $wp_user The registered {@see WP_User} to retrieve from WP database.
-	 * @param Pmi_Users_Sync_Pmi_User $user The user to synchronize.
-	 * @param array                   $options The plugin settings.
+	 * @param  WP_User                 $wp_user The registered {@see WP_User} to retrieve from WP database.
+	 * @param  Pmi_Users_Sync_Pmi_User $user    The user to synchronize.
+	 * @param  array                   $options The plugin settings.
 	 * @return boolean
 	 */
 	private static function user_has_same_pmi_id( WP_User $wp_user, Pmi_Users_Sync_Pmi_User $user, $options ): bool {

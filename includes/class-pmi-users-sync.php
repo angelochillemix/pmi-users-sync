@@ -229,6 +229,8 @@ class Pmi_Users_Sync {
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'add_menu_link' );
 		$this->loader->add_action( 'admin_notices', $plugin_admin, 'notify_user_about_acf_plugin' );
 
+		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'filter_plugin_row_meta', 10, 4 );
+
 		if ( null === $this->scheduler ) {
 			throw new Exception( 'Schedule instance cannot be null', 1 );
 		}
@@ -238,6 +240,7 @@ class Pmi_Users_Sync {
 		 */
 		$this->loader->add_filter( 'cron_schedules', $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_CUSTOM_SCHEDULE_CALLBACK );
 		$this->loader->add_action( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK, $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK );
+
 	}
 
 	/**

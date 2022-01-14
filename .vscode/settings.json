@@ -1,7 +1,4 @@
 {
-    "files.exclude": {
-       // "**/wordpress": true
-    },
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
     // PHPCBF
@@ -21,5 +18,5 @@
     },
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features"
-    }
+    },
 }
