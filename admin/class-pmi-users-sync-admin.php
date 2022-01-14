@@ -138,7 +138,7 @@ class Pmi_Users_Sync_Admin {
 				<p><?php esc_html_e( 'Install the plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"', 'pmi-users-sync' ); ?></p>
 			</div>
 			<?php
-			echo ob_get_clean();
+			echo esc_html( ob_get_clean() );
 			return;
 		}
 
@@ -154,7 +154,7 @@ class Pmi_Users_Sync_Admin {
 				<p><?php esc_html_e( 'Install the ACF plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"', 'pmi-users-sync' ); ?></p>
 			</div>
 			<?php
-			echo ob_get_clean();
+			echo esc_html( ob_get_clean() );
 		}
 	}
 
@@ -231,7 +231,7 @@ class Pmi_Users_Sync_Admin {
 					),
 					array(
 						'id'       => self::FIELD_ID_USER_ROLE_FIELD,
-						'label'    => __( 'User role to update', 'pmi-users-sync' ),
+						'label'    => __( 'User role to set', 'pmi-users-sync' ),
 						'callback' => array( $this, 'pmi_users_sync_roles_render_field' ),
 						'type'     => 'multicheck',
 					),
@@ -342,9 +342,9 @@ class Pmi_Users_Sync_Admin {
 			$html   .= sprintf( '%1$s</label><br>', $role_config['name'] );
 		}
 
-		$html .= __( 'The user role to update if users found to be member of PMI', 'pmi-users-sync' );
+		$html .= __( 'The user role to set if users is found to be member of PMI', 'pmi-users-sync' );
 		$html .= '</fieldset>';
-		echo $html;
+		echo esc_html( $html );
 		unset( $all_roles, $html );
 	}
 
