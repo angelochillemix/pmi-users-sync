@@ -48,7 +48,10 @@ class Pmi_Users_Sync_Admin {
 	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
 
 	private const FIELD_ID_USER_ROLE_FIELD = 'user_role_field';
-	public const OPTION__USER_ROLE         = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_FIELD;
+	public const OPTION_USER_ROLE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_FIELD;
+
+	private const FIELD_ID_USER_ROLE_TO_REMOVE_FIELD = 'user_role_field';
+	public const OPTION_USER_ROLE_TO_REMOVE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_TO_REMOVE_FIELD;
 
 	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = 'loader_last_synchronization_date_time';
 
@@ -236,6 +239,12 @@ class Pmi_Users_Sync_Admin {
 						'type'     => 'multicheck',
 					),
 					array(
+						'id'       => self::FIELD_ID_USER_ROLE_TO_REMOVE_FIELD,
+						'label'    => __( 'User role', 'pmi-users-sync' ),
+						'callback' => array( $this, 'pmi_users_sync_roles_render_field' ),
+						'type'     => 'multicheck',
+					),
+					array(
 						'id'    => self::FIELD_ID_PMI_ID_CUSTOM_FIELD,
 						'label' => __( 'PMI-ID custom field', 'pmi-users-sync' ),
 						'desc'  => __( 'Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)', 'pmi-users-sync' ),
@@ -372,6 +381,7 @@ class Pmi_Users_Sync_Admin {
 				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
 
+			// TODO #9 Move the code to an AJAX call to synchronize the users in background.
 			// Update of the PMI-ID triggered manually.
 			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
 				if (
@@ -403,7 +413,10 @@ class Pmi_Users_Sync_Admin {
 		} catch ( Exception $exception ) {
 			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 			$error_message = __( 'An error occurred during the page rendering', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
+		} finally {
+			$error_message = __( 'An error occurred during the page rendering', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		}
+
 		$user_loader_type = get_option( self::OPTION_USER_LOADER );
 		$file_path        = self::OPTION_USER_LOADER_EXCEL === $user_loader_type ? get_option( self::OPTION_PMI_FILE_FIELD_ID ) : false;
 
@@ -420,6 +433,8 @@ class Pmi_Users_Sync_Admin {
 		$options = array(
 			self::OPTION_OVERWRITE_PMI_ID    => get_option( self::OPTION_OVERWRITE_PMI_ID ),
 			self::OPTION_PMI_ID_CUSTOM_FIELD => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
+			self::OPTION_USER_ROLE           => get_option( self::OPTION_USER_ROLE ),
+			self::OPTION_USER_ROLE_TO_REMOVE => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
 		);
 		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
 	}

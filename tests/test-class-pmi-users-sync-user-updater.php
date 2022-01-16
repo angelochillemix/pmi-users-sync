@@ -41,7 +41,9 @@ class Test_Pmi_Users_Sync_Pmi_User_Updater extends TestCase {
 	public function initialize_tests() {
 		$this->excel_loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader( self::TEMP_PMI_EXCEL_FILE_PATH );
 		$this->user_updater = Pmi_Users_Sync_User_Updater::get_user_updater();
-		$this->users        = $this->excel_loader->load();
+		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::get_user_attribute_updater() );
+		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Roles_Updater::get_user_attribute_updater() );
+		$this->users = $this->excel_loader->load();
 
 		// Create in the WP test database the users found in the Excel file
 		foreach ( $this->users as $key => $value ) {

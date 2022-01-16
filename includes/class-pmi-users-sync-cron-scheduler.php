@@ -171,6 +171,8 @@ class Pmi_Users_Sync_Cron_Scheduler {
 		$options = array(
 			Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID => get_option( Pmi_Users_Sync_Admin::OPTION_OVERWRITE_PMI_ID ),
 			Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD => get_option( Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ),
+			Pmi_Users_Sync_Admin::OPTION_USER_ROLE        => get_option( Pmi_Users_Sync_Admin::OPTION_USER_ROLE ),
+			Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE => get_option( Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE ),
 		);
 		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
 	}

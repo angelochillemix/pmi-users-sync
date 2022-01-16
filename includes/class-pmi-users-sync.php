@@ -166,7 +166,7 @@ class Pmi_Users_Sync {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-abstract-updater.php';
 
 		/**
-		 * The class responsible to update the PMI users with PMI-ID of the Excel file from PMI
+		 * The class responsible to synchronize the WP users with PMI users
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-updater.php';
 
@@ -189,6 +189,21 @@ class Pmi_Users_Sync {
 		 * The class with utilities methods
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-utils.php';
+
+		/**
+		 * Represents the abstract class of the the classes responsible to synchronize and update the user attributes between WP users and PMI users.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-attribute-updater.php';
+
+		/**
+		 * The class responsible to synchronize and update the PMI-ID.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-pmi-id-updater.php';
+
+		/**
+		 * The class responsible to synchronize and update the roles.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-roles-updater.php';
 
 		$this->loader    = new Pmi_Users_Sync_Loader();
 		$this->scheduler = new Pmi_Users_Sync_Cron_Scheduler();
