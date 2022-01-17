@@ -61,6 +61,11 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			$recurrence = self::PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT;
 		}
 
+		if ( wp_get_schedule( self::PMI_USERS_SYNC_CRON_HOOK === $recurrence ) ) {
+			// Do not schedule anything since same recurrence.
+			return;
+		}
+
 		// Register the hook to the cron tasks.
 		if ( ! wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK ) ) {
 			$seconds = $this->get_seconds_from_schedule( $recurrence );
