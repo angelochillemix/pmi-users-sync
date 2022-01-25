@@ -205,6 +205,21 @@ class Pmi_Users_Sync {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-roles-updater.php';
 
+		/**
+		 * The class responsible to synchronize and update the memberships.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-memberships-updater.php';
+
+		/**
+		 * The class responsible to synchronize and update the memberships.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-acf-helper.php';
+
+		/**
+		 * The class responsible to synchronize and update the memberships.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-updater-factory.php';
+
 		$this->loader    = new Pmi_Users_Sync_Loader();
 		$this->scheduler = new Pmi_Users_Sync_Cron_Scheduler();
 	}
@@ -255,7 +270,6 @@ class Pmi_Users_Sync {
 		 */
 		$this->loader->add_filter( 'cron_schedules', $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_CUSTOM_SCHEDULE_CALLBACK );
 		$this->loader->add_action( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK, $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK );
-
 	}
 
 	/**

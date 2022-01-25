@@ -30,15 +30,10 @@ class Pmi_Users_Sync_User_Pmi_Id_Updater extends Pmi_Users_Sync_User_Attribute_U
 	 * @return void
 	 * @throws Exception If unable to perform the update.
 	 */
-	public function update( $wp_user, $user, $options ) {
-		if ( ! $user instanceof Pmi_Users_Sync_Pmi_User ) {
-			throw new Exception( 'Invalid argument passed. Expected Pmi_Users_Sync_Pmi_User.' );
-		}
-		if ( ! $wp_user instanceof stdClass ) {
-			throw new Exception( 'Invalid argument passed. Expected stdClass.' );
-		}
-
-		if ( ! $this->user_matched_condition( $wp_user, $user, $options ) ) {
+	public function do_update( $wp_user, $user, $options ) {
+		// Checking if plugin options are set and users from WordPress and PMI match, else do nothing.
+		if ( ! array_key_exists( Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD, $options )
+			|| ! $this->user_matched_condition( $wp_user, $user, $options ) ) {
 			return;
 		}
 

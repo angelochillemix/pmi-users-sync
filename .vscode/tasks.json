@@ -7,7 +7,7 @@
             "label": "Install Test Wordpress",
             "type": "shell",
             "command": "./bin/install-wp-tests.sh",
-            "args": ["wordpress_test", "angelo", "''", "localhost", "latest"],
+            "args": ["wordpress_test", "angelo", "''", "localhost", "5.8.2"],
             "group": "test",
             "presentation": {
               "reveal": "always",

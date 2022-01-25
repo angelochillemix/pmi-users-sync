@@ -29,7 +29,13 @@ class Pmi_Users_Sync_User_Roles_Updater extends Pmi_Users_Sync_User_Attribute_Up
 	 * @param array                   $options The array with plugin settings.
 	 * @return void
 	 */
-	public function update( $wp_user, $user, $options ) {
+	public function do_update( $wp_user, $user, $options ) {
+		// Checking if plugin options are set, else do nothing.
+		if ( ! array_key_exists( Pmi_Users_Sync_Admin::OPTION_USER_ROLE, $options )
+			|| ! array_key_exists( Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE, $options ) ) {
+			return;
+		}
+
 		$new_wp_user = new WP_User( $wp_user->ID );
 		if ( empty( $new_wp_user ) ) {
 			return;

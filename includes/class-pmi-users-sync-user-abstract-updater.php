@@ -24,6 +24,8 @@
  */
 abstract class Pmi_Users_Sync_User_Abstract_Updater {
 
+	private const DATE_TIME_FORMAT = 'Y-M-d H:i T';
+
 	/**
 	 * The list of updaters to invoke to update the user's attributes.
 	 *
@@ -32,11 +34,19 @@ abstract class Pmi_Users_Sync_User_Abstract_Updater {
 	protected $user_attibute_updaters;
 
 	/**
+	 * Undocumented variable
+	 *
+	 * @var string $last_synchronization_date_time The last synchronization date and time in the format 'Y-M-d H:i T'
+	 */
+	protected $last_synchronization_date_time;
+
+	/**
 	 * Class constructor. Registers the User Attribute Updater classes that will contributes to the synchronization
 	 * of the WP Users with the PMI Users.
 	 */
 	protected function __construct() {
-		$this->user_attibute_updaters = array();
+		$this->user_attibute_updaters         = array();
+		$this->last_synchronization_date_time = '';
 	}
 
 	/**
@@ -59,8 +69,17 @@ abstract class Pmi_Users_Sync_User_Abstract_Updater {
 		$this->do_update( $users, $options );
 
 		// Store the date and time of the last synchronization.
-		$date_time = gmdate( 'Y-M-d H:i T', time() );
-		update_option( Pmi_Users_Sync_Admin::LOADER_LAST_SYNCHRONIZATION_DATE_TIME, $date_time );
+		$this->last_synchronization_date_time = gmdate( self::DATE_TIME_FORMAT, time() );
+		update_option( Pmi_Users_Sync_Admin::LOADER_LAST_SYNCHRONIZATION_DATE_TIME, $this->last_synchronization_date_time );
+	}
+
+	/**
+	 * Returns formatted date and time of last user update in following format 'Y-M-d H:i T'
+	 *
+	 * @return string the formatted date and time of last user update
+	 */
+	public function get_synchronization_date_time() {
+		return $this->last_synchronization_date_time;
 	}
 
 	/**

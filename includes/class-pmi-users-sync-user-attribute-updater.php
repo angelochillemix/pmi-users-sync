@@ -1,11 +1,11 @@
 <?php
 /**
- * The plugin class responsible to update the user PMI ID
+ * The plugin class responsible to update the user attribute while synchronizing with users from PMI.
  *
  * This is used to update the PMI ID in the usermeta database according to the plugin settings
  *
  * @link  http://angelochillemi.com
- * @since 1.0.0
+ * @since 1.3.0
  *
  * @package    Pmi_Users_Sync
  * @subpackage Pmi_Users_Sync/includes
@@ -26,7 +26,7 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 *
 	 * @var Pmi_Users_Sync_User_Attribute_Updater $instance Instance of this class.
 	 */
-	private static $instance;
+	private static $user_attribute_updater_instances = array();
 
 	/**
 	 * It is true if the user's attribute has been updated, false otherwise.
@@ -42,6 +42,25 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 		$this->updated = false;
 	}
 
+
+	/**
+	 * Update the user's attribute according to the plugin settings
+	 *
+	 * @param stdClass                $wp_user The user to update the PMI-ID for.
+	 * @param Pmi_Users_Sync_Pmi_User $user The user to update the PMI-ID for.
+	 * @param array                   $options The array with plugin settings.
+	 * @throws Exception If unable to perform the update.
+	 */
+	public function update( $wp_user, $user, $options ) {
+		if ( ! $user instanceof Pmi_Users_Sync_Pmi_User ) {
+			throw new Exception( 'Invalid argument passed. Expected Pmi_Users_Sync_Pmi_User.' );
+		}
+		if ( ! $wp_user instanceof stdClass ) {
+			throw new Exception( 'Invalid argument passed. Expected stdClass.' );
+		}
+		$this->do_update( $wp_user, $user, $options );
+	}
+
 	/**
 	 * Update the user attribute.
 	 *
@@ -50,7 +69,7 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 * @param array                     $options The array with plugin settings.
 	 * @return void
 	 */
-	abstract public function update( $wp_user, $users, $options );
+	abstract public function do_update( $wp_user, $users, $options );
 
 	/**
 	 * Confirms if the user's attribute has been updated.
@@ -67,15 +86,20 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 * @return Pmi_Users_Sync_User_Attribute_Updater The instance of the User Updater.
 	 */
 	public static function get_user_attribute_updater(): Pmi_Users_Sync_User_Attribute_Updater {
-		if ( ! isset( self::$instance ) || null === self::$instance ) {
-			$class          = get_called_class();
-			self::$instance = new $class();
+		$class    = get_called_class();
+		$instance = null;
+		if ( array_key_exists( $class, self::$user_attribute_updater_instances ) ) {
+			$instance = self::$user_attribute_updater_instances[ $class ];
 		}
-		return self::$instance;
+		if ( ! isset( $instance ) || null === $instance ) {
+			$instance = new $class();
+			self::$user_attribute_updater_instances[ $class ] = $instance;
+		}
+		return $instance;
 	}
 
 	/**
-	 * Undocumented function
+	 * Returns true if the matching conditions a user in WordPress and from PMI.
 	 *
 	 * @param stdClass                $wp_user The WP_User instance representing the user retrieved from WP database.
 	 * @param Pmi_Users_Sync_Pmi_User $user The user retrieved from PMI.

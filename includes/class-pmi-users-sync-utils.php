@@ -18,6 +18,8 @@
  */
 class Pmi_Users_Sync_Utils {
 
+	public const ACF_POST_TYPE = 'acf-field';
+
 	/**
 	 * No instances allowed since this class is meant to contain only static method
 	 */
@@ -88,7 +90,7 @@ class Pmi_Users_Sync_Utils {
 		// $acf_fields = wp_cache_get( PMI_USERS_SYNC_PREFIX . 'acf_field', '', false, $found );
 		// if ( ! $found ) {
 			// TODO #3 Avoid direct call to database.
-			$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, 'acf-field' ) );
+			$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) );
 		// wp_cache_set( PMI_USERS_SYNC_PREFIX . 'acf_field', $acf_fields, '', 3600 );
 		// }
 		if ( is_null( $acf_fields ) ) {

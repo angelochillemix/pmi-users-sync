@@ -47,13 +47,23 @@ class Pmi_Users_Sync_Admin {
 	private const FIELD_ID_LOADER_SCHEDULE = 'loader_schedule_field';
 	public const OPTION_LOADER_SCHEDULE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_LOADER_SCHEDULE;
 
-	private const FIELD_ID_USER_ROLE_FIELD = 'user_role_field';
-	public const OPTION_USER_ROLE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_FIELD;
+	private const FIELD_ID_USER_ROLE = 'user_role_field';
+	public const OPTION_USER_ROLE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE;
 
-	private const FIELD_ID_USER_ROLE_TO_REMOVE_FIELD = 'user_role_field';
-	public const OPTION_USER_ROLE_TO_REMOVE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_TO_REMOVE_FIELD;
+	private const FIELD_ID_USER_ROLE_TO_REMOVE = 'user_role_to_remove_field';
+	public const OPTION_USER_ROLE_TO_REMOVE    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_ROLE_TO_REMOVE;
 
-	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = 'loader_last_synchronization_date_time';
+	private const FIELD_ID_MEMBERSHIP_CUSTOM_FIELD = 'membership_custom_field';
+	public const OPTION_MEMBERSHIP_CUSTOM_FIELD    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_MEMBERSHIP_CUSTOM_FIELD;
+
+
+	private const FIELD_ID_USER_MEMBERSHIPS = 'user_memberships_field';
+	public const OPTION_MEMBERSHIP          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_MEMBERSHIPS;
+
+	private const FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE = 'user_memberships_to_remove_field';
+	public const OPTION_MEMBERSHIP_TO_REMOVE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE;
+
+	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = PMI_USERS_SYNC_PREFIX . 'loader_last_synchronization_date_time';
 
 	/**
 	 * The ID of this plugin.
@@ -148,13 +158,14 @@ class Pmi_Users_Sync_Admin {
 		// ACF plugin is installed and active.
 		// It is now safe to check that custom field exists.
 
-		if ( ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ) ) ) {
+		if ( ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) )
+			|| ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) ) ) {
 			// Inform the user that the ACF field for the PMI-ID is not yet defined.
 			ob_start()
 			?>
 			<div class="notice notice-warning is-dismissible">
-				<p><strong>Warning:&nbsp;</strong><?php esc_html_e( 'This plugin requires that a custom user field representing the PMI-ID is defined ', 'pmi-users-sync' ); ?></p>
-				<p><?php esc_html_e( 'Install the ACF plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"', 'pmi-users-sync' ); ?></p>
+				<p><strong>Warning:&nbsp;</strong><?php esc_html_e( 'PMI Users Sync plugin requires that a custom membership and custom user field representing the PMI-ID are defined', 'pmi-users-sync' ); ?></p>
+				<p><?php esc_html_e( 'Install the ACF plugin, create the custom fields and set their name in the Settings page option "PMI-ID custom field" and "Membership custom field"', 'pmi-users-sync' ); ?></p>
 			</div>
 			<?php
 			echo ob_get_clean();
@@ -233,14 +244,14 @@ class Pmi_Users_Sync_Admin {
 						'type'  => 'checkbox',
 					),
 					array(
-						'id'       => self::FIELD_ID_USER_ROLE_FIELD,
-						'label'    => __( 'User role', 'pmi-users-sync' ),
+						'id'       => self::FIELD_ID_USER_ROLE,
+						'label'    => __( 'Role to set', 'pmi-users-sync' ),
 						'callback' => array( $this, 'pmi_users_sync_roles_render_field' ),
 						'type'     => 'multicheck',
 					),
 					array(
-						'id'       => self::FIELD_ID_USER_ROLE_TO_REMOVE_FIELD,
-						'label'    => __( 'User role', 'pmi-users-sync' ),
+						'id'       => self::FIELD_ID_USER_ROLE_TO_REMOVE,
+						'label'    => __( 'Role to remove', 'pmi-users-sync' ),
 						'callback' => array( $this, 'pmi_users_sync_roles_render_field' ),
 						'type'     => 'multicheck',
 					),
@@ -248,6 +259,24 @@ class Pmi_Users_Sync_Admin {
 						'id'    => self::FIELD_ID_PMI_ID_CUSTOM_FIELD,
 						'label' => __( 'PMI-ID custom field', 'pmi-users-sync' ),
 						'desc'  => __( 'Insert the PMI-ID custom field defined with ACF plugin (e.g. dbem_pmi_id)', 'pmi-users-sync' ),
+						'type'  => 'text',
+					),
+					array(
+						'id'       => self::FIELD_ID_USER_MEMBERSHIPS,
+						'label'    => __( 'Memberships to set', 'pmi-users-sync' ),
+						'callback' => array( $this, 'pmi_users_sync_memberships_render_field' ),
+						'type'     => 'multicheck',
+					),
+					array(
+						'id'       => self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE,
+						'label'    => __( 'Memberships to remove', 'pmi-users-sync' ),
+						'callback' => array( $this, 'pmi_users_sync_memberships_render_field' ),
+						'type'     => 'multicheck',
+					),
+					array(
+						'id'    => self::FIELD_ID_MEMBERSHIP_CUSTOM_FIELD,
+						'label' => __( 'Membership custom field', 'pmi-users-sync' ),
+						'desc'  => __( 'Insert the Membership custom field defined with ACF plugin (e.g. dbem_membership)', 'pmi-users-sync' ),
 						'type'  => 'text',
 					),
 				),
@@ -351,7 +380,50 @@ class Pmi_Users_Sync_Admin {
 			$html   .= sprintf( '%1$s</label><br>', $role_config['name'] );
 		}
 
-		$html .= __( 'The user role to set if users is found to be member of PMI', 'pmi-users-sync' );
+		switch ( $args['id'] ) {
+			case self::FIELD_ID_USER_ROLE:
+				$html .= __( 'The user role to set if user is found member of PMI', 'pmi-users-sync' );
+				break;
+			case self::FIELD_ID_USER_ROLE_TO_REMOVE:
+				$html .= __( 'The user role to remove if user is not found member of PMI', 'pmi-users-sync' );
+				break;
+		}
+		$html .= '</fieldset>';
+		echo $html;
+		unset( $all_roles, $html );
+	}
+
+	/**
+	 * Callback function to render the list of memberships from the Advanced Custom Fields plugin.
+	 *
+	 * @param array $args The arguments from the Boo Settings Helper.
+	 * @return void
+	 * @since 1.3.0
+	 */
+	public function pmi_users_sync_memberships_render_field( $args ) {
+		$all_memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
+
+		$value = $args['value'];
+		if ( empty( $value ) ) {
+			$value = $args['default'];
+		}
+
+		$html = '<fieldset>';
+		foreach ( $all_memberships as $membership => $membership_config ) {
+			$checked = isset( $value[ $membership ] ) ? $value[ $membership ] : '0';
+			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $membership );
+			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $membership, checked( $checked, $membership, false ), $args['name'] );
+			$html   .= sprintf( '%1$s</label><br>', $membership_config );
+		}
+
+		switch ( $args['id'] ) {
+			case self::FIELD_ID_USER_MEMBERSHIPS:
+				$html .= __( 'The user membership to set if user is found member of PMI', 'pmi-users-sync' );
+				break;
+			case self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE:
+				$html .= __( 'The user membership to remove if user is not found member of PMI', 'pmi-users-sync' );
+				break;
+		}
 		$html .= '</fieldset>';
 		echo $html;
 		unset( $all_roles, $html );
@@ -374,16 +446,21 @@ class Pmi_Users_Sync_Admin {
 	 */
 	public function pmi_users_list_page() {
 		try {
-			$loader                     = Pmi_Users_Sync_User_Loader_Factory::create_user_loader();
-			$users                      = $loader->load();
+			$users                      = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
 			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
 			if ( ! $pmi_id_custom_field_exists ) {
 				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
+			$membership_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) );
+			if ( ! $membership_custom_field_exists ) {
+				$error_message .= __( '</br>Membership custom field does not exist. Update not done!', 'pmi-users-sync' );
+			}
 
 			// TODO #9 Move the code to an AJAX call to synchronize the users in background.
 			// Update of the PMI-ID triggered manually.
-			if ( isset( $_POST['update_users'] ) && $pmi_id_custom_field_exists ) {
+			if ( isset( $_POST['update_users'] )
+				&& $pmi_id_custom_field_exists
+				&& $membership_custom_field_exists ) {
 				if (
 					! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
 					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' )
@@ -392,13 +469,13 @@ class Pmi_Users_Sync_Admin {
 					wp_nonce_ays( '' );
 				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
-				$this->pmi_users_sync_users_update( $users );
+				Pmi_Users_Sync_User_Updater_Factory::create_user_updater()->update( $users, $this->get_options() );
 				$error_message = __( 'Users successfully updated!', 'pmi-users-sync' );
 			}
 
 			// Update the last synchronization date and time on the page.
 			$pus_last_synchronization_date = get_option( self::LOADER_LAST_SYNCHRONIZATION_DATE_TIME );
-			if ( ! $pus_last_synchronization_date ) {
+			if ( empty( $pus_last_synchronization_date ) ) {
 				$pus_last_synchronization_date = __( 'No synchronization occurred yet', 'pmi-users-sync' );
 			}
 		} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
@@ -424,18 +501,20 @@ class Pmi_Users_Sync_Admin {
 	}
 
 	/**
-	 * Synchronize the PMI-ID of the users.
+	 * Returns the options for the synchronization of the PMI user.
 	 *
-	 * @param Pmi_Users_Sync_Pmi_User[] $users List of users retrieved with the loader.
-	 * @return void
+	 * @return array plugin settings
 	 */
-	private function pmi_users_sync_users_update( $users ) {
+	private function get_options() {
 		$options = array(
-			self::OPTION_OVERWRITE_PMI_ID    => get_option( self::OPTION_OVERWRITE_PMI_ID ),
-			self::OPTION_PMI_ID_CUSTOM_FIELD => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
-			self::OPTION_USER_ROLE           => get_option( self::OPTION_USER_ROLE ),
-			self::OPTION_USER_ROLE_TO_REMOVE => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
+			self::OPTION_OVERWRITE_PMI_ID        => get_option( self::OPTION_OVERWRITE_PMI_ID ),
+			self::OPTION_PMI_ID_CUSTOM_FIELD     => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
+			self::OPTION_USER_ROLE               => get_option( self::OPTION_USER_ROLE ),
+			self::OPTION_USER_ROLE_TO_REMOVE     => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
+			self::OPTION_MEMBERSHIP_CUSTOM_FIELD => get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
+			self::OPTION_MEMBERSHIP              => get_option( self::OPTION_MEMBERSHIP ),
+			self::OPTION_MEMBERSHIP_TO_REMOVE    => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
 		);
-		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
+		return $options;
 	}
 }
