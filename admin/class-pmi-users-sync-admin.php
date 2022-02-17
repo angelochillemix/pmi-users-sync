@@ -490,8 +490,6 @@ class Pmi_Users_Sync_Admin {
 		} catch ( Exception $exception ) {
 			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 			$error_message = __( 'An error occurred during the page rendering', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
-		} finally {
-			$error_message = __( 'An error occurred during the page rendering', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		}
 
 		$user_loader_type = get_option( self::OPTION_USER_LOADER );
