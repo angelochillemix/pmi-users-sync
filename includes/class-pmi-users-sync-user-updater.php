@@ -66,18 +66,42 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 		// If not found
 		// Remove PMI-SIC role and membership from the user's profile, keeping PMI membership.
 
+		$users_to_synchronize = $users;
+
 		// Looping the users list and update the user's attributes.
 		foreach ( $wp_users as $wp_user ) {
-			foreach ( $users as $user ) {
+			foreach ( $users_to_synchronize as $index => $user ) {
 				$updated = false;
-				foreach ( $this->user_attibute_updaters as $user_attibute_updater ) {
-					$user_attibute_updater->update( $wp_user, $user, $options );
-					$updated = $updated | $user_attibute_updater->is_updated();
-				}
-				if ( false === $updated ) {
-					Pmi_Users_Sync_Logger::log_information( __( 'User ', 'pmi-users-sync' ) . $user->get_first_name() . ' ' . $user->get_last_name() . __( ' with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not registered to the site', 'pmi-users-sync' ) );
+				if ( $this->user_matched_condition( $wp_user, $user, $options ) ) {
+					foreach ( $this->user_attibute_updaters as $user_attibute_updater ) {
+						$user_attibute_updater->update( $wp_user, $user, $options );
+						$updated = $updated | $user_attibute_updater->is_updated();
+					}
+					// User updated. No need to loop all elements. Rest of users from PMI can be skipped.
+					// In addition, we can remove the user already synchronized.
+					if ( true === boolval( $updated ) ) {
+						unset( $users_to_synchronize[ $index ] );
+						break;
+					}
+
+					// No update done. Log information.
+					if ( false === boolval( $updated ) ) {
+						Pmi_Users_Sync_Logger::log_information( __( 'User ', 'pmi-users-sync' ) . $user->get_first_name() . ' ' . $user->get_last_name() . __( ' with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not registered to the site', 'pmi-users-sync' ) );
+					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns true if the matching conditions a user in WordPress and from PMI.
+	 *
+	 * @param stdClass                $wp_user The WP_User instance representing the user retrieved from WP database.
+	 * @param Pmi_Users_Sync_Pmi_User $user The user retrieved from PMI.
+	 * @param array                   $options The plugin settings.
+	 * @return bool
+	 */
+	protected function user_matched_condition( $wp_user, $user, $options ): bool {
+		return Pmi_Users_Sync_Utils::user_matched_condition( $wp_user, $user, $options );
 	}
 }

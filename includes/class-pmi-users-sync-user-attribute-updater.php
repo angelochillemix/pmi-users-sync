@@ -36,12 +36,11 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	protected $updated;
 
 	/**
-	 * Class constructor.
+	 * Class constructor
 	 */
-	private function __construct() {
+	public function __construct() {
 		$this->updated = false;
 	}
-
 
 	/**
 	 * Update the user's attribute according to the plugin settings
@@ -81,24 +80,6 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	}
 
 	/**
-	 * Returns the instance of the User Attribute Updater
-	 *
-	 * @return Pmi_Users_Sync_User_Attribute_Updater The instance of the User Updater.
-	 */
-	public static function get_user_attribute_updater(): Pmi_Users_Sync_User_Attribute_Updater {
-		$class    = get_called_class();
-		$instance = null;
-		if ( array_key_exists( $class, self::$user_attribute_updater_instances ) ) {
-			$instance = self::$user_attribute_updater_instances[ $class ];
-		}
-		if ( ! isset( $instance ) || null === $instance ) {
-			$instance = new $class();
-			self::$user_attribute_updater_instances[ $class ] = $instance;
-		}
-		return $instance;
-	}
-
-	/**
 	 * Returns true if the matching conditions a user in WordPress and from PMI.
 	 *
 	 * @param stdClass                $wp_user The WP_User instance representing the user retrieved from WP database.
@@ -107,8 +88,7 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 * @return bool
 	 */
 	protected function user_matched_condition( $wp_user, $user, $options ): bool {
-		return $wp_user->user_email === $user->get_email()
-					|| $this->users_have_same_pmi_id( $wp_user, $user, $options );
+		return Pmi_Users_Sync_Utils::user_matched_condition( $wp_user, $user, $options );
 	}
 
 	/**
@@ -119,10 +99,7 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 * @return boolean
 	 */
 	protected function user_has_no_pmi_id( $wp_user, $options ): bool {
-		$pmi_id = get_user_meta( $wp_user->ID, $options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ], true );
-
-		// User meta not found or empty.
-		return empty( $pmi_id );
+		return Pmi_Users_Sync_Utils::user_has_no_pmi_id( $wp_user, $options );
 	}
 
 	/**
@@ -134,8 +111,6 @@ abstract class Pmi_Users_Sync_User_Attribute_Updater {
 	 * @return boolean
 	 */
 	protected static function users_have_same_pmi_id( $wp_user, $user, $options ): bool {
-		$pmi_id = get_user_meta( $wp_user->ID, $options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ], true );
-
-		return $pmi_id === $user->get_pmi_id();
+		return Pmi_Users_Sync_Utils::users_have_same_pmi_id( $wp_user, $user, $options );
 	}
 }

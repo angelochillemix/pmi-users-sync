@@ -89,6 +89,10 @@ abstract class Pmi_Users_Sync_User_Abstract_Updater {
 	 * @return void
 	 */
 	public function register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater $user_attribute_updater ) {
+		$found = array_search( $user_attribute_updater, $this->user_attibute_updaters, true );
+		if ( $found ) {
+			return;
+		}
 		array_push( $this->user_attibute_updaters, $user_attribute_updater );
 	}
 

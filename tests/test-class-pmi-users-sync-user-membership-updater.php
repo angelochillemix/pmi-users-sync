@@ -52,8 +52,8 @@ class Test_Pmi_Users_Sync_User_Memberships_Updater extends PHPUnit\Framework\Tes
 	 */
 	public function initialize_tests() {
 		$this->user_updater = Pmi_Users_Sync_User_Updater::get_user_updater();
-		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::get_user_attribute_updater() );
-		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Memberships_Updater::get_user_attribute_updater() );
+		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::class ) );
+		$this->user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Memberships_Updater::class ) );
 		$this->excel_loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader( self::TEMP_PMI_EXCEL_FILE_PATH );
 		$this->users        = $this->excel_loader->load();
 
@@ -124,11 +124,14 @@ class Test_Pmi_Users_Sync_User_Memberships_Updater extends PHPUnit\Framework\Tes
 		$user_ciccio_bello = $this->users[0];
 		$this->assertEquals( 'Ciccio', $user_ciccio_bello->get_first_name(), 'Not the same name' );
 		$this->assertEquals( 'test@email.it', $user_ciccio_bello->get_email(), 'Not the same email' );
+		$this->assertSame( $this->pmi_ids[0], $user_ciccio_bello->get_pmi_id(), 'Not same PMI-ID' );
 		$wp_user = get_user_by( 'email', 'test@email.it' );
 		$this->assertNotFalse( $wp_user );
-		$this->assertInstanceOf( WP_User::class, $wp_user, 'User does not exist' );
+		$this->assertInstanceOf( WP_User::class, $wp_user, 'User does not exist and not an instance of WP_User' );
 
 		$options = $this->get_options();
+
+		// Setting PMI-CIC membership to the user.
 		update_user_meta(
 			$wp_user->ID,
 			$options[ Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ],

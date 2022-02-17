@@ -99,5 +99,52 @@ class Pmi_Users_Sync_Utils {
 		return ( count( $acf_fields ) ) > 0;
 	}
 
+	/**
+	 * Returns true if the matching conditions a user in WordPress and from PMI.
+	 *
+	 * @param stdClass                $wp_user The WP_User instance representing the user retrieved from WP database.
+	 * @param Pmi_Users_Sync_Pmi_User $user The user retrieved from PMI.
+	 * @param array                   $options The plugin settings.
+	 * @return bool
+	 */
+	public static function user_matched_condition( $wp_user, $user, $options ): bool {
+		return $wp_user->user_email === $user->get_email()
+					|| self::users_have_same_pmi_id( $wp_user, $user, $options );
+	}
 
+	/**
+	 * Check that user has no PMI-ID
+	 *
+	 * @param  WP_User $wp_user The registered {@see WP_User} to retrieve from WP database.
+	 * @param  array   $options The plugin settings.
+	 * @return boolean
+	 */
+	public static function user_has_no_pmi_id( $wp_user, $options ): bool {
+		$pmi_id = get_user_meta(
+			$wp_user->ID,
+			$options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ],
+			true
+		);
+
+		// User meta not found or empty.
+		return empty( $pmi_id );
+	}
+
+	/**
+	 * Check that the two users have same PMI-ID
+	 *
+	 * @param  stdClass                $wp_user The registered {@see WP_User} to retrieve from WP database.
+	 * @param  Pmi_Users_Sync_Pmi_User $user    The user to synchronize.
+	 * @param  array                   $options The plugin settings.
+	 * @return boolean
+	 */
+	public static function users_have_same_pmi_id( $wp_user, $user, $options ): bool {
+		$pmi_id = get_user_meta(
+			$wp_user->ID,
+			$options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ],
+			true
+		);
+
+		return $pmi_id === $user->get_pmi_id();
+	}
 }

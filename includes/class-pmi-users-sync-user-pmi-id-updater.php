@@ -40,13 +40,11 @@ class Pmi_Users_Sync_User_Pmi_Id_Updater extends Pmi_Users_Sync_User_Attribute_U
 		try {
 			if ( true === $this->pmi_id_to_be_updated( $user, $wp_user, $options ) ) {
 				$result = update_user_meta( $wp_user->ID, $options[ Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD ], $user->get_pmi_id() );
-				if ( true === $result ) {
+				if ( true === $result || $result > 0 ) {
 					$this->updated = true;
 					Pmi_Users_Sync_Logger::log_information( __( 'PMI-ID of user with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' updated to ', 'pmi-users-sync' ) . $options[ PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ] );
-				} elseif ( false === $result ) {
-					Pmi_Users_Sync_Logger::log_warning( __( 'PMI-ID custom field does not exist, therefore not updated', 'pmi-users-sync' ) );
 				} else {
-					Pmi_Users_Sync_Logger::log_warning( __( 'PMI-ID ', 'pmi-users-sync' ) . $options[ PMI_USERS_SYNC_PREFIX . 'pmi_id_custom_field' ] . __( ' for user with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' was not found', 'pmi-users-sync' ) );
+					Pmi_Users_Sync_Logger::log_warning( __( 'PMI-ID custom field not updated', 'pmi-users-sync' ) );
 				}
 			} else {
 				Pmi_Users_Sync_Logger::log_information( __( 'User with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not overwritten', 'pmi-users-sync' ) );

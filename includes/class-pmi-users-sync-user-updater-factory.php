@@ -35,9 +35,9 @@ class Pmi_Users_Sync_User_Updater_Factory {
 	 */
 	public static function create_user_updater() {
 		$user_updater = Pmi_Users_Sync_User_Updater::get_user_updater();
-		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::get_user_attribute_updater() );
-		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Roles_Updater::get_user_attribute_updater() );
-		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Memberships_Updater::get_user_attribute_updater() );
+		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::class ) );
+		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Roles_Updater::class ) );
+		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Memberships_Updater::class ) );
 		return $user_updater;
 	}
 }

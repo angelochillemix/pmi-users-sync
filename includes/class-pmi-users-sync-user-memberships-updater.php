@@ -52,7 +52,7 @@ class Pmi_Users_Sync_User_Memberships_Updater extends Pmi_Users_Sync_User_Attrib
 			$new_user_memberships = $options[ Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_TO_REMOVE ];
 			if ( is_array( $user_memberships )
 				&& is_array( $new_user_memberships )
-				&& array_count_values( $user_memberships ) > 0 ) {
+				&& count( $user_memberships ) > 0 ) {
 				$new_user_memberships = array_diff( $user_memberships, $new_user_memberships );
 				update_user_meta( $wp_user->ID, $options[ Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ], $new_user_memberships );
 				$this->updated = true;

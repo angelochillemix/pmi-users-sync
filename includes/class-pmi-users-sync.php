@@ -196,6 +196,11 @@ class Pmi_Users_Sync {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-attribute-updater.php';
 
 		/**
+		 * Represents the abstract class of the the factory class responsible to create user attributes updater instances.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-attribute-updater-factory.php';
+
+		/**
 		 * The class responsible to synchronize and update the PMI-ID.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-pmi-id-updater.php';
