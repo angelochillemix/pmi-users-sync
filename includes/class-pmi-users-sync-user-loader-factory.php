@@ -49,11 +49,12 @@ class Pmi_Users_Sync_User_Loader_Factory {
 					$loader  = new Pmi_Users_Sync_Pmi_User_Web_Service_Loader( $web_service );
 				break;
 			case 'option_excel':
-			default: // default loading from Excel file.
 				$pmi_file_url = get_option( Pmi_Users_Sync_Admin::OPTION_PMI_FILE_FIELD_ID );
 				$file_path    = Pmi_Users_Sync_Path_Utils::get_file_path( $pmi_file_url );
 				$loader       = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader( $file_path );
 				break;
+			default: // default loading from Excel file.
+				throw new InvalidArgumentException( __( 'Invalid loader option', 'pmi-users-sync' ), 1 );
 		}
 		return $loader;
 	}

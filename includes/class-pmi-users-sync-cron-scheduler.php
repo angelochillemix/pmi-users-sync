@@ -159,10 +159,10 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			}
 
 			$users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
-			Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
+			Pmi_Users_Sync_Logger::log_information( __( 'Run the scheduled synchronization of the PMI-ID of the users', 'pmi-users-sync' ) );
 			$this->pmi_users_sync_users_update( $users );
 		} catch ( Exception $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while running the update. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while running the scheduled update. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
 		}
 	}
 

@@ -47,7 +47,7 @@ class Pmi_Users_Sync_User_Pmi_Id_Updater extends Pmi_Users_Sync_User_Attribute_U
 					Pmi_Users_Sync_Logger::log_warning( __( 'PMI-ID custom field not updated', 'pmi-users-sync' ) );
 				}
 			} else {
-				Pmi_Users_Sync_Logger::log_information( __( 'User with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not overwritten', 'pmi-users-sync' ) );
+				Pmi_Users_Sync_Logger::log_information( __( 'Update for user with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not done', 'pmi-users-sync' ) );
 			}
 		} catch ( Exception $exception ) {
 			throw $exception;

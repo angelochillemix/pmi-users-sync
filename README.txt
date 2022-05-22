@@ -62,6 +62,7 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 * Shows last PMI users synchronization date and time
 * Added user loaded daily recurrence option for PMI users synchonization
 * Update the user's role and membership as per subscription to PMI
+* Refactoring of the users list page
 
 ### 1.2.0
 * Changes according to the results of PHP Code Sniffer and Beautifier analysis following WordPress standard

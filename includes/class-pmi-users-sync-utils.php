@@ -86,13 +86,8 @@ class Pmi_Users_Sync_Utils {
 	 */
 	public static function acf_field_exists( $field_name ) {
 		global $wpdb;
-		// $found      = false;
-		// $acf_fields = wp_cache_get( PMI_USERS_SYNC_PREFIX . 'acf_field', '', false, $found );
-		// if ( ! $found ) {
-			// TODO #3 Avoid direct call to database.
-			$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) );
-		// wp_cache_set( PMI_USERS_SYNC_PREFIX . 'acf_field', $acf_fields, '', 3600 );
-		// }
+		// TODO #3 Avoid direct call to database and use a cache mechanism.
+		$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) );
 		if ( is_null( $acf_fields ) ) {
 			return false;
 		}

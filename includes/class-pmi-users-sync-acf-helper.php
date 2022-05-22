@@ -52,7 +52,6 @@ class Pmi_Users_Sync_Acf_Helper {
 	 * @return array array with all the memberships of the user
 	 */
 	public static function get_user_memberships( $user_id ) {
-		// $user_memberships = get_field( get_option( Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ), 'user_' . $user_id );
 		$user_memberships = get_user_meta( $user_id, get_option( Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ), true );
 		return empty( $user_memberships ) ? array() : $user_memberships;
 	}

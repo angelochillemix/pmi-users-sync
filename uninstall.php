@@ -29,11 +29,15 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
+Pmi_Users_Sync_Logger::log_information( __( 'Uninstalling the plugin.', 'pmi-users-sync' ) );
 
-// Delete all options stored by the plugin.
+
+// TODO #10 Delete all options stored by the plugin.
+Pmi_Users_Sync_Logger::log_information( __( 'Removing options from WordPress options table.', 'pmi-users-sync' ) );
 $pmi_users_sync_options = get_class_vars( Pmi_Users_Sync_Admin::class );
 foreach ( $pus_options as $pmi_users_sync_option => $pmi_users_sync_value ) {
 	if ( str_starts_with( 'OPTION_', $pmi_users_sync_option ) ) {
+		Pmi_Users_Sync_Logger::log_information( __( 'Removing option ', 'pmi-users-sync' ) . $pmi_users_sync_option . ( ' from WordPress options table', 'pmi-users-sync' ) );
 		delete_option( Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_PASSWORD );
 	}
 }

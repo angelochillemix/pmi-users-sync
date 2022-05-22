@@ -9,6 +9,8 @@
  * @subpackage Pmi_Users_Sync/admin
  */
 
+use phpDocumentor\Reflection\Types\String_;
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -426,7 +428,7 @@ class Pmi_Users_Sync_Admin {
 		}
 		$html .= '</fieldset>';
 		echo $html;
-		unset( $all_roles, $html );
+		unset( $all_memberships, $html );
 	}
 
 	/**
@@ -443,59 +445,96 @@ class Pmi_Users_Sync_Admin {
 	 * Shows the list of users from the Excel file
 	 *
 	 * @return void
+	 * @throws Exception If the users list is not set.
 	 */
 	public function pmi_users_list_page() {
+		$pus_error_message             = '';
+		$pus_last_synchronization_date = '';
+		$pus_users                     = array(); // Initialize as an empty array.
+		$user_loader_option            = get_option( self::OPTION_USER_LOADER ); // Check that the loader option is set.
+
+		Pmi_Users_Sync_Logger::log_information( 'Checking user loader option.' );
+
+		if ( ! $user_loader_option ) {
+			$pus_error_message .= __( 'Loader not set yet. Please set it up first in the Settings page.', 'pmi-users-sync' );
+		}
+		$file_path = self::OPTION_USER_LOADER_EXCEL === $user_loader_option ? get_option( self::OPTION_PMI_FILE_FIELD_ID ) : false;
+
+		Pmi_Users_Sync_Logger::log_information( 'Checking if ACF fields exist.' );
 		try {
-			$users                      = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
 			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
 			if ( ! $pmi_id_custom_field_exists ) {
-				$error_message = __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
+				$pus_error_message .= '\r\n' . __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
 			$membership_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) );
 			if ( ! $membership_custom_field_exists ) {
-				$error_message .= __( '</br>Membership custom field does not exist. Update not done!', 'pmi-users-sync' );
+				$pus_error_message .= '\r\n' . __( 'Membership custom field does not exist. Update not done!', 'pmi-users-sync' );
 			}
+		} catch ( Exception $exception ) {
+			$pus_error_message .= '\r\n' . __( 'An error occurred while checking ACF fields.', 'pmi-users-sync' ) . $exception->getMessage();
+			Pmi_Users_Sync_Logger::log_error( $pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
+		}
 
+		if ( $user_loader_option ) {
+			Pmi_Users_Sync_Logger::log_information( 'Loading the users.' );
+			try {
+				$pus_users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
+			} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+				$pus_error_message .= '\r\n' . __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' );
+			} catch ( SoapFault $fault ) {
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
+				$pus_error_message .= '\r\n' . __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' );
+			} catch ( InvalidArgumentException $exception ) {
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
+				$pus_error_message .= '\r\n' . __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
+			} catch ( Exception $exception ) {
+				$pus_error_message .= '\r\n' . __( 'An error occurred during the page rendering', 'pmi-users-sync' );
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . isnull( $exception ) ? '' : $exception->getMessage() );
+			}
+		}
+
+		try {
 			// TODO #9 Move the code to an AJAX call to synchronize the users in background.
-			// Update of the PMI-ID triggered manually.
-			if ( isset( $_POST['update_users'] )
+
+			if ( isset( $_POST['update_users'] ) // Update of the PMI-ID triggered manually.
 				&& $pmi_id_custom_field_exists
 				&& $membership_custom_field_exists ) {
+				Pmi_Users_Sync_Logger::log_information( 'Updating the users.' );
 				if (
 					! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
-					|| ! wp_verify_nonce( filter_var( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ), FILTER_SANITIZE_STRING ), PMI_USERS_SYNC_PREFIX . 'nonce_action' )
+					|| ! wp_verify_nonce( htmlspecialchars( sanitize_text_field( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ) ) ), PMI_USERS_SYNC_PREFIX . 'nonce_action' )
 				) {
 					Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
 					wp_nonce_ays( '' );
 				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
-				Pmi_Users_Sync_User_Updater_Factory::create_user_updater()->update( $users, $this->get_options() );
-				$error_message = __( 'Users successfully updated!', 'pmi-users-sync' );
+				Pmi_Users_Sync_User_Updater_Factory::create_user_updater()->update( $pus_users, $this->get_options() );
+				$pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
 			}
-
-			// Update the last synchronization date and time on the page.
-			$pus_last_synchronization_date = get_option( self::LOADER_LAST_SYNCHRONIZATION_DATE_TIME );
-			if ( empty( $pus_last_synchronization_date ) ) {
-				$pus_last_synchronization_date = __( 'No synchronization occurred yet', 'pmi-users-sync' );
-			}
-		} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' );
-		} catch ( SoapFault $fault ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
-			$error_message = __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' );
-		} catch ( InvalidArgumentException $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
 		} catch ( Exception $exception ) {
-			Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-			$error_message = __( 'An error occurred during the page rendering', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
+			$pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
+			Pmi_Users_Sync_Logger::log_error( $pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
 		}
 
-		$user_loader_type = get_option( self::OPTION_USER_LOADER );
-		$file_path        = self::OPTION_USER_LOADER_EXCEL === $user_loader_type ? get_option( self::OPTION_PMI_FILE_FIELD_ID ) : false;
-
+		// Update the last synchronization date and time on the page.
+		Pmi_Users_Sync_Logger::log_information( 'Getting last synchronization date.' );
+		$pus_last_synchronization_date = get_option( self::LOADER_LAST_SYNCHRONIZATION_DATE_TIME );
+		if ( ! $pus_last_synchronization_date || empty( $pus_last_synchronization_date ) ) {
+			$pus_last_synchronization_date = __( 'No synchronization occurred yet', 'pmi-users-sync' );
+		}
+		Pmi_Users_Sync_Logger::log_information( 'Rendering the users list page.' );
 		require_once plugin_dir_path( __FILE__ ) . 'partials/pmi-users-sync-admin-display.php';
+	}
+
+	/**
+	 * Add messages to the error message to be displayed when the page is rendered
+	 *
+	 * @param string $pus_error_message The message to attach to the error message.
+	 * @return string The error message.
+	 */
+	private function add_error_message( $pus_error_message ) : string {
+		return $pus_error_message . '\r\n';
 	}
 
 	/**

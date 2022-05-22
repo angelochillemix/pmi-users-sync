@@ -50,18 +50,20 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<form id="update_users_form" method="POST">
 		<input type="submit" name="update_users" value="<?php esc_html_e( 'Update', 'pmi-users-sync' ); ?>">Update the PMI-ID of the users</input>
 		<?php wp_nonce_field( PMI_USERS_SYNC_PREFIX . 'nonce_action', PMI_USERS_SYNC_PREFIX . 'nonce_field' ); ?>
-</form>
-
 	</form>
-	<br />
-	<br />
-	<?php if ( isset( $error_message ) && ! empty( $error_message ) ) { ?>
-		<p> <?php echo esc_html( $error_message ); ?></p>
-	<?php } ?>
-	<p> <?php echo esc_html__( 'Last synchronization on: ', 'pmi-users-sync' ) . esc_html( $pus_last_synchronization_date ); ?></p>
 
-	<?php if ( isset( $users ) ) { ?>
-		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $users ) ); ?> <?php echo esc_html( ' users' ); ?></p>
+	<br />
+	<?php if ( isset( $pus_error_message ) && ! empty( $pus_error_message ) ) { ?>
+		<p> <?php echo str_replace( array( '\r\n', '\r', '\n' ), '<br />', $pus_error_message ); ?></p>
+	<?php } ?>
+	<br />
+	<?php if ( isset( $pus_last_synchronization_date ) && ! empty( $pus_last_synchronization_date ) ) { ?>
+		<p> <?php esc_html_e( 'Last synchronization on: ', 'pmi-users-sync' ) . esc_html_e( $pus_last_synchronization_date ); ?></p>
+	<?php } ?>
+
+
+	<?php if ( isset( $pus_users ) && ! empty( $pus_users ) ) { ?>
+		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $pus_users ) ); ?> <?php echo esc_html( ' users' ); ?></p>
 		<table class="styled-table">
 			<thead>
 				<th>PMI ID</th>
@@ -69,12 +71,12 @@ if ( ! current_user_can( 'manage_options' ) ) {
 				<th>Last name</th>
 				<th>Email</th>
 			</thead>
-			<?php foreach ( $users as $user ) : ?>
+			<?php foreach ( $pus_users as $pus_user ) : ?>
 				<tr>
-					<td><?php echo esc_html( $user->get_pmi_id() ); ?></td>
-					<td><?php echo esc_html( $user->get_first_name() ); ?></td>
-					<td><?php echo esc_html( $user->get_last_name() ); ?></td>
-					<td><?php echo esc_html( $user->get_email() ); ?></td>
+					<td><?php echo esc_html( $pus_user->get_pmi_id() ); ?></td>
+					<td><?php echo esc_html( $pus_user->get_first_name() ); ?></td>
+					<td><?php echo esc_html( $pus_user->get_last_name() ); ?></td>
+					<td><?php echo esc_html( $pus_user->get_email() ); ?></td>
 				</tr>
 			<?php endforeach; ?>
 		</table>
