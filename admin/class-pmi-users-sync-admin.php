@@ -207,7 +207,7 @@ class Pmi_Users_Sync_Admin {
 	 */
 	public function add_menu_link() {
 		// Adding the main menu item at admin menu level.
-		$menu_page = add_menu_page( esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', array( $this, 'pmi_users_list_page' ), 'dashicons-id-alt' );
+		add_menu_page( esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', array( $this, 'pmi_users_list_page' ), 'dashicons-id-alt' );
 		add_submenu_page( PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__( 'PMI Users', 'pmi-users-sync' ), esc_html__( 'PMI Users', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options' );
 
 		/**
@@ -576,7 +576,7 @@ class Pmi_Users_Sync_Admin {
 	 * @return array plugin settings
 	 */
 	private function get_options() {
-		return $options = array(
+		return array(
 			self::OPTION_OVERWRITE_PMI_ID        => get_option( self::OPTION_OVERWRITE_PMI_ID ),
 			self::OPTION_PMI_ID_CUSTOM_FIELD     => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
 			self::OPTION_USER_ROLE               => get_option( self::OPTION_USER_ROLE ),

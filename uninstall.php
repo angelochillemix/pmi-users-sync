@@ -37,7 +37,7 @@ Pmi_Users_Sync_Logger::log_information( __( 'Removing options from WordPress opt
 $pmi_users_sync_options = get_class_vars( Pmi_Users_Sync_Admin::class );
 foreach ( $pus_options as $pmi_users_sync_option => $pmi_users_sync_value ) {
 	if ( str_starts_with( 'OPTION_', $pmi_users_sync_option ) ) {
-		Pmi_Users_Sync_Logger::log_information( __( 'Removing option ', 'pmi-users-sync' ) . $pmi_users_sync_option . ( ' from WordPress options table', 'pmi-users-sync' ) );
+		Pmi_Users_Sync_Logger::log_information( __( 'Removing option ', 'pmi-users-sync' ) . $pmi_users_sync_option . __( ' from WordPress options table', 'pmi-users-sync' ) );
 		delete_option( Pmi_Users_Sync_Admin::OPTION_DEP_SERVICE_PASSWORD );
 	}
 }

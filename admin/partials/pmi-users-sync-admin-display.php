@@ -33,9 +33,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
+	<title>PMI Users List</title>
 
 </head>
 
@@ -65,6 +67,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<?php if ( isset( $pus_users ) && ! empty( $pus_users ) ) { ?>
 		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $pus_users ) ); ?> <?php echo esc_html( ' users' ); ?></p>
 		<table class="styled-table">
+			<caption>List of PMI users</caption>
 			<thead>
 				<th>PMI ID</th>
 				<th>First name</th>
