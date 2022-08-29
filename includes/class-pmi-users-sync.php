@@ -267,7 +267,7 @@ class Pmi_Users_Sync {
 		$this->loader->add_filter( 'plugin_row_meta', $plugin_admin, 'filter_plugin_row_meta', 10, 4 );
 
 		if ( null === $this->scheduler ) {
-			throw new Exception( 'Schedule instance cannot be null', 1 );
+			throw new InvalidArgumentException( 'Schedule instance cannot be null', 1 );
 		}
 
 		/**
@@ -302,7 +302,6 @@ class Pmi_Users_Sync {
 		if ( false === $recurrence ) {
 			$recurrence = Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
 		}
-		$this->scheduler->unschedule();
 		$this->scheduler->schedule( $recurrence );
 	}
 

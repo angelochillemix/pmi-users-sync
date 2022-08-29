@@ -30,12 +30,15 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 */
 	public const PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK = 'pus_update_users_pmi_id';
 
+	// Schedules constants that can be set from the plugin options: 
+	// daily, weekly, monthly, quarterly, every two minutes
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_DAILY             = 'daily';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY            = 'weekly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY           = 'pus_monthly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY         = 'pus_quarterly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_EVERY_TWO_MINUTES = 'pus_every_two_minutes';
 
+	// Default synchronization schedule
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT = self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
 
 	/**
@@ -61,10 +64,12 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			$recurrence = self::PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT;
 		}
 
-		if ( wp_get_schedule( self::PMI_USERS_SYNC_CRON_HOOK === $recurrence ) ) {
+		if ( wp_get_schedule( self::PMI_USERS_SYNC_CRON_HOOK ) === $recurrence ) {
 			// Do not schedule anything since same recurrence.
 			return;
 		}
+
+		$this->clear_scheduled_hook();
 
 		// Register the hook to the cron tasks.
 		if ( ! wp_next_scheduled( self::PMI_USERS_SYNC_CRON_HOOK ) ) {
@@ -73,10 +78,8 @@ class Pmi_Users_Sync_Cron_Scheduler {
 				time() + $seconds, // Adding the recurrence in seconds otherwise it starts the synchronization immediately.
 				$recurrence,
 				self::PMI_USERS_SYNC_CRON_HOOK,
-				array(),
-				true
 			);
-			if ( ( is_object( $error ) && ( $error instanceof WP_Error ) && $error->has_errors() ) ) {
+			if ( is_object( $error ) && ( $error instanceof WP_Error ) && $error->has_errors() ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while scheduling the cron for the synchronization of the PMI-ID. Error is: ', 'pmi-users-sync' ) . $error->get_error_message() );
 			}
 		}

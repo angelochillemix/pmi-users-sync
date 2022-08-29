@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -23,7 +24,7 @@ use phpDocumentor\Reflection\Types\String_;
  */
 class Pmi_Users_Sync_Admin {
 
-
+	private string $pus_error_message;
 
 	private const FIELD_ID_OVERWRITE_PMI_ID = 'overwrite_pmi_id';
 	public const OPTION_OVERWRITE_PMI_ID    = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_OVERWRITE_PMI_ID;
@@ -104,16 +105,16 @@ class Pmi_Users_Sync_Admin {
 	 */
 	public function enqueue_styles() {
 		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Pmi_Users_Sync_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Pmi_Users_Sync_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+		   * This function is provided for demonstration purposes only.
+		   *
+		   * An instance of this class should be passed to the run() function
+		   * defined in Pmi_Users_Sync_Loader as all of the hooks are defined
+		   * in that particular class.
+		   *
+		   * The Pmi_Users_Sync_Loader will then create the relationship
+		   * between the defined hooks and the functions defined in this
+		   * class.
+		   */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all' );
 	}
@@ -124,7 +125,7 @@ class Pmi_Users_Sync_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		/**
+		 /**
 		 * This function is provided for demonstration purposes only.
 		 *
 		 * An instance of this class should be passed to the run() function
@@ -160,8 +161,10 @@ class Pmi_Users_Sync_Admin {
 		// ACF plugin is installed and active.
 		// It is now safe to check that custom field exists.
 
-		if ( ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) )
-			|| ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) ) ) {
+		if (
+			! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) )
+			|| ! Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) )
+		) {
 			// Inform the user that the ACF field for the PMI-ID is not yet defined.
 			ob_start()
 			?>
@@ -389,6 +392,8 @@ class Pmi_Users_Sync_Admin {
 			case self::FIELD_ID_USER_ROLE_TO_REMOVE:
 				$html .= __( 'The user role to remove if user is not found member of PMI', 'pmi-users-sync' );
 				break;
+			default:
+				break;
 		}
 		$html .= '</fieldset>';
 		echo $html;
@@ -425,6 +430,8 @@ class Pmi_Users_Sync_Admin {
 			case self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE:
 				$html .= __( 'The user membership to remove if user is not found member of PMI', 'pmi-users-sync' );
 				break;
+			default:
+				break;
 		}
 		$html .= '</fieldset>';
 		echo $html;
@@ -442,37 +449,18 @@ class Pmi_Users_Sync_Admin {
 	}
 
 	/**
-	 * Shows the list of users from the Excel file
+	 * Load the users from the selected source (Excel file, Web Service, etc.)
 	 *
-	 * @return void
-	 * @throws Exception If the users list is not set.
+	 * @return array The list of users
 	 */
-	public function pmi_users_list_page() {
-		$pus_error_message             = '';
-		$pus_last_synchronization_date = '';
-		$pus_users                     = array(); // Initialize as an empty array.
-		$user_loader_option            = get_option( self::OPTION_USER_LOADER ); // Check that the loader option is set.
+	private function load_users() {
+		 $pus_users         = array(); // Initialize as an empty array.
+		$user_loader_option = get_option( self::OPTION_USER_LOADER ); // Check that the loader option is set.
 
 		Pmi_Users_Sync_Logger::log_information( 'Checking user loader option.' );
 
 		if ( ! $user_loader_option ) {
-			$pus_error_message .= __( 'Loader not set yet. Please set it up first in the Settings page.', 'pmi-users-sync' );
-		}
-		$file_path = self::OPTION_USER_LOADER_EXCEL === $user_loader_option ? get_option( self::OPTION_PMI_FILE_FIELD_ID ) : false;
-
-		Pmi_Users_Sync_Logger::log_information( 'Checking if ACF fields exist.' );
-		try {
-			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
-			if ( ! $pmi_id_custom_field_exists ) {
-				$pus_error_message .= '\r\n' . __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' );
-			}
-			$membership_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) );
-			if ( ! $membership_custom_field_exists ) {
-				$pus_error_message .= '\r\n' . __( 'Membership custom field does not exist. Update not done!', 'pmi-users-sync' );
-			}
-		} catch ( Exception $exception ) {
-			$pus_error_message .= '\r\n' . __( 'An error occurred while checking ACF fields.', 'pmi-users-sync' ) . $exception->getMessage();
-			Pmi_Users_Sync_Logger::log_error( $pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
+			$this->add_error_message( __( 'Loader not set yet. Please set it up first in the Settings page.', 'pmi-users-sync' ) );
 		}
 
 		if ( $user_loader_option ) {
@@ -481,25 +469,48 @@ class Pmi_Users_Sync_Admin {
 				$pus_users = Pmi_Users_Sync_User_Loader_Factory::create_user_loader()->load();
 			} catch ( \PhpOffice\PhpSpreadsheet\Reader\Exception $exception ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while reading the Excel file. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-				$pus_error_message .= '\r\n' . __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' );
+				$this->add_error_message( __( 'No file has been set in the plugin settings page or file does not exist.', 'pmi-users-sync' ) );
 			} catch ( SoapFault $fault ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while retrieving the list of PMI members through the web service. Error is: ', 'pmi-users-sync' ) . $fault->faultstring );
-				$pus_error_message .= '\r\n' . __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' );
+				$this->add_error_message( __( 'An error occurred while retrieving the list of PMI members through the web service.', 'pmi-users-sync' ) );
 			} catch ( InvalidArgumentException $exception ) {
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred. Error is: ', 'pmi-users-sync' ) . $exception->getMessage() );
-				$pus_error_message .= '\r\n' . __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage();
+				$this->add_error_message( __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage() );
 			} catch ( Exception $exception ) {
-				$pus_error_message .= '\r\n' . __( 'An error occurred during the page rendering', 'pmi-users-sync' );
+				$this->add_error_message( __( 'An error occurred during the page rendering', 'pmi-users-sync' ) );
 				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . isnull( $exception ) ? '' : $exception->getMessage() );
 			}
+		}
+		return $pus_users;
+	}
+
+	private function update_users( $pus_users ) {
+		Pmi_Users_Sync_Logger::log_information( 'Checking if ACF fields exist.' );
+		$pmi_id_custom_field_exists     = false;
+		$membership_custom_field_exists = false;
+
+		try {
+			$pmi_id_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ) );
+			if ( ! $pmi_id_custom_field_exists ) {
+				$this->add_error_message( __( 'PMI-ID custom field does not exist. Update not done!', 'pmi-users-sync' ) );
+			}
+			$membership_custom_field_exists = Pmi_Users_Sync_Utils::acf_field_exists( get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ) );
+			if ( ! $membership_custom_field_exists ) {
+				$this->add_error_message( __( 'Membership custom field does not exist. Update not done!', 'pmi-users-sync' ) );
+			}
+		} catch ( Exception $exception ) {
+			$this->add_error_message( __( 'An error occurred while checking ACF fields.', 'pmi-users-sync' ) . $exception->getMessage() );
+			Pmi_Users_Sync_Logger::log_error( $this->pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
 		}
 
 		try {
 			// TODO #9 Move the code to an AJAX call to synchronize the users in background.
 
-			if ( isset( $_POST['update_users'] ) // Update of the PMI-ID triggered manually.
+			if (
+				isset( $_POST['update_users'] ) // Update of the PMI-ID triggered manually.
 				&& $pmi_id_custom_field_exists
-				&& $membership_custom_field_exists ) {
+				&& $membership_custom_field_exists
+			) {
 				Pmi_Users_Sync_Logger::log_information( 'Updating the users.' );
 				if (
 					! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
@@ -510,11 +521,26 @@ class Pmi_Users_Sync_Admin {
 				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 				Pmi_Users_Sync_User_Updater_Factory::create_user_updater()->update( $pus_users, $this->get_options() );
-				$pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
+				$this->pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
 			}
 		} catch ( Exception $exception ) {
-			$pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
-			Pmi_Users_Sync_Logger::log_error( $pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
+			$this->pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
+			Pmi_Users_Sync_Logger::log_error( $this->pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
+		}
+	}
+
+	/**
+	 * Shows the list of users from the Excel file
+	 *
+	 * @return void
+	 * @throws Exception If the users list is not set.
+	 */
+	public function pmi_users_list_page() {
+		 $this->empty_error_message();
+
+		$pus_users = $this->load_users();
+		if ( isset( $_POST['update_users'] ) ) { // Update of the PMI-ID triggered manually.
+			$this->update_users( $pus_users );
 		}
 
 		// Update the last synchronization date and time on the page.
@@ -533,8 +559,15 @@ class Pmi_Users_Sync_Admin {
 	 * @param string $pus_error_message The message to attach to the error message.
 	 * @return string The error message.
 	 */
-	private function add_error_message( $pus_error_message ) : string {
-		return $pus_error_message . '\r\n';
+	private function add_error_message( $pus_error_message ): string {
+		return $this->pus_error_message .= $pus_error_message . '\r\n';
+	}
+
+	/**
+	 * Empty the error message to be displayed when the page is rendered
+	 */
+	private function empty_error_message(): string {
+		return $this->pus_error_message = '';
 	}
 
 	/**
@@ -543,7 +576,7 @@ class Pmi_Users_Sync_Admin {
 	 * @return array plugin settings
 	 */
 	private function get_options() {
-		$options = array(
+		return $options = array(
 			self::OPTION_OVERWRITE_PMI_ID        => get_option( self::OPTION_OVERWRITE_PMI_ID ),
 			self::OPTION_PMI_ID_CUSTOM_FIELD     => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
 			self::OPTION_USER_ROLE               => get_option( self::OPTION_USER_ROLE ),
@@ -552,6 +585,5 @@ class Pmi_Users_Sync_Admin {
 			self::OPTION_MEMBERSHIP              => get_option( self::OPTION_MEMBERSHIP ),
 			self::OPTION_MEMBERSHIP_TO_REMOVE    => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
 		);
-		return $options;
 	}
 }
