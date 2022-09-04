@@ -1,6 +1,6 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use Yoast\WPTestUtils\BrainMonkey\TestCase;
 
 class Test_Pmi_Users_Sync_Pmi_User_Excel_File_Loader extends TestCase
 {
@@ -18,7 +18,7 @@ class Test_Pmi_Users_Sync_Pmi_User_Excel_File_Loader extends TestCase
      * @return void
      * @beforeClass
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->excel_loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader(self::TEMP_PMI_EXCEL_FILE_PATH);
         $this->users = $this->excel_loader->load();
@@ -31,7 +31,7 @@ class Test_Pmi_Users_Sync_Pmi_User_Excel_File_Loader extends TestCase
      * 
      * @afterClass
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         unset($excel_loader);
         unset($users);
@@ -84,5 +84,4 @@ class Test_Pmi_Users_Sync_Pmi_User_Excel_File_Loader extends TestCase
         $excel_loader = new Pmi_Users_Sync_Pmi_User_Excel_File_Loader(self::TEMP_PMI_EXCEL_FILE_DOES_NOT_EXISTS_PATH);
         $users = $excel_loader->load();
     }
-
 }

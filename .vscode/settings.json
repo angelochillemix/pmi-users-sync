@@ -1,20 +1,10 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
-    // PHPCBF
-    "phpcbf.enable": true,
-    "phpcbf.onsave": true,
-    "phpcbf.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcbf",
-    "phpcbf.standard": "WordPress",
-    "phpcbf.documentFormattingProvider": true,
-    // PHPCS
-    "phpcs.enable": true,
-    "phpcs.executablePath": "/home/angelo/.config/composer/vendor/bin/phpcs",
-    "phpcs.standard": "WordPress",
     "[php]": {
         "editor.formatOnPaste": true,
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "persoderlind.vscode-phpcbf"
+        "editor.defaultFormatter": "wongjn.php-sniffer"
     },
     "[jsonc]": {
         "editor.defaultFormatter": "vscode.json-language-features"
@@ -92,5 +82,10 @@
         "zip",
         "zlib",
         "wordpress"
+    ],
+    "phpSniffer.snippetExcludeSniffs": [
+    	"/vendor/",
+	    "/node_modules/",
+        "/bin/",
     ],
 }
