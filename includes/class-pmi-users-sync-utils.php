@@ -87,7 +87,11 @@ class Pmi_Users_Sync_Utils {
 	public static function acf_field_exists( $field_name ) {
 		global $wpdb;
 		// TODO #3 Avoid direct call to database and use a cache mechanism.
-		$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) );
+		$acf_fields = wp_cache_get( 'acf_fields' );
+		if ( false === $acf_fields ) {
+			$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) ); // Get ACF fields from database.
+			wp_cache_set( 'acf_fields', $acf_fields, '', HOUR_IN_SECONDS );
+		}
 		if ( is_null( $acf_fields ) ) {
 			return false;
 		}
