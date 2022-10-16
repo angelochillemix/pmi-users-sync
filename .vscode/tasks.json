@@ -70,6 +70,27 @@
         "panel": "new"
       }
     },
+    {
+      "label": "Start Apache and MySQL servers",
+      "type": "shell",
+      "command": "sudo systemctl start apache2 & sudo systemctl start mysql",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "focus": true
+      }
+    },
+    {
+      "label": "Stop Apache and MySQL servers",
+      "type": "shell",
+      "command": "sudo systemctl stop apache2 & sudo systemctl stop mysql",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": true
+      }
+    }
   ],
   "inputs": [
     {
