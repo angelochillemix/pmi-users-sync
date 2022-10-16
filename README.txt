@@ -68,9 +68,13 @@ None
 
 ## Changelog
 
+### 1.4.1
+* Typo in README.txt
+* Delete doc folder since referncing the Component Service file directly from the original URL to ensure always the updated document is available
+
 ### 1.4.0
 * Distinguish caching of different ACF fields when checking thye exists
-* Improve this READM.txt with more post installation steps
+* Improve this README.txt with more post installation steps
 
 ### 1.3.0
 * Shows last PMI users synchronization date and time
