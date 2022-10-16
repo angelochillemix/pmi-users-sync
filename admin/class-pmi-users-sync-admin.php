@@ -24,6 +24,11 @@ use phpDocumentor\Reflection\Types\String_;
  */
 class Pmi_Users_Sync_Admin {
 
+	/**
+	 * The error message displayed to the user
+	 *
+	 * @var string
+	 */
 	private string $pus_error_message;
 
 	private const FIELD_ID_OVERWRITE_PMI_ID = 'overwrite_pmi_id';
@@ -104,18 +109,6 @@ class Pmi_Users_Sync_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-		/**
-		   * This function is provided for demonstration purposes only.
-		   *
-		   * An instance of this class should be passed to the run() function
-		   * defined in Pmi_Users_Sync_Loader as all of the hooks are defined
-		   * in that particular class.
-		   *
-		   * The Pmi_Users_Sync_Loader will then create the relationship
-		   * between the defined hooks and the functions defined in this
-		   * class.
-		   */
-
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/pmi-users-sync-admin.css', array(), $this->version, 'all' );
 	}
 
@@ -125,18 +118,6 @@ class Pmi_Users_Sync_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-		 /**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Pmi_Users_Sync_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Pmi_Users_Sync_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/pmi-users-sync-admin.js', array( 'jquery' ), $this->version, false );
 	}
 
@@ -454,7 +435,7 @@ class Pmi_Users_Sync_Admin {
 	 * @return array The list of users
 	 */
 	private function load_users() {
-		 $pus_users         = array(); // Initialize as an empty array.
+		$pus_users          = array(); // Initialize as an empty array.
 		$user_loader_option = get_option( self::OPTION_USER_LOADER ); // Check that the loader option is set.
 
 		Pmi_Users_Sync_Logger::log_information( 'Checking user loader option.' );
@@ -484,6 +465,12 @@ class Pmi_Users_Sync_Admin {
 		return $pus_users;
 	}
 
+	/**
+	 * Update the users list
+	 *
+	 * @param Pmi_Users_Sync_Pmi_User[] $pus_users The array of users from PMI to synchronize with the WordPress users.
+	 * @return void
+	 */
 	private function update_users( $pus_users ) {
 		Pmi_Users_Sync_Logger::log_information( 'Checking if ACF fields exist.' );
 		$pmi_id_custom_field_exists     = false;
@@ -536,7 +523,7 @@ class Pmi_Users_Sync_Admin {
 	 * @throws Exception If the users list is not set.
 	 */
 	public function pmi_users_list_page() {
-		 $this->empty_error_message();
+		$this->empty_error_message();
 
 		$pus_users = $this->load_users();
 		if ( isset( $_POST['update_users'] ) ) { // Update of the PMI-ID triggered manually.
@@ -567,7 +554,8 @@ class Pmi_Users_Sync_Admin {
 	 * Empty the error message to be displayed when the page is rendered
 	 */
 	private function empty_error_message(): string {
-		return $this->pus_error_message = '';
+		$this->pus_error_message = '';
+		return $this->pus_error_message;
 	}
 
 	/**

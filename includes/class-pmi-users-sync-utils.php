@@ -18,7 +18,8 @@
  */
 class Pmi_Users_Sync_Utils {
 
-	public const ACF_POST_TYPE = 'acf-field';
+	public const ACF_POST_TYPE   = 'acf-field';
+	public const ACF_POST_STATUS = 'publish';
 
 	/**
 	 * No instances allowed since this class is meant to contain only static method
@@ -85,18 +86,48 @@ class Pmi_Users_Sync_Utils {
 	 * @return bool true if the field is found, false otherwise
 	 */
 	public static function acf_field_exists( $field_name ) {
-		global $wpdb;
-		$cache_item_name = 'acf_fields_' . $field_name;
-		$acf_fields      = wp_cache_get( $cache_item_name );
-		if ( false === $acf_fields ) {
-			$acf_fields = $wpdb->get_results( $wpdb->prepare( "SELECT ID,post_parent,post_name FROM $wpdb->posts WHERE post_excerpt=%s AND post_type=%s", $field_name, self::ACF_POST_TYPE ) ); // Get ACF fields from database.
-			wp_cache_set( $cache_item_name, $acf_fields, '', HOUR_IN_SECONDS );
-		}
-		if ( is_null( $acf_fields ) ) {
-			return false;
-		}
-		return ( count( $acf_fields ) ) > 0;
+		$post = self::get_acf_field( $field_name );
+		return ( ! is_null( $post ) );
 	}
+
+	/**
+	 * Return the WP_Post ACF custom field represented by the passed name of the field
+	 *
+	 * @param string $field_name The name of the custom field.
+	 * @return WP_Post The WP_Post ACF custom field represented by the passed name of the field.
+	 */
+	public static function get_acf_field( $field_name ) : WP_Post | null {
+		$posts = self::get_acf_fields();
+		foreach ( $posts as $post ) {
+			if ( $field_name === $post->post_excerpt ) {
+				return $post;
+			}
+		}
+		return null;
+	}
+
+
+	/**
+	 * Return an array of WP_Post representing the custom fields of ACF if a Advanced Custom Field PMI-ID field is defined
+	 *
+	 * @return WP_Post[] An array of WP_Post representing the custom fields of ACF if a Advanced Custom Field PMI-ID field is defined
+	 */
+	public static function get_acf_fields() : array {
+		$cache_item_name = 'acf_fields';
+		$posts           = wp_cache_get( $cache_item_name );
+
+		if ( false === $posts ) {
+			$args       = array(
+				'post_type'   => self::ACF_POST_TYPE,
+				'post_status' => self::ACF_POST_STATUS,
+			);
+			$acf_fields = new WP_Query( $args );
+			$posts      = $acf_fields->get_posts();
+			wp_cache_set( $cache_item_name, $posts, '', HOUR_IN_SECONDS );
+		}
+		return $posts;
+	}
+
 
 	/**
 	 * Returns true if the matching conditions a user in WordPress and from PMI.
