@@ -94,9 +94,9 @@ class Pmi_Users_Sync_Utils {
 	 * Return the WP_Post ACF custom field represented by the passed name of the field
 	 *
 	 * @param string $field_name The name of the custom field.
-	 * @return WP_Post The WP_Post ACF custom field represented by the passed name of the field.
+	 * @return The WP_Post ACF custom field represented by the passed name of the field.
 	 */
-	public static function get_acf_field( $field_name ) : WP_Post | null {
+	public static function get_acf_field( $field_name ) {
 		$posts = self::get_acf_fields();
 		foreach ( $posts as $post ) {
 			if ( $field_name === $post->post_excerpt ) {

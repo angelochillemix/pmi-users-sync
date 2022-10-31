@@ -4,7 +4,7 @@ Donate link: https://paypal.me/angelochillemi
 Tags: pmi, users management
 Requires at least: 5.x
 Tested up to: 5.8.2
-Stable tag: 1.3.0
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,9 @@ None
 3. PMI Users page where PMI users list from Excel file or Web Serice are displayed. From this page it is possible to trigger a manual synchornization clicking the Update button.
 
 ## Changelog
+
+### 1.4.2
+* Fix null post returned when checking ACF fields exist by returning "WP_Post | null" notation applicable only starting with PHP 8.1
 
 ### 1.4.1
 * Typo in README.txt
