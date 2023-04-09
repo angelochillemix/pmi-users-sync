@@ -396,6 +396,8 @@ class Pmi_Users_Sync_Admin {
 			$value = $args['default'];
 		}
 
+		Pmi_Users_Sync_Logger::log_information( 'Found ' . count( $all_memberships ) . ' choices' );
+
 		$html = '<fieldset>';
 		foreach ( $all_memberships as $membership => $membership_config ) {
 			$checked = isset( $value[ $membership ] ) ? $value[ $membership ] : '0';
