@@ -42,7 +42,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 </head>
 
 <body>
-	<?php if ( $file_path ) { ?>
+	<?php if ( isset( $file_path ) ) { ?>
 		<h1>PMI Users from Excel file</h1>
 		<p><?php esc_html_e( 'Excel file path', 'pmi-users-sync' ); ?> <?php echo esc_html( $file_path ); ?></p>
 	<?php } else { ?>
@@ -60,7 +60,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	<?php } ?>
 	<br />
 	<?php if ( isset( $pus_last_synchronization_date ) && ! empty( $pus_last_synchronization_date ) ) { ?>
-		<p> <?php esc_html_e( 'Last synchronization on: ', 'pmi-users-sync' ) . esc_html_e( $pus_last_synchronization_date ); ?></p>
+		<p> <?php esc_html_e( 'Last synchronization on: ', 'pmi-users-sync' ) . esc_html_e( $pus_last_synchronization_date, 'pmi-users-sync' ); ?></p>
 	<?php } ?>
 
 
