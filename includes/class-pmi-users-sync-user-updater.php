@@ -72,22 +72,25 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 		foreach ( $wp_users as $wp_user ) {
 			foreach ( $users_to_synchronize as $index => $user ) {
 				$updated = false;
-				if ( $this->user_matched_condition( $wp_user, $user, $options ) ) {
-					foreach ( $this->user_attibute_updaters as $user_attibute_updater ) {
-						$user_attibute_updater->update( $wp_user, $user, $options );
-						$updated = $updated | $user_attibute_updater->is_updated();
-					}
+
+				if ( ! $this->user_matched_condition( $wp_user, $user, $options ) ) {
+					Pmi_Users_Sync_Logger::log_warning( sprintf( 'No match for %s. Removing attributes if set.', $wp_user->user_email ) );
+				}
+
+				foreach ( $this->user_attibute_updaters as $user_attibute_updater ) {
+					$user_attibute_updater->update( $wp_user, $user, $options );
+					$updated = $updated | $user_attibute_updater->is_updated();
+				}
 					// User updated. No need to loop all elements. Rest of users from PMI can be skipped.
 					// In addition, we can remove the user already synchronized.
-					if ( true === boolval( $updated ) ) {
-						unset( $users_to_synchronize[ $index ] );
-						break;
-					}
+				if ( true === boolval( $updated ) ) {
+					unset( $users_to_synchronize[ $index ] );
+					break;
+				}
 
 					// No update done. Log information.
-					if ( false === boolval( $updated ) ) {
-						Pmi_Users_Sync_Logger::log_information( __( 'User ', 'pmi-users-sync' ) . $user->get_first_name() . ' ' . $user->get_last_name() . __( ' with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not registered to the site', 'pmi-users-sync' ) );
-					}
+				if ( false === boolval( $updated ) ) {
+					Pmi_Users_Sync_Logger::log_information( __( 'User ', 'pmi-users-sync' ) . $user->get_first_name() . ' ' . $user->get_last_name() . __( ' with email ', 'pmi-users-sync' ) . $user->get_email() . __( ' not registered to the site', 'pmi-users-sync' ) );
 				}
 			}
 		}

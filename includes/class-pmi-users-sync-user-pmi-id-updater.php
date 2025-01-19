@@ -34,6 +34,7 @@ class Pmi_Users_Sync_User_Pmi_Id_Updater extends Pmi_Users_Sync_User_Attribute_U
 		// Checking if plugin options are set and users from WordPress and PMI match, else do nothing.
 		if ( ! array_key_exists( Pmi_Users_Sync_Admin::OPTION_PMI_ID_CUSTOM_FIELD, $options )
 			|| ! $this->user_matched_condition( $wp_user, $user, $options ) ) {
+			Pmi_Users_Sync_Logger::log_warning( sprintf( 'No match for %s', $wp_user->user_email ) );
 			return;
 		}
 

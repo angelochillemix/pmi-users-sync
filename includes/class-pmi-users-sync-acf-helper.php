@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The ACF Helper class
  *
@@ -20,11 +21,12 @@
  */
 class Pmi_Users_Sync_Acf_Helper {
 
+	private const POST_TYPE_ACF_FIELD        = 'acf-field';
+	private const POST_FIELD_NAME_MEMBERSHIP = 'choices';
 	/**
 	 * No instances of this class.
 	 */
-	private function __construct() {
-	}
+	private function __construct() {}
 
 	/**
 	 * Returns the membership settings from the ACF plugin
@@ -32,17 +34,40 @@ class Pmi_Users_Sync_Acf_Helper {
 	 * @return array
 	 */
 	public static function get_memberships_settings() {
-		$parameters        = array(
-			'post_type'    => 'acf-field',
-			'post_excerpt' => get_option( Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
-		);
-		$query_memberships = new WP_Query( $parameters );
-
-		if ( ! $query_memberships->have_posts() ) {
+		 // Check if ACF is active.
+		if ( ! function_exists( 'get_field_object' ) || ! function_exists( 'acf_get_field' ) ) {
+			Pmi_Users_Sync_Logger::log_error( 'ACF is not active. Cannot retrieve membership settings.' );
 			return array();
 		}
 
-		return get_field_object( $query_memberships->post->post_name )['choices'];
+		$option_value = get_option( Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD );
+		if ( empty( $option_value ) ) {
+			Pmi_Users_Sync_Logger::log_error( sprintf( 'Value for option "%s" is not set.', Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_CUSTOM_FIELD ) );
+			return array();
+		}
+
+		$field             = acf_get_field( $option_value );
+		$field_key_or_name = $field['key'];
+		Pmi_Users_Sync_Logger::log_information( sprintf( 'ACF Field key "%s" found.', $field_key_or_name ) );
+
+		if ( empty( $field_key_or_name ) ) {
+			Pmi_Users_Sync_Logger::log_error( 'Membership custom field option is not set.' );
+			return array();
+		}
+
+		$field = get_field_object( $field_key_or_name );
+
+		if ( ! $field ) {
+			Pmi_Users_Sync_Logger::log_error( sprintf( 'ACF Field with key or name "%s" not found.', $field_key_or_name ) );
+			return array();
+		}
+
+		if ( isset( $field[ self::POST_FIELD_NAME_MEMBERSHIP ] ) && is_array( $field[ self::POST_FIELD_NAME_MEMBERSHIP ] ) ) {
+			return $field[ self::POST_FIELD_NAME_MEMBERSHIP ];
+		} else {
+			Pmi_Users_Sync_Logger::log_error( sprintf( 'ACF Field with key or name "%s" does not have choices.', $field_key_or_name ) );
+			return array();
+		}
 	}
 
 	/**
