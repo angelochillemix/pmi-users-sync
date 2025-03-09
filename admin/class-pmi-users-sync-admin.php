@@ -199,7 +199,7 @@ class Pmi_Users_Sync_Admin {
 		 */
 		$config_array_menu = array(
 			'prefix'   => PMI_USERS_SYNC_PREFIX,
-			'tabs'     => false,
+			'tabs'     => true,
 			'menu'     =>
 			array(
 				'page_title' => __( 'PMI Users Sync Settings', 'pmi-users-sync' ),
@@ -217,6 +217,11 @@ class Pmi_Users_Sync_Admin {
 					'id'    => 'general_settings_section',
 					'title' => __( 'General Settings', 'pmi-users-sync' ),
 					'desc'  => __( 'Settings for PMI Users Sync plugin', 'pmi-users-sync' ),
+				),
+				array(
+					'id'    => 'membership_roles_settings_section',
+					'title' => __( 'Membership-Roles Mapping', 'pmi-users-sync' ),
+					'desc'  => __( 'Mapping between Membership and Roles', 'pmi-users-sync' ),
 				),
 				array(
 					'id'    => 'loader_settings_section',
@@ -346,23 +351,17 @@ class Pmi_Users_Sync_Admin {
 		$memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
 		foreach ( $memberships as $membership_slug ) {
 			$fields[ $membership_slug ] = array(
+				// TODO: To improve the code to use a single field for all the memberships.
 				'id'       => self::FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING . '_' . $membership_slug,
 				'label'    => $membership_slug,
 				'desc'     => __(
 					'Select the role for Membership',
 					'pmi-users-sync',
 				),
-				'type'     => 'select',
-				'default'  => 'Not Mapped',
+				'type'     => 'multicheck',
 				'callback' => array( $this, 'pmi_users_sync_memberships_roles_mapping_render_field' ),
 			);
 		}
-
-		$config_array_menu['sections']['membership_roles_settings_section'] = array(
-			'id'    => 'membership_roles_settings_section',
-			'title' => __( 'Membership-Roles Mapping', 'pmi-users-sync' ),
-			'desc'  => __( 'Mapping between Membership and Roles', 'pmi-users-sync' ),
-		);
 
 		$config_array_menu['fields']['membership_roles_settings_section'] = $fields;
 
@@ -390,21 +389,13 @@ class Pmi_Users_Sync_Admin {
 
 		$html = '<fieldset>';
 
-		$html .= sprintf( '<select class="%4$s" id="%1$s[%2$s]" name="%3$s" />', $args['section'], $args['id'], $args['name'], $args['class'] );
-		$html .= '<option value="">Not Mapped</option>';
-
 		$roles = wp_roles()->get_names();
 		foreach ( $roles as $role_name ) {
-			$selected = isset( $value ) && $value == $role_name ? ' selected' : '';
-			$html    .= sprintf(
-				'<option value="%1s"%2s>%3s</option>',
-				$role_name,
-				$selected,
-				$role_name
-			);
+			$checked = isset( $value[ $role_name ] ) ? $value[ $role_name ] : '0';
+			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $role_name );
+			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $role_name, checked( $checked, $role_name, false ), $args['name'] );
+			$html   .= sprintf( '%1$s</label><br>', $role_name );
 		}
-
-		$html .= sprintf( '</select>' );
 
 		$html .= '</fieldset>';
 		// @codingStandardsIgnoreLine
