@@ -1,12 +1,13 @@
 # PMI Users Sync
-Contributors: angelochillemix
-Donate link: https://paypal.me/angelochillemi
-Tags: pmi, users management
-Requires at least: 5.x
-Tested up to: 5.8.2
-Stable tag: 1.5.0
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+- Contributors: angelochillemix
+- Tags: pmi, users management
+- Requires at least: 5.x
+- Tested up to: 5.8.2
+- Stable tag: 1.5.0
+- License: GPLv2 or later
+- License URI: http://www.gnu.org/licenses/gpl-2.0.html
+
+---
 
 Synchronizes the ID of PMI (Project Management Institute) members with the same users registered to the site.
 
@@ -70,6 +71,8 @@ None
 
 ### 1.5.0
 * Improve INFO logging
+* Membership-Role Mapping
+  * Map a role to the membership to assign the proper WordPress role to the user.
 
 ### 1.4.2
 * Fix null post returned when checking ACF fields exist by returning "WP_Post | null" notation applicable only starting with PHP 8.1
@@ -115,3 +118,13 @@ None
 
 None
 
+
+## Support
+
+If you find my work valuable, consider supporting me with :coffee: , through **GitHub Sponsors**, **Buy Me a Coffee**, **PayPal**, or by giving a :star: to my repositories :blush:
+
+[![GitHub Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/angelochillemix)
+
+[![PayPal](https://img.shields.io/badge/support-paypal-%23003087?label=Donate&logo=PayPal)](https://paypal.me/angelochillemi)
+
+[![Buy Me A Coffee](https://img.shields.io/badge/support-buymeacoffee-222222.svg?style=flat-square)](https://www.buymeacoffee.com/angelochillemi)
