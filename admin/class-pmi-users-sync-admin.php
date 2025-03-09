@@ -71,6 +71,9 @@ class Pmi_Users_Sync_Admin {
 	private const FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE = 'user_memberships_to_remove_field';
 	public const OPTION_MEMBERSHIP_TO_REMOVE          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE;
 
+	private const FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING = 'user_memberships_roles_mapping_field';
+	public const OPTION_MEMBERSHIP_ROLES_MAPPING          = PMI_USERS_SYNC_PREFIX . self::FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING;
+
 	public const LOADER_LAST_SYNCHRONIZATION_DATE_TIME = PMI_USERS_SYNC_PREFIX . 'loader_last_synchronization_date_time';
 
 	/**
@@ -135,7 +138,7 @@ class Pmi_Users_Sync_Admin {
 				<p><?php esc_html_e( 'Install the plugin, create a custom field and set its name in the Settings page option "PMI-ID custom field"', 'pmi-users-sync' ); ?></p>
 			</div>
 			<?php
-			echo ob_get_clean();
+			echo wp_kses_post( ob_get_clean() );
 			return;
 		}
 
@@ -154,7 +157,7 @@ class Pmi_Users_Sync_Admin {
 				<p><?php esc_html_e( 'Install the ACF plugin, create the custom fields and set their name in the Settings page option "PMI-ID custom field" and "Membership custom field"', 'pmi-users-sync' ); ?></p>
 			</div>
 			<?php
-			echo ob_get_clean();
+			echo wp_kses_post( ob_get_clean() );
 		}
 	}
 
@@ -339,10 +342,75 @@ class Pmi_Users_Sync_Admin {
 			),
 		);
 
+		$fields      = array();
+		$memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
+		foreach ( $memberships as $membership_slug ) {
+			$fields[ $membership_slug ] = array(
+				'id'       => self::FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING . '_' . $membership_slug,
+				'label'    => $membership_slug,
+				'desc'     => __(
+					'Select the role for Membership',
+					'pmi-users-sync',
+				),
+				'type'     => 'select',
+				'default'  => 'Not Mapped',
+				'callback' => array( $this, 'pmi_users_sync_memberships_roles_mapping_render_field' ),
+			);
+		}
+
+		$config_array_menu['sections']['membership_roles_settings_section'] = array(
+			'id'    => 'membership_roles_settings_section',
+			'title' => __( 'Membership-Roles Mapping', 'pmi-users-sync' ),
+			'desc'  => __( 'Mapping between Membership and Roles', 'pmi-users-sync' ),
+		);
+
+		$config_array_menu['fields']['membership_roles_settings_section'] = $fields;
+
 		/**
 		 * Building the settings menu creating a new instance of the {@see Boo_Settings_Helper} class
 		 */
 		$settings_helper = new Boo_Settings_Helper( $config_array_menu );
+
+		unset( $settings_helper );
+		( $memberships );
+	}
+
+
+	/**
+	 * Callback function to render the list of memberships and roles mapping fields
+	 *
+	 * @param array $args The arguments from the Boo Settings Helper.
+	 * @return void
+	 */
+	public function pmi_users_sync_memberships_roles_mapping_render_field( $args ) {
+		$value = $args['value'];
+		if ( empty( $value ) ) {
+			$value = $args['default'];
+		}
+
+		$html = '<fieldset>';
+
+		$html .= sprintf( '<select class="%4$s" id="%1$s[%2$s]" name="%3$s" />', $args['section'], $args['id'], $args['name'], $args['class'] );
+		$html .= '<option value="">Not Mapped</option>';
+
+		$roles = wp_roles()->get_names();
+		foreach ( $roles as $role_name ) {
+			$selected = isset( $value ) && $value == $role_name ? ' selected' : '';
+			$html    .= sprintf(
+				'<option value="%1s"%2s>%3s</option>',
+				$role_name,
+				$selected,
+				$role_name
+			);
+		}
+
+		$html .= sprintf( '</select>' );
+
+		$html .= '</fieldset>';
+		// @codingStandardsIgnoreLine
+		echo $html;
+
+		unset( $roles, $html );
 	}
 
 	/**
@@ -359,24 +427,25 @@ class Pmi_Users_Sync_Admin {
 		}
 
 		$html = '<fieldset>';
-		foreach ( $all_roles as $role => $role_config ) {
-			$checked = isset( $value[ $role ] ) ? $value[ $role ] : '0';
-			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $role );
-			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $role, checked( $checked, $role, false ), $args['name'] );
+		foreach ( $all_roles as $role_config ) {
+			$checked = isset( $value[ $role_config['name'] ] ) ? $value[ $role_config['name'] ] : '0';
+			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $role_config['name'] );
+			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $role_config['name'], checked( $checked, $role_config['name'], false ), $args['name'] );
 			$html   .= sprintf( '%1$s</label><br>', $role_config['name'] );
 		}
 
 		switch ( $args['id'] ) {
 			case self::FIELD_ID_USER_ROLE:
-				$html .= __( 'The user role to set if user is found member of PMI', 'pmi-users-sync' );
+				$html .= __( 'The user role to set if user is member of PMI', 'pmi-users-sync' );
 				break;
 			case self::FIELD_ID_USER_ROLE_TO_REMOVE:
-				$html .= __( 'The user role to remove if user is not found member of PMI', 'pmi-users-sync' );
+				$html .= __( 'The user role to remove if user is not member of PMI', 'pmi-users-sync' );
 				break;
 			default:
 				break;
 		}
 		$html .= '</fieldset>';
+		// @codingStandardsIgnoreLine
 		echo $html;
 		unset( $all_roles, $html );
 	}
@@ -408,15 +477,16 @@ class Pmi_Users_Sync_Admin {
 
 		switch ( $args['id'] ) {
 			case self::FIELD_ID_USER_MEMBERSHIPS:
-				$html .= __( 'The user membership to set if user is found member of PMI', 'pmi-users-sync' );
+				$html .= __( 'The user membership to set if user is member of PMI', 'pmi-users-sync' );
 				break;
 			case self::FIELD_ID_USER_MEMBERSHIPS_TO_REMOVE:
-				$html .= __( 'The user membership to remove if user is not found member of PMI', 'pmi-users-sync' );
+				$html .= __( 'The user membership to remove if user is not member of PMI', 'pmi-users-sync' );
 				break;
 			default:
 				break;
 		}
 		$html .= '</fieldset>';
+		// @codingStandardsIgnoreLine
 		echo $html;
 		unset( $all_memberships, $html );
 	}
@@ -567,13 +637,14 @@ class Pmi_Users_Sync_Admin {
 	 */
 	private function get_options() {
 		return array(
-			self::OPTION_OVERWRITE_PMI_ID        => get_option( self::OPTION_OVERWRITE_PMI_ID ),
-			self::OPTION_PMI_ID_CUSTOM_FIELD     => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
-			self::OPTION_USER_ROLE               => get_option( self::OPTION_USER_ROLE ),
-			self::OPTION_USER_ROLE_TO_REMOVE     => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
-			self::OPTION_MEMBERSHIP_CUSTOM_FIELD => get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
-			self::OPTION_MEMBERSHIP              => get_option( self::OPTION_MEMBERSHIP ),
-			self::OPTION_MEMBERSHIP_TO_REMOVE    => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
+			self::OPTION_OVERWRITE_PMI_ID         => get_option( self::OPTION_OVERWRITE_PMI_ID ),
+			self::OPTION_PMI_ID_CUSTOM_FIELD      => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
+			self::OPTION_USER_ROLE                => get_option( self::OPTION_USER_ROLE ),
+			self::OPTION_USER_ROLE_TO_REMOVE      => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
+			self::OPTION_MEMBERSHIP_CUSTOM_FIELD  => get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
+			self::OPTION_MEMBERSHIP               => get_option( self::OPTION_MEMBERSHIP ),
+			self::OPTION_MEMBERSHIP_TO_REMOVE     => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
+			self::OPTION_MEMBERSHIP_ROLES_MAPPING => get_option( self::OPTION_MEMBERSHIP_ROLES_MAPPING ),
 		);
 	}
 }

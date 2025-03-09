@@ -20,11 +20,8 @@
  * @author     Angelo Chillemi <info@angelochillemi.com>
  */
 class Pmi_Users_Sync_Acf_Helper {
-	private const POST_TYPE_ACF_FIELD        = 'acf-field';
 	private const POST_FIELD_NAME_MEMBERSHIP = 'choices';
 
-	private const POST_TYPE_ACF_FIELD        = 'acf-field';
-	private const POST_FIELD_NAME_MEMBERSHIP = 'choices';
 	/**
 	 * No instances of this class.
 	 */

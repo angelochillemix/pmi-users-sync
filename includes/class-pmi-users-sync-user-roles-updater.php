@@ -52,6 +52,7 @@ class Pmi_Users_Sync_User_Roles_Updater extends Pmi_Users_Sync_User_Attribute_Up
 
 			// Retrieves the roles to set from the plugin settings.
 			$roles = $options[ Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE ];
+			Pmi_Users_Sync_Logger::log_information( sprintf( 'Removing roles for users with email %s.', $wp_user->user_email ) );
 
 			// Remove the roles set in the plugin settings.
 			foreach ( $roles as $role ) {
