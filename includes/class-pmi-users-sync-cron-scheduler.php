@@ -30,15 +30,15 @@ class Pmi_Users_Sync_Cron_Scheduler {
 	 */
 	public const PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK = 'pus_update_users_pmi_id';
 
-	// Schedules constants that can be set from the plugin options: 
-	// daily, weekly, monthly, quarterly, every two minutes
+	// Schedules constants that can be set from the plugin options:
+	// daily, weekly, monthly, quarterly, every two minutes.
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_DAILY             = 'daily';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_WEEKLY            = 'weekly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY           = 'pus_monthly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_QUARTERLY         = 'pus_quarterly';
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_EVERY_TWO_MINUTES = 'pus_every_two_minutes';
 
-	// Default synchronization schedule
+	// Default synchronization schedule.
 	public const PMI_USERS_SYNC_CRON_SCHEDULE_DEFAULT = self::PMI_USERS_SYNC_CRON_SCHEDULE_MONTHLY;
 
 	/**
@@ -182,6 +182,12 @@ class Pmi_Users_Sync_Cron_Scheduler {
 			Pmi_Users_Sync_Admin::OPTION_USER_ROLE        => get_option( Pmi_Users_Sync_Admin::OPTION_USER_ROLE ),
 			Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE => get_option( Pmi_Users_Sync_Admin::OPTION_USER_ROLE_TO_REMOVE ),
 		);
+
+		$memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
+		foreach ( $memberships as $membership_slug ) {
+			$options[ Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_ROLES_MAPPING . '_' . $membership_slug ] = get_option( Pmi_Users_Sync_Admin::OPTION_MEMBERSHIP_ROLES_MAPPING );
+		}
+
 		Pmi_Users_Sync_User_Updater::get_user_updater()->update( $users, $options );
 	}
 }

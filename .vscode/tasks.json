@@ -21,11 +21,14 @@
       }
     },
     {
-      "label": "Run Tests",
+      "label": "Run Wordpress Tests",
       "type": "shell",
       "command": "./vendor/bin/phpunit",
       "args": [
-        "-v"
+         "-v",
+         "-dxdebug.mode=debug,develop",
+         "-dxdebug.profiler_enable=on",
+         "-dxdebug.idekey=VSCODE",
       ],
       "group": "test",
       "presentation": {
@@ -33,6 +36,10 @@
         "panel": "new",
         "focus": true
       }
+    },
+    {
+      "label": "Run Wordpress Tests (with logs permission)",
+      "dependsOn": ["Make logs writable", "Run Wordpress Tests"]
     },
     {
       "label": "Plugin zip",
@@ -68,6 +75,17 @@
       "presentation": {
         "reveal": "always",
         "panel": "new"
+      }
+    },
+    {
+      "label": "Make logs writable",
+      "type": "shell",
+      "command": "sudo chmod a+w /home/angelo/Development/Projects/web/wordpress/wp-content/plugins/pmi-users-sync/admin/logs/*.log",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared" 
       }
     },
     {

@@ -75,6 +75,7 @@ class Pmi_Users_Sync_User_Updater extends Pmi_Users_Sync_User_Abstract_Updater {
 
 				if ( ! $this->user_matched_condition( $wp_user, $user, $options ) ) {
 					Pmi_Users_Sync_Logger::log_warning( sprintf( 'No match for %s. Removing attributes if set.', $wp_user->user_email ) );
+					continue;
 				}
 
 				foreach ( $this->user_attibute_updaters as $user_attibute_updater ) {

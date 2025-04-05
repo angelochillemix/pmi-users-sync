@@ -21,6 +21,7 @@ class Pmi_Users_Sync_Logger {
 	const LOG_FILE_NAME = PMI_USERS_SYNC_PREFIX . 'log.log';
 	const LOG_DIR_PATH  = PMI_USERS_SYNC_PLUGIN_DIR_ADMIN . 'logs/';
 	const LOG_FILE_PATH = self::LOG_DIR_PATH . self::LOG_FILE_NAME;
+	const LOG_LEVEL     = Logger::DEBUG;
 
 	/**
 	 * The logger instance
@@ -44,7 +45,7 @@ class Pmi_Users_Sync_Logger {
 		if ( null === self::$log ) {
 			// Create a log channel.
 			self::$log = new Logger( self::LOG_FILE_NAME );
-			self::$log->pushHandler( new RotatingFileHandler( self::LOG_FILE_PATH, 5, Logger::INFO ) );
+			self::$log->pushHandler( new RotatingFileHandler( self::LOG_FILE_PATH, 5, self::LOG_LEVEL ) );
 		}
 		return self::$log;
 	}
@@ -80,5 +81,16 @@ class Pmi_Users_Sync_Logger {
 	 */
 	public static function log_warning( $message, $context = array() ) {
 		self::get_log()->warning( $message, $context );
+	}
+
+	/**
+	 * Log information in the log file
+	 *
+	 * @param string $message The message to log.
+	 * @param array  $context The context.
+	 * @return void
+	 */
+	public static function log_debug( $message, $context = array() ) {
+		self::get_log()->debug( $message, $context );
 	}
 }

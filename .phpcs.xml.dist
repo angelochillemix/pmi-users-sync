@@ -49,4 +49,12 @@
 	<!-- Add in some extra rules from other standards. -->
 	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
 	<rule ref="Generic.Commenting.Todo"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.InvalidPrefixPassed">
+        <exclude-pattern>*.php</exclude-pattern>
+    </rule>
+
+	<rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+        <exclude-pattern>*.php</exclude-pattern>
+    </rule>
 </ruleset>

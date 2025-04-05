@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -193,6 +192,7 @@ class Pmi_Users_Sync_Admin {
 		// Adding the main menu item at admin menu level.
 		add_menu_page( esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), esc_html__( 'PMI Users Sync', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', array( $this, 'pmi_users_list_page' ), 'dashicons-id-alt' );
 		add_submenu_page( PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__( 'PMI Users', 'pmi-users-sync' ), esc_html__( 'PMI Users', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options' );
+		add_submenu_page( PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options', esc_html__( 'Users Membership/Role Mapping', 'pmi-users-sync' ), esc_html__( 'Users Membership/Role Mapping', 'pmi-users-sync' ), 'manage_options', PMI_USERS_SYNC_PREFIX . 'pmi_users_membership_role_mapping_options', array( $this, 'pmi_membership_roles_list_page' ) );
 
 		/**
 		 * Build the menu configuration array for the Boo Settings Helper class
@@ -201,16 +201,16 @@ class Pmi_Users_Sync_Admin {
 			'prefix'   => PMI_USERS_SYNC_PREFIX,
 			'tabs'     => true,
 			'menu'     =>
-			array(
-				'page_title' => __( 'PMI Users Sync Settings', 'pmi-users-sync' ),
-				'menu_title' => __( 'Settings', 'pmi-users-sync' ),
-				'capability' => 'manage_options',
-				'slug'       => 'pmi_users_sync_options',
-				'icon'       => 'dashicons-id-alt',
-				'position'   => 70,
-				'parent'     => PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options',
-				'submenu'    => true,
-			),
+				array(
+					'page_title' => __( 'PMI Users Sync Settings', 'pmi-users-sync' ),
+					'menu_title' => __( 'Settings', 'pmi-users-sync' ),
+					'capability' => 'manage_options',
+					'slug'       => 'pmi_users_sync_options',
+					'icon'       => 'dashicons-id-alt',
+					'position'   => 70,
+					'parent'     => PMI_USERS_SYNC_PREFIX . 'pmi_users_sync_options',
+					'submenu'    => true,
+				),
 			'sections' =>
 			array(
 				array(
@@ -349,10 +349,10 @@ class Pmi_Users_Sync_Admin {
 
 		$fields      = array();
 		$memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
-		foreach ( $memberships as $membership_slug ) {
-			$fields[ $membership_slug ] = array(
+		foreach ( $memberships as $membership => $membership_slug ) {
+			$fields[ $membership ] = array(
 				// TODO: To improve the code to use a single field for all the memberships.
-				'id'       => self::FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING . '_' . $membership_slug,
+				'id'       => self::FIELD_ID_USER_MEMBERSHIPS_ROLES_MAPPING . '_' . $membership,
 				'label'    => $membership_slug,
 				'desc'     => __(
 					'Select the role for Membership',
@@ -389,12 +389,11 @@ class Pmi_Users_Sync_Admin {
 
 		$html = '<fieldset>';
 
-		$roles = wp_roles()->get_names();
-		foreach ( $roles as $role_name ) {
-			$checked = isset( $value[ $role_name ] ) ? $value[ $role_name ] : '0';
-			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $role_name );
-			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $role_name, checked( $checked, $role_name, false ), $args['name'] );
-			$html   .= sprintf( '%1$s</label><br>', $role_name );
+		foreach ( wp_roles()->roles as $index => $role ) {
+			$checked = isset( $value[ $index ] ) ? $value[ $index ] : '0';
+			$html   .= sprintf( '<label for="%1$s[%2$s][%3$s]">', $args['section'], $args['id'], $index );
+			$html   .= sprintf( '<input type="checkbox" class="checkbox" id="%1$s[%2$s][%3$s]" name="%5$s[%3$s]" value="%3$s" %4$s />', $args['section'], $args['id'], $index, checked( $checked, $index, false ), $args['name'], $role['name'] );
+			$html   .= sprintf( '%1$s</label><br>', $role['name'] );
 		}
 
 		$html .= '</fieldset>';
@@ -580,6 +579,79 @@ class Pmi_Users_Sync_Admin {
 	}
 
 	/**
+	 * Updates the users' membership/role mapping manually.
+	 *
+	 * This function is responsible for updating the users' membership/role map based on the provided data.
+	 * It checks if the necessary data is available and performs the update accordingly.
+	 *
+	 * @throws Exception If an error occurs during the update process.
+	 */
+	private function update_users_membership_role_map(): void {
+		try {
+			// TODO #9 Move the code to an AJAX call to synchronize the users in background.
+
+			// Update of the membership/role map manually.
+			if ( isset( $_POST['membership_role_map'] ) ) {
+				Pmi_Users_Sync_Logger::log_information( 'Updating the users.' );
+				if (
+				 ! isset( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] )
+				 || ! wp_verify_nonce( htmlspecialchars( sanitize_text_field( wp_unslash( $_POST[ PMI_USERS_SYNC_PREFIX . 'nonce_field' ] ) ) ), PMI_USERS_SYNC_PREFIX . 'nonce_action' )
+				) {
+					Pmi_Users_Sync_Logger::log_error( __( 'Nonce failed!', 'pmi-users-sync' ) );
+					wp_nonce_ays( '' );
+				}
+				Pmi_Users_Sync_Logger::log_information( __( 'Mapping memeberships and roles of the users', 'pmi-users-sync' ) );
+				$this->execute_update_users_membership_role_map();
+				$this->pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
+			}
+		} catch ( Exception $exception ) {
+			$this->pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
+			Pmi_Users_Sync_Logger::log_error( $this->pus_error_message . ' Error is: ', 'pmi-users-sync' ) . $exception->getMessage();
+		}
+	}
+
+	/**
+	 * Updates the users' membership/role mapping based on the current plugin settings.
+	 *
+	 * This function is responsible for updating the users' membership/role map based on the current plugin settings.
+	 * It uses the {@see Pmi_Users_Sync_User_Updater_Factory::create_user_updater_for_membership_role_mapping()} to update the users' roles
+	 * based on the plugin settings.
+	 *
+	 * @throws Exception If an error occurs during the update process.
+	 */
+	public function execute_update_users_membership_role_map(): void {
+		Pmi_Users_Sync_User_Updater_Factory::create_user_updater_for_membership_role_mapping()->update(
+			array(),
+			$this->get_membership_role_map_options()
+		);
+	}
+
+
+	/**
+	 * Displays the page with the list of PMI memberships and their corresponding WordPress roles.
+	 *
+	 * This function handles the rendering of the page with the list of PMI memberships and their corresponding WordPress roles.
+	 * It also handles the manual update of the membership/role map.
+	 *
+	 * @return void
+	 * @throws Exception If an error occurs during the rendering process.
+	 */
+	public function pmi_membership_roles_list_page(): void {
+		$this->empty_error_message();
+
+		// Check if the membership/role map needs to be updated manually.
+		if ( isset( $_POST['membership_role_map'] ) && check_admin_referer( PMI_USERS_SYNC_PREFIX . 'nonce_action', PMI_USERS_SYNC_PREFIX . 'nonce_field' ) ) {
+			$this->update_users_membership_role_map();
+		}
+
+		// Log the information about rendering the membership/roles mapping page.
+		Pmi_Users_Sync_Logger::log_information( 'Rendering the membership/roles mapping page.' );
+
+		// Include the partial file to display the membership/roles mapping page.
+		require_once plugin_dir_path( __FILE__ ) . 'partials/pmi-users-sync-admin-membership-role-display.php';
+	}
+
+	/**
 	 * Shows the list of users from the Excel file
 	 *
 	 * @return void
@@ -589,7 +661,7 @@ class Pmi_Users_Sync_Admin {
 		$this->empty_error_message();
 
 		$pus_users = $this->load_users();
-		if ( isset( $_POST['update_users'] ) ) { // Update of the PMI-ID triggered manually.
+		if ( isset( $_POST['update_users'] ) && check_admin_referer( PMI_USERS_SYNC_PREFIX . 'nonce_action', PMI_USERS_SYNC_PREFIX . 'nonce_field' ) ) { // Update of the PMI-ID triggered manually.
 			$this->update_users( $pus_users );
 		}
 
@@ -628,14 +700,28 @@ class Pmi_Users_Sync_Admin {
 	 */
 	private function get_options() {
 		return array(
-			self::OPTION_OVERWRITE_PMI_ID         => get_option( self::OPTION_OVERWRITE_PMI_ID ),
-			self::OPTION_PMI_ID_CUSTOM_FIELD      => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
-			self::OPTION_USER_ROLE                => get_option( self::OPTION_USER_ROLE ),
-			self::OPTION_USER_ROLE_TO_REMOVE      => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
-			self::OPTION_MEMBERSHIP_CUSTOM_FIELD  => get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
-			self::OPTION_MEMBERSHIP               => get_option( self::OPTION_MEMBERSHIP ),
-			self::OPTION_MEMBERSHIP_TO_REMOVE     => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
-			self::OPTION_MEMBERSHIP_ROLES_MAPPING => get_option( self::OPTION_MEMBERSHIP_ROLES_MAPPING ),
+			self::OPTION_OVERWRITE_PMI_ID        => get_option( self::OPTION_OVERWRITE_PMI_ID ),
+			self::OPTION_PMI_ID_CUSTOM_FIELD     => get_option( self::OPTION_PMI_ID_CUSTOM_FIELD ),
+			self::OPTION_USER_ROLE               => get_option( self::OPTION_USER_ROLE ),
+			self::OPTION_USER_ROLE_TO_REMOVE     => get_option( self::OPTION_USER_ROLE_TO_REMOVE ),
+			self::OPTION_MEMBERSHIP_CUSTOM_FIELD => get_option( self::OPTION_MEMBERSHIP_CUSTOM_FIELD ),
+			self::OPTION_MEMBERSHIP              => get_option( self::OPTION_MEMBERSHIP ),
+			self::OPTION_MEMBERSHIP_TO_REMOVE    => get_option( self::OPTION_MEMBERSHIP_TO_REMOVE ),
 		);
+	}
+
+	/**
+	 * Returns the options for the mapping of membership and roles.
+	 *
+	 * @return array The options for the mapping of membership and roles
+	 */
+	private function get_membership_role_map_options() : array {
+		$options = array();
+
+		$memberships = Pmi_Users_Sync_Acf_Helper::get_memberships_settings();
+		foreach ( $memberships as $membership => $membership_slug ) {
+			$options[ self::OPTION_MEMBERSHIP_ROLES_MAPPING . '_' . $membership ] = get_option( self::OPTION_MEMBERSHIP_ROLES_MAPPING . '_' . $membership );
+		}
+		return $options;
 	}
 }

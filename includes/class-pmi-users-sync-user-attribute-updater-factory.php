@@ -33,20 +33,25 @@ class Pmi_Users_Sync_User_Attribute_Updater_Factory {
 	}
 
 	/**
-	 * Returns the instance of the User Attribute Updater
+	 * Returns the instance of the User Attribute Updater.
 	 *
-	 * @param string $class The name of the attribute updater class.
-	 * @return Pmi_Users_Sync_User_Attribute_Updater The instance of the User Updater.
+	 * @param string $class_name The name of the attribute updater class.
+	 * @return Pmi_Users_Sync_User_Attribute_Updater|null The instance of the User Updater, or null if the class does not exist.
+	 * @throws InvalidArgumentException If the class does not exist or does not implement the expected interface.
 	 */
-	public static function get_user_attribute_updater( $class ): Pmi_Users_Sync_User_Attribute_Updater {
-		$instance = null;
-		if ( array_key_exists( $class, self::$user_attribute_updater_instances ) ) {
-			$instance = self::$user_attribute_updater_instances[ $class ];
+	public static function get_user_attribute_updater( string $class_name ): ?Pmi_Users_Sync_User_Attribute_Updater {
+		if ( ! class_exists( $class_name ) ) {
+			throw new InvalidArgumentException( "Class {$class_name} does not exist." );
 		}
-		if ( ! isset( $instance ) || null === $instance ) {
-			$instance = new $class();
-			self::$user_attribute_updater_instances[ $class ] = $instance;
+
+		if ( ! array_key_exists( $class_name, self::$user_attribute_updater_instances ) ) {
+			$instance = new $class_name();
+			if ( ! $instance instanceof Pmi_Users_Sync_User_Attribute_Updater ) {
+				throw new InvalidArgumentException( "Class {$class_name} must implement Pmi_Users_Sync_User_Attribute_Updater." );
+			}
+			self::$user_attribute_updater_instances[ $class_name ] = $instance;
 		}
-		return $instance;
+
+		return self::$user_attribute_updater_instances[ $class_name ] ?? null;
 	}
 }

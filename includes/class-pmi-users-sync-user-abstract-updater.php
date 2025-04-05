@@ -34,6 +34,13 @@ abstract class Pmi_Users_Sync_User_Abstract_Updater {
 	protected $user_attibute_updaters;
 
 	/**
+	 * The list of updaters class name registered.
+	 *
+	 * @var array
+	 */
+	protected $user_attibute_updaters_class_names;
+
+	/**
 	 * Undocumented variable
 	 *
 	 * @var string $last_synchronization_date_time The last synchronization date and time in the format 'Y-M-d H:i T'
@@ -89,11 +96,46 @@ abstract class Pmi_Users_Sync_User_Abstract_Updater {
 	 * @return void
 	 */
 	public function register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater $user_attribute_updater ) {
-		$found = array_search( $user_attribute_updater, $this->user_attibute_updaters, true );
-		if ( $found ) {
+		if ( ! is_array( $this->user_attibute_updaters ) ) {
+			$this->user_attibute_updaters = array();
+		}
+		if ( ! is_array( $this->user_attibute_updaters_class_names ) ) {
+			$this->user_attibute_updaters_class_names = array();
+		}
+
+		$class_name = get_class( $user_attribute_updater );
+
+		if ( in_array( $class_name, $this->user_attibute_updaters_class_names, true ) ) {
 			return;
 		}
+
+		Pmi_Users_Sync_Logger::log_debug( sprintf( 'Registering user attribute updater %s', $class_name ) );
+
 		array_push( $this->user_attibute_updaters, $user_attribute_updater );
+		array_push( $this->user_attibute_updaters_class_names, $class_name );
 	}
 
+	/**
+	 * Returns the list of updaters to invoke to update the user's attributes.
+	 *
+	 * @return string[] The list of updaters to invoke to update the user's attributes.
+	 */
+	public function get_user_attribute_updaters() {
+		if ( ! is_array( $this->user_attibute_updaters ) ) {
+			return array();
+		}
+		return array_map( 'get_class', $this->user_attibute_updaters );
+	}
+
+	/**
+	 * Returns the list of updaters to invoke to update the user's attributes.
+	 *
+	 * @return string[] The list of updaters to invoke to update the user's attributes.
+	 */
+	public function get_user_attribute_updaters_class_name() {
+		if ( ! is_array( $this->user_attibute_updaters_class_names ) ) {
+			return array();
+		}
+		return $this->user_attibute_updaters_class_names;
+	}
 }

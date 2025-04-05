@@ -38,6 +38,21 @@ class Pmi_Users_Sync_User_Updater_Factory {
 		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Pmi_Id_Updater::class ) );
 		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Roles_Updater::class ) );
 		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Memberships_Updater::class ) );
+		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Membership_Roles_Mapping_Updater::class ) );
+		return $user_updater;
+	}
+
+	/**
+	 * Returns the initialized instance of {@see Pmi_Users_Sync_User_Updater}
+	 * configured to update only the roles of the user based on the membership/role
+	 * mapping.
+	 *
+	 * @return Pmi_Users_Sync_User_Updater The updater used to update the user's roles
+	 *                                     based on the membership/role map.
+	 */
+	public static function create_user_updater_for_membership_role_mapping() {
+		$user_updater = Pmi_Users_Sync_User_Memberships_Roles_Updater::get_user_updater();
+		$user_updater->register_user_attribute_updater( Pmi_Users_Sync_User_Attribute_Updater_Factory::get_user_attribute_updater( Pmi_Users_Sync_User_Membership_Roles_Mapping_Updater::class ) );
 		return $user_updater;
 	}
 }

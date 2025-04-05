@@ -37,23 +37,22 @@ if ( ! current_user_can( 'manage_options' ) ) {
 <html lang="en">
 
 <head>
-	<title>PMI Users List</title>
-
+	<title>Membership/Role Mapping</title>
 </head>
 
 <body>
-	<?php if ( isset( $file_path ) ) { ?>
-		<h1>PMI Users from Excel file</h1>
-		<p><?php esc_html_e( 'Excel file path', 'pmi-users-sync' ); ?> <?php echo esc_html( $file_path ); ?></p>
-	<?php } else { ?>
-		<h1>PMI Users from PMI web service</h1>
-	<?php } ?>
-	<p><?php esc_html_e( 'Update the PMI ID of the users', 'pmi-users-sync' ); ?></p>
+	<div class="notice">
+		<p><strong>Memberships/Roles Mapping:&nbsp;</strong><?php esc_html_e( 'Memberships/Roles Mapping can be set in the related settings page', 'pmi-users-sync' ); ?></p><p><a href="/wordpress/wp-admin/admin.php?page=pmi_users_sync_options&tab=membership_roles_settings_section"><?php esc_html_e( 'Click here to access the settings page', 'pmi-users-sync' ); ?></a></p>
+	</div>
+	<div class="notice notice-warning">
+		<p><?php esc_html_e( 'If a user has no membership then it will be assigned the role subscriber by default', 'pmi-users-sync' ); ?></a></p>
+	</div>
+
+	<p><?php esc_html_e( 'Manually update the mapping of the memberships to the roles of the users based on the settings', 'pmi-users-sync' ); ?></p>
 	<form id="update_users_form" method="POST">
-		<input type="submit" name="update_users" value="<?php esc_html_e( 'Update', 'pmi-users-sync' ); ?>">Update the PMI-ID of the users</input>
+		<input type="submit" name="membership_role_map" value="<?php esc_html_e( 'Map Membership/Role', 'pmi-users-sync' ); ?>"/>
 		<?php wp_nonce_field( PMI_USERS_SYNC_PREFIX . 'nonce_action', PMI_USERS_SYNC_PREFIX . 'nonce_field' ); ?>
 	</form>
-
 	<br />
 	<?php if ( ! empty( $pus_error_message ) ) : ?>
 		<p><?php echo nl2br( esc_html( $pus_error_message ) ); ?></p>
@@ -70,26 +69,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	</p>
 	<?php } ?>
 
-	<?php if ( isset( $pus_users ) && ! empty( $pus_users ) ) { ?>
-		<p><?php esc_html_e( 'Found ', 'pmi-users-sync' ); ?> <?php echo esc_html( count( $pus_users ) ); ?> <?php echo esc_html( ' users' ); ?></p>
-		<table class="styled-table">
-			<caption>List of PMI users</caption>
-			<thead>
-				<th>PMI ID</th>
-				<th>First name</th>
-				<th>Last name</th>
-				<th>Email</th>
-			</thead>
-			<?php foreach ( $pus_users as $pus_user ) : ?>
-				<tr>
-					<td><?php echo esc_html( $pus_user->get_pmi_id() ); ?></td>
-					<td><?php echo esc_html( $pus_user->get_first_name() ); ?></td>
-					<td><?php echo esc_html( $pus_user->get_last_name() ); ?></td>
-					<td><?php echo esc_html( $pus_user->get_email() ); ?></td>
-				</tr>
-			<?php endforeach; ?>
-		</table>
-	<?php } ?>
 </body>
 
 </html>

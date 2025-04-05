@@ -171,6 +171,11 @@ class Pmi_Users_Sync {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-updater.php';
 
 		/**
+		 * The class responsible to synchronize the WP users with PMI users
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-memberships-roles-updater.php';
+
+		/**
 		 * The class responsible to log messages to the log file
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-logger.php';
@@ -218,6 +223,11 @@ class Pmi_Users_Sync {
 		/**
 		 * The class responsible to synchronize and update the memberships.
 		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-user-membership-roles-mapping-updater.php';
+
+		/**
+		 * The class responsible to synchronize and update the memberships.
+		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . '/includes/class-pmi-users-sync-acf-helper.php';
 
 		/**
@@ -250,7 +260,7 @@ class Pmi_Users_Sync {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @throws Exception Throws an exception if the scheduler instance is null.
+	 * @throws InvalidArgumentException Throws an exception if the scheduler instance is null.
 	 */
 	private function define_admin_hooks() {
 		$plugin_admin = new Pmi_Users_Sync_Admin( $this->get_plugin_name(), $this->get_version() );
@@ -275,6 +285,9 @@ class Pmi_Users_Sync {
 		 */
 		$this->loader->add_filter( 'cron_schedules', $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_CUSTOM_SCHEDULE_CALLBACK );
 		$this->loader->add_action( Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_HOOK, $this->scheduler, Pmi_Users_Sync_Cron_Scheduler::PMI_USERS_SYNC_CRON_SCHEDULED_CALLBACK );
+
+		$this->loader->add_action( 'user_register', $plugin_admin, 'execute_update_users_membership_role_map' );
+		$this->loader->add_action( 'profile_update', $plugin_admin, 'execute_update_users_membership_role_map', 10 );
 	}
 
 	/**

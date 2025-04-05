@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The ACF Helper class
  *

@@ -40,7 +40,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<!-- Value: replace the function, class, and variable prefixes used. Separate multiple prefixes with a comma. -->
-			<property name="prefixes" type="array" value="pmi_users_sync"/>
+			<property name="prefixes" type="array" value="PMI_USERS_SYNC,Pmi_Users_Sync,pmi-users-sync,pus,pmi_users_sync"/>
 		</properties>
 	</rule>
 	<rule ref="WordPress.WP.I18n">
@@ -59,4 +59,12 @@
 	<!-- Add in some extra rules from other standards. -->
 	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter"/>
 	<rule ref="Generic.Commenting.Todo"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.InvalidPrefixPassed">
+        <exclude-pattern>*.php</exclude-pattern>
+    </rule>
+
+	<rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+        <exclude-pattern>*.php</exclude-pattern>
+    </rule>
 </ruleset>
