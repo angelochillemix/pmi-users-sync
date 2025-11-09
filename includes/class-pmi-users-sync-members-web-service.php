@@ -104,10 +104,19 @@ class Pmi_Users_Sync_Members_Web_Service {
 			'uri'          => $method_namespace,
 		);
 
-		$soap_client = new SoapClient( null, $array_options );
-		$soap_client->__setSoapHeaders( array( $auth_header ) );
-
 		try {
+			$soap_client = new SoapClient( null, $array_options );
+			$soap_client->__setSoapHeaders( array( $auth_header ) );
+
+			$last_run = $this->get_last_run( $soap_client, $method_namespace, $service_name );
+
+			$baseline_date = new DateTime( '2001-01-01' );
+			$last_run_date = new DateTime( $last_run->LastRun );
+
+			if ( $last_run_date <= $baseline_date ) {
+				return $last_run;
+			}
+
 			// Build method call.
 			$arguments           = array();
 			$action              = array(
@@ -122,6 +131,26 @@ class Pmi_Users_Sync_Members_Web_Service {
 			throw $fault;
 		}
 	}
+
+	/**
+	 * Retrieve the last run date of the GetMemberExtractReport method.
+	 *
+	 * @param SoapClient $soap_client The SOAP client to use for the call.
+	 * @param string     $method_namespace The namespace of the method to call.
+	 * @param string     $service_name The name of the service to call.
+	 * @return stdClass The SOAP response containing the last run date.
+	 * @throws SoapFault An exception in case of errors occurred during the call to the web service.
+	 */
+	private function get_last_run( $soap_client, $method_namespace, $service_name, $method_name = 'GetMemberExtractReportLastRun' ) {
+			$arguments = array();
+			$action    = array(
+				'soapaction' => "$method_namespace/$service_name/$method_name",
+				'uri'        => $method_namespace,
+			);
+			$result    = $soap_client->__soapCall( $method_name, $arguments, $action );
+			return $result;
+	}
+
 
 	/**
 	 * Retuns the count of members retrieved through the web service call

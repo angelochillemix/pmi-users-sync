@@ -51,7 +51,7 @@ class Pmi_Users_Sync_Utils {
 		) {
 			return false;
 		}
-		return self::attachment_url_to_path( $file_url );
+		return self::attachment_url_to_path( $file_url, false );
 	}
 
 	/**
@@ -66,12 +66,19 @@ class Pmi_Users_Sync_Utils {
 		if ( empty( $parsed_url['path'] ) ) {
 			return false;
 		}
+		Pmi_Users_Sync_Logger::log_information( __( 'File path is ', 'pmi-users-sync' ) . $parsed_url['path'] );
 		// Remove parent directory.
+		// TODO : Check if it is safe to remove the parent directory since in production with PHP 8.3 it throws an error.
 		$dir_path = substr( ltrim( $parsed_url['path'], '/' ), strpos( ltrim( $parsed_url['path'], '/' ), '/' ) );
+		Pmi_Users_Sync_Logger::log_information( __( 'File path with parent directory removed ', 'pmi-users-sync' ) . $dir_path );
 		// Remove one more trailing slash from the full path.
-		$dir_path = ltrim( $dir_path, '/' );
+		$dir_path = ltrim( $parsed_url['path'], '/' );
+		Pmi_Users_Sync_Logger::log_information( __( 'File path with trailing slash removed ', 'pmi-users-sync' ) . $dir_path );
 		// Append the absolute path of WordPress directory from the ABSPATH variable.
 		$file = ABSPATH . $dir_path;
+		Pmi_Users_Sync_Logger::log_information( __( 'File path is ', 'pmi-users-sync' ) . $file );
+		Pmi_Users_Sync_Logger::log_information( __( 'File exists? ', 'pmi-users-sync' ) . file_exists( $file ) ? 'Y' : 'N' );
+
 		// Check if the resulting file exists and return its full path.
 		if ( ! $check_file || file_exists( $file ) ) {
 			return $file;

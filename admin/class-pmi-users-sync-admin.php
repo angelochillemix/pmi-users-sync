@@ -459,7 +459,7 @@ class Pmi_Users_Sync_Admin {
 				$this->add_error_message( __( 'An error occurred', 'pmi-users-sync' ) . ' ' . $exception->getMessage() );
 			} catch ( Exception $exception ) {
 				$this->add_error_message( __( 'An error occurred during the page rendering', 'pmi-users-sync' ) );
-				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . isnull( $exception ) ? '' : $exception->getMessage() );
+				Pmi_Users_Sync_Logger::log_error( __( 'An error occurred while rendering the page. Error is: ', 'pmi-users-sync' ) . is_null( $exception ) ? '' : $exception->getMessage() );
 			}
 		}
 		return $pus_users;
