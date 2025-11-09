@@ -39,6 +39,7 @@
     },
     {
       "label": "Run Wordpress Tests (with logs permission)",
+      "dependsOrder": "sequence",
       "dependsOn": ["Make logs writable", "Run Wordpress Tests"]
     },
     {

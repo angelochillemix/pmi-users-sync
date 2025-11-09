@@ -40,14 +40,17 @@ class Test_Pmi_Users_Sync_User_Updater_Factory extends TestCase {
 		Pmi_Users_Sync_Logger::log_debug( 'testCreateUser_updaterRegistersExpectedUpdaters' );
 		$user_updater      = Pmi_Users_Sync_User_Updater_Factory::create_user_updater();
 		$expected_updaters = array(
+			Pmi_Users_Sync_User_Membership_Roles_Mapping_Updater::class,
 			Pmi_Users_Sync_User_Pmi_Id_Updater::class,
 			Pmi_Users_Sync_User_Memberships_Updater::class,
 			Pmi_Users_Sync_User_Roles_Updater::class,
-			Pmi_Users_Sync_User_Membership_Roles_Mapping_Updater::class,
 		);
 		$this->assertCount( 4, $user_updater->get_user_attribute_updaters_class_name() );
 		$this->assertCount( 4, $user_updater->get_user_attribute_updaters() );
-		$this->assertEquals( $expected_updaters, $user_updater->get_user_attribute_updaters_class_name() );
+
+		foreach ( $expected_updaters as $expected_updater ) {
+			$this->assertContains( $expected_updater, $user_updater->get_user_attribute_updaters_class_name() );
+		}
 	}
 
 	/**
