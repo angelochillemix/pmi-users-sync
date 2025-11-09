@@ -55,8 +55,9 @@ class Pmi_Users_Sync_Pmi_User_Excel_File_Loader implements Pmi_Users_Sync_User_L
 	 * @throws \PhpOffice\PhpSpreadsheet\Exception Exception raised by PhpSpreadsheet.
 	 */
 	public function load() {
+		Pmi_Users_Sync_Logger::log_information( __( 'Excel file path is ', 'pmi-users-sync' ) . $this->file_path );
 		$spreadsheet = IOFactory::load( $this->file_path );
-		$worksheet   = $spreadsheet->setActiveSheetIndexByName( self::PMI_EXCEL_WORKSHEET_NAME );
+		$worksheet   = $spreadsheet->setActiveSheetIndex( 0 );
 		$pmi_users   = array();
 		foreach ( $worksheet->getRowIterator( 2 ) as $row ) {
 			if ( $row->getRowIndex() >= $worksheet->getHighestRow() ) {
@@ -68,13 +69,13 @@ class Pmi_Users_Sync_Pmi_User_Excel_File_Loader implements Pmi_Users_Sync_User_L
 				if ( ! strcmp( 'A', $cell->getColumn() ) ) {
 					$pmi_id = $cell->getValue();
 				}
-				if ( ! strcmp( 'C', $cell->getColumn() ) ) {
+				if ( ! strcmp( 'D', $cell->getColumn() ) ) {
 					$first_name = $cell->getValue();
 				}
 				if ( ! strcmp( 'E', $cell->getColumn() ) ) {
 					$last_name = $cell->getValue();
 				}
-				if ( ! strcmp( 'S', $cell->getColumn() ) ) {
+				if ( ! strcmp( 'AV', $cell->getColumn() ) ) {
 					$email = $cell->getValue();
 				}
 			}

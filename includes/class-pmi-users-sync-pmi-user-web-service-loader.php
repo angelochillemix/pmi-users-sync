@@ -57,7 +57,12 @@ class Pmi_Users_Sync_Pmi_User_Web_Service_Loader implements Pmi_Users_Sync_User_
 	public function load() {
 		$pmi_users = array();
 		if ( $this->web_service ) {
-			$this->web_service->call();
+			$result = $this->web_service->call();
+			if ( ! ( true === $result->Success || $result->MemberCount > 0 ) ) {
+				Pmi_Users_Sync_Logger::log_error( __( 'No members retrieved from the Web Service. Returned message: ', 'pmi-users-sync' ) . $result->Message );
+				return $pmi_users;
+			}
+
 			$reader      = IOFactory::createReader( 'Csv' );
 			$file_path   = $this->get_temp_csv_file_path( $this->web_service->get_csv_extract() );
 			$spreadsheet = $reader->load( $file_path );
