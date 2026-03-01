@@ -49,7 +49,17 @@ class Pmi_Users_Sync_Pmi_User_Excel_File_Loader implements Pmi_Users_Sync_User_L
 	}
 
 	/**
-	 * Loads the users from the Excel file from PMI and return an array of Pmi_Users_Sync_Pmi_User instances
+	 * Loads the users from the Excel file from PMI and return an array of Pmi_Users_Sync_Pmi_User instances.
+	 *
+	 * File Mapping
+	 *
+	 * Column   | Field         | Variable
+	 * A        | PMI ID        | pmi_id
+	 * D        | First Name    | first_name
+	 * E        | Last Name     | last_name
+	 * AV       | Email         | email
+	 *
+	 * If a record has no PMI ID and email, the user is not loaded.
 	 *
 	 * @return Pmi_Users_Sync_Pmi_User[] array of user instances
 	 * @throws \PhpOffice\PhpSpreadsheet\Exception Exception raised by PhpSpreadsheet.
