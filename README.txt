@@ -72,6 +72,7 @@ None
 * Improve INFO logging
 * Membership-Role Mapping
   * Map a role to the membership to assign the proper WordPress role to the user.
+* Improved updaters for roles and membership to correctly add to the user and ensure roles or membership to remove are not kept indefinitely
 
 ### 1.4.2
 * Fix null post returned when checking ACF fields exist by returning "WP_Post | null" notation applicable only starting with PHP 8.1
