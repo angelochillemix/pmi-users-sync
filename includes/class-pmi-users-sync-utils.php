@@ -62,25 +62,24 @@ class Pmi_Users_Sync_Utils {
 	 * @return bool|string It returns the absolute path of an attachment, or false if file does not exist
 	 */
 	public static function attachment_url_to_path( $url, $check_file = true ) {
-		$parsed_url = wp_parse_url( $url );
-		if ( empty( $parsed_url['path'] ) ) {
-			return false;
+		$upload_dir = wp_upload_dir();
+		$file       = false;
+
+		// If the URL is for a file in the uploads directory, replace baseurl with basedir.
+		if ( 0 === strpos( $url, $upload_dir['baseurl'] ) ) {
+			$file = str_replace( $upload_dir['baseurl'], $upload_dir['basedir'], $url );
+		} else {
+			// Fallback for files not in the uploads directory (e.g. different base URL from a CDN).
+			// This is a more robust way to get the path relative to the WP install directory.
+			$relative_path = str_replace( get_site_url(), '', $url );
+			$file          = ABSPATH . ltrim( $relative_path, '/' );
 		}
-		Pmi_Users_Sync_Logger::log_information( __( 'File path is ', 'pmi-users-sync' ) . $parsed_url['path'] );
-		// Remove parent directory.
-		// TODO : Check if it is safe to remove the parent directory since in production with PHP 8.3 it throws an error.
-		$dir_path = substr( ltrim( $parsed_url['path'], '/' ), strpos( ltrim( $parsed_url['path'], '/' ), '/' ) );
-		Pmi_Users_Sync_Logger::log_information( __( 'File path with parent directory removed ', 'pmi-users-sync' ) . $dir_path );
-		// Remove one more trailing slash from the full path.
-		$dir_path = ltrim( $parsed_url['path'], '/' );
-		Pmi_Users_Sync_Logger::log_information( __( 'File path with trailing slash removed ', 'pmi-users-sync' ) . $dir_path );
-		// Append the absolute path of WordPress directory from the ABSPATH variable.
-		$file = ABSPATH . $dir_path;
-		Pmi_Users_Sync_Logger::log_information( __( 'File path is ', 'pmi-users-sync' ) . $file );
-		Pmi_Users_Sync_Logger::log_information( __( 'File exists? ', 'pmi-users-sync' ) . file_exists( $file ) ? 'Y' : 'N' );
+
+		Pmi_Users_Sync_Logger::log_information( __( 'Calculated file path is ', 'pmi-users-sync' ) . $file );
+		Pmi_Users_Sync_Logger::log_information( __( 'File exists? ', 'pmi-users-sync' ) . ( file_exists( $file ) ? 'Y' : 'N' ) );
 
 		// Check if the resulting file exists and return its full path.
-		if ( ! $check_file || file_exists( $file ) ) {
+		if ( $file && ( ! $check_file || file_exists( $file ) ) ) {
 			return $file;
 		}
 		return false;

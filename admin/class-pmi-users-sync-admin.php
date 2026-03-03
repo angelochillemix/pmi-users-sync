@@ -9,8 +9,6 @@
  * @subpackage Pmi_Users_Sync/admin
  */
 
-use phpDocumentor\Reflection\Types\String_;
-
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -570,7 +568,7 @@ class Pmi_Users_Sync_Admin {
 				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Synchronizing the PMI-ID of the users', 'pmi-users-sync' ) );
 				Pmi_Users_Sync_User_Updater_Factory::create_user_updater()->update( $pus_users, $this->get_options() );
-				$this->pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
+				$this->pus_error_message .= __( 'Users successfully updated!', 'pmi-users-sync' );
 			}
 		} catch ( Exception $exception ) {
 			$this->pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
@@ -602,7 +600,7 @@ class Pmi_Users_Sync_Admin {
 				}
 				Pmi_Users_Sync_Logger::log_information( __( 'Mapping memeberships and roles of the users', 'pmi-users-sync' ) );
 				$this->execute_update_users_membership_role_map();
-				$this->pus_error_message .= '\r\n' . __( 'Users successfully updated!', 'pmi-users-sync' );
+				$this->pus_error_message .= __( 'Users successfully updated!', 'pmi-users-sync' );
 			}
 		} catch ( Exception $exception ) {
 			$this->pus_error_message = __( 'An error occurred while updating the users.', 'pmi-users-sync' ) . $exception->getMessage();
@@ -671,6 +669,19 @@ class Pmi_Users_Sync_Admin {
 		if ( ! $pus_last_synchronization_date || empty( $pus_last_synchronization_date ) ) {
 			$pus_last_synchronization_date = __( 'No synchronization occurred yet', 'pmi-users-sync' );
 		}
+
+		$user_loader_option = get_option( self::OPTION_USER_LOADER );
+		if ( self::OPTION_USER_LOADER_EXCEL === $user_loader_option ) {
+			$pmi_file_url = get_option( self::OPTION_PMI_FILE_FIELD_ID );
+			$file_path    = Pmi_Users_Sync_Utils::get_file_path( $pmi_file_url );
+		}
+
+		$pus_error_message = '';
+		if ( ! empty( $this->pus_error_message ) ) {
+			$pus_error_message = $this->pus_error_message;
+		}
+
+		// Log the information about rendering the users list page.
 		Pmi_Users_Sync_Logger::log_information( 'Rendering the users list page.' );
 		require_once plugin_dir_path( __FILE__ ) . 'partials/pmi-users-sync-admin-display.php';
 	}
